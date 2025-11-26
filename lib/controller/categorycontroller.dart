@@ -6,23 +6,31 @@ class CategoryController extends ChangeNotifier {
   final ApiService _service = ApiService();
 
   // ---------------------------------------------------------------------------
-  // STATE
+  // STATE VARIABLES
   // ---------------------------------------------------------------------------
-  List<LoaiDanhMuc> tree = []; // Cây danh mục
-  bool isLoading = false; // Hiển thị loading
+  List<LoaiDanhMuc> tree = []; // Danh sách danh mục dạng cây
+  bool isLoading = false;
 
   // ---------------------------------------------------------------------------
-  // 1. Tải danh mục từ API
+  // PUBLIC METHODS
   // ---------------------------------------------------------------------------
+
+  /// Tải cây danh mục
   Future<void> loadCategories() async {
-    if (tree.isNotEmpty) return; // Nếu đã tải rồi, không tải lại
+    // Nếu đã có dữ liệu thì không load lại (Cache đơn giản)
+    if (tree.isNotEmpty) return;
 
-    isLoading = true;
-    notifyListeners();
+    try {
+      isLoading = true;
+      notifyListeners();
 
-    tree = await _service.fetchCategoryTree();
-
-    isLoading = false;
-    notifyListeners();
+      tree = await _service.fetchCategoryTree();
+    } catch (e) {
+      print("Lỗi tải danh mục: $e");
+      tree = [];
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 }

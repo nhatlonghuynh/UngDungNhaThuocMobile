@@ -5,15 +5,25 @@ import 'package:nhathuoc_mobilee/service/productservice.dart';
 class HomeController extends ChangeNotifier {
   final ProductService _service = ProductService();
 
+  // ---------------------------------------------------------------------------
+  // STATE VARIABLES
+  // ---------------------------------------------------------------------------
   List<Thuoc> products = [];
   bool isLoading = true;
   String errorMessage = '';
 
-  // Khởi tạo là tải dữ liệu ngay
+  // ---------------------------------------------------------------------------
+  // CONSTRUCTOR
+  // ---------------------------------------------------------------------------
   HomeController() {
     fetchProducts();
   }
 
+  // ---------------------------------------------------------------------------
+  // PUBLIC METHODS
+  // ---------------------------------------------------------------------------
+
+  /// Tải danh sách sản phẩm mặc định
   Future<void> fetchProducts() async {
     isLoading = true;
     errorMessage = '';
@@ -22,36 +32,39 @@ class HomeController extends ChangeNotifier {
     try {
       products = await _service.getProducts();
     } catch (e) {
-      errorMessage = e.toString();
+      errorMessage = "Không thể tải sản phẩm: $e";
     } finally {
       isLoading = false;
       notifyListeners();
     }
   }
 
+  /// Tìm kiếm sản phẩm
   Future<void> onSearch(String keyword) async {
     isLoading = true;
     errorMessage = '';
     notifyListeners();
 
     try {
-      if (keyword.isEmpty) {
-        // Nếu xóa hết chữ thì load lại tất cả sản phẩm
+      if (keyword.trim().isEmpty) {
+        // Nếu từ khóa rỗng, tải lại danh sách gốc
         products = await _service.getProducts();
       } else {
-        // Nếu có chữ thì tìm theo tên hoặc công dụng
+        // Gọi API tìm kiếm
         products = await _service.searchProductByNameOrUse(keyword);
       }
     } catch (e) {
       errorMessage = "Không tìm thấy kết quả phù hợp";
-      products = []; // Xóa danh sách cũ nếu lỗi
+      products = [];
     } finally {
       isLoading = false;
       notifyListeners();
     }
   }
 
-  // --- Wrapper để UI gọi các hàm tính toán từ Service ---
+  // ---------------------------------------------------------------------------
+  // UI HELPERS (Wrapper gọi Service)
+  // ---------------------------------------------------------------------------
   bool checkPromo(Thuoc t) => _service.hasPromotion(t);
   double finalPrice(Thuoc t) => _service.getDiscountedPrice(t);
   String badgeText(Thuoc t) => _service.getBadgeText(t);

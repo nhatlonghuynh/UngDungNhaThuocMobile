@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:nhathuoc_mobilee/common/constants/appcolor.dart';
 import 'package:nhathuoc_mobilee/controller/home_controller.dart';
+import 'package:nhathuoc_mobilee/controller/productcontroller.dart';
 import 'package:nhathuoc_mobilee/models/thuoc.dart';
 import 'package:nhathuoc_mobilee/widgets/Home/product_buy_sheet.dart';
 import 'package:nhathuoc_mobilee/widgets/ProductDetail/product_bottom_bar.dart';
 import 'package:nhathuoc_mobilee/widgets/ProductDetail/product_images_slider.dart';
 import 'package:nhathuoc_mobilee/widgets/ProductDetail/product_info_section.dart';
 import 'package:provider/provider.dart';
-import 'package:nhathuoc_mobilee/controller/productcontroller.dart';
 
 class DetailProductScreen extends StatelessWidget {
   final int productId;

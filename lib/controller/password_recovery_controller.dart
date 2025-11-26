@@ -5,35 +5,36 @@ class PasswordRecoveryController extends ChangeNotifier {
   final UserService _service = UserService();
   bool isLoading = false;
 
-  // Bước 1: Yêu cầu Token
+  /// Bước 1: Yêu cầu Token qua username/email
   Future<Map<String, dynamic>> requestToken(String username) async {
-    isLoading = true;
-    notifyListeners();
-
-    final result = await _service.forgotPassword(username);
-
-    isLoading = false;
-    notifyListeners();
-    return result;
+    try {
+      isLoading = true;
+      notifyListeners();
+      return await _service.forgotPassword(username);
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
-  // Bước 2: Đổi mật khẩu mới
+  /// Bước 2: Gửi token và mật khẩu mới
   Future<Map<String, dynamic>> submitReset({
     required String username,
     required String token,
     required String newPass,
   }) async {
-    isLoading = true;
-    notifyListeners();
+    try {
+      isLoading = true;
+      notifyListeners();
 
-    final result = await _service.resetPassword(
-      username: username,
-      token: token,
-      newPassword: newPass,
-    );
-
-    isLoading = false;
-    notifyListeners();
-    return result;
+      return await _service.resetPassword(
+        username: username,
+        token: token,
+        newPassword: newPass,
+      );
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 }

@@ -7,33 +7,41 @@ import 'package:nhathuoc_mobilee/service/orderservice.dart';
 import 'package:nhathuoc_mobilee/service/userservice.dart';
 
 class OrderController extends ChangeNotifier {
-  final OrderService _service = OrderService();
-  final UserService _serviceaddress = UserService();
+  final OrderService _orderService = OrderService();
+  final UserService _userService = UserService();
 
-  List<UserAddress> addresses = [];
-  UserAddress? selectedAddress;
-  // --- STATE (Trạng thái UI) ---
+  // ---------------------------------------------------------------------------
+  // STATE VARIABLES
+  // ---------------------------------------------------------------------------
+  // UI State
   bool isOrdering = false;
   int deliveryMethod = 0; // 0: Giao tận nơi, 1: Tại quầy
   String paymentMethod = "COD";
-  String address = UserManager().diaChi ?? "";
   String note = "";
+  String addressDisplay =
+      UserManager().diaChi ?? ""; // Địa chỉ hiển thị (String)
 
-  // Điểm thưởng
+  // Address State
+  List<UserAddress> addresses = [];
+  UserAddress? selectedAddress;
+
+  // Reward Points State
   bool usePoints = false;
   int pointsToUse = 0;
   int get maxPoints => UserManager().diemTichLuy;
 
-  // --- COMPUTED (Tính toán để hiển thị) ---
-  double getSubtotal(List<GioHang> items) => _service.calcSubtotal(items);
+  // ---------------------------------------------------------------------------
+  // COMPUTED (Tính toán tiền)
+  // ---------------------------------------------------------------------------
+  double getSubtotal(List<GioHang> items) => _orderService.calcSubtotal(items);
 
-  double getShipping() => _service.calcShippingFee(deliveryMethod);
+  double getShipping() => _orderService.calcShippingFee(deliveryMethod);
 
   double getPointDiscount() =>
-      usePoints ? _service.calcPointDiscount(pointsToUse) : 0;
+      usePoints ? _orderService.calcPointDiscount(pointsToUse) : 0;
 
   double getFinalTotal(List<GioHang> items) {
-    return _service.calcFinalTotal(
+    return _orderService.calcFinalTotal(
       subtotal: getSubtotal(items),
       shipping: getShipping(),
       discount: getPointDiscount(),
@@ -41,31 +49,32 @@ class OrderController extends ChangeNotifier {
   }
 
   int getEarnedPoints(List<GioHang> items) =>
-      _service.calcEarnedPoints(getFinalTotal(items));
+      _orderService.calcEarnedPoints(getFinalTotal(items));
 
-  // --- ACTIONS (Hành động) ---
+  // ---------------------------------------------------------------------------
+  // ORDER ACTIONS (Đặt hàng)
+  // ---------------------------------------------------------------------------
 
   Future<Map<String, dynamic>> placeOrder(List<GioHang> items) async {
     // Validate
     if (deliveryMethod == 0 &&
-        (address.isEmpty || address == "Chưa chọn địa chỉ")) {
+        (addressDisplay.isEmpty || addressDisplay == "Chưa chọn địa chỉ")) {
       throw Exception("Vui lòng nhập địa chỉ giao hàng!");
     }
 
-    isOrdering = true;
-    notifyListeners();
-
     try {
-      final result = await _service.submitOrder(
+      isOrdering = true;
+      notifyListeners();
+
+      final result = await _orderService.submitOrder(
         items: items,
-        note: "$note | ĐC: ${deliveryMethod == 0 ? address : 'Nhận tại quầy'}",
+        note:
+            "$note | ĐC: ${deliveryMethod == 0 ? addressDisplay : 'Nhận tại quầy'}",
         pointDiscount: getPointDiscount(),
         paymentMethod: paymentMethod,
-        diaChi: address,
+        diaChi: addressDisplay,
       );
       return result;
-    } catch (e) {
-      rethrow;
     } finally {
       isOrdering = false;
       notifyListeners();
@@ -73,7 +82,7 @@ class OrderController extends ChangeNotifier {
   }
 
   Future<void> confirmPayOS(int maHD, int code) async {
-    await _service.confirmPayment(maHD, code);
+    await _orderService.confirmPayment(maHD, code);
   }
 
   Future<void> clearCart(List<GioHang> items) async {
@@ -82,7 +91,55 @@ class OrderController extends ChangeNotifier {
     }
   }
 
-  // --- SETTERS (Cập nhật UI) ---
+  // ---------------------------------------------------------------------------
+  // ADDRESS MANAGEMENT (Quản lý địa chỉ)
+  // ---------------------------------------------------------------------------
+
+  Future<void> loadUserAddresses({required String userId}) async {
+    try {
+      addresses = await _userService.getAddresses(userId);
+      if (addresses.isNotEmpty) {
+        selectedAddress = addresses.firstWhere(
+          (e) => e.isDefault,
+          orElse: () => addresses.first,
+        );
+      } else {
+        selectedAddress = null;
+      }
+      notifyListeners();
+    } catch (e) {
+      print("Lỗi tải địa chỉ: $e");
+    }
+  }
+
+  Future<void> addNewAddress(UserAddress addr, String userId) async {
+    await _userService.addAddress(userId, addr);
+    await loadUserAddresses(userId: userId);
+  }
+
+  Future<void> editAddress(UserAddress addr) async {
+    await _userService.updateAddress(addr);
+    // Cập nhật lại nếu đang chọn địa chỉ này
+    if (selectedAddress?.addressID == addr.addressID) {
+      selectedAddress = addr;
+    }
+    notifyListeners();
+  }
+
+  Future<void> deleteAddress(UserAddress addr, String userId) async {
+    await _userService.deleteAddress(addr.addressID);
+    await loadUserAddresses(userId: userId);
+  }
+
+  void setSelectedAddress(UserAddress addr) {
+    selectedAddress = addr;
+    addressDisplay = addr.fullAddress; // Cập nhật chuỗi hiển thị
+    notifyListeners();
+  }
+
+  // ---------------------------------------------------------------------------
+  // UI SETTERS
+  // ---------------------------------------------------------------------------
   void setDeliveryMethod(int val) {
     deliveryMethod = val;
     notifyListeners();
@@ -94,7 +151,7 @@ class OrderController extends ChangeNotifier {
   }
 
   void setAddress(String val) {
-    address = val;
+    addressDisplay = val;
     notifyListeners();
   }
 
@@ -111,42 +168,5 @@ class OrderController extends ChangeNotifier {
   void setPointsToUse(int val) {
     pointsToUse = (val > maxPoints) ? maxPoints : val;
     notifyListeners();
-  }
-
-  Future<void> loadUserAddresses({required String userId}) async {
-    addresses = await _serviceaddress.getAddresses(userId);
-    if (addresses.isEmpty) {
-      selectedAddress =
-          null; // nếu selectedAddress là UserAddress?, cho phép null
-    } else {
-      selectedAddress = addresses.firstWhere(
-        (e) => e.isDefault,
-        orElse: () => addresses.first,
-      );
-      notifyListeners();
-    }
-  }
-
-  void setSelectedAddress(UserAddress addr) {
-    selectedAddress = addr;
-    notifyListeners();
-  }
-
-  Future<void> addNewAddress(UserAddress addr, String userId) async {
-    await _serviceaddress.addAddress(userId, addr);
-    await loadUserAddresses(userId: userId);
-  }
-
-  Future<void> editAddress(UserAddress addr) async {
-    await _serviceaddress.updateAddress(addr);
-    if (selectedAddress?.addressID == addr.addressID) {
-      selectedAddress = addr;
-    }
-    notifyListeners();
-  }
-
-  Future<void> deleteAddress(UserAddress addr, String userId) async {
-    await _serviceaddress.deleteAddress(addr.addressID);
-    await loadUserAddresses(userId: userId);
   }
 }

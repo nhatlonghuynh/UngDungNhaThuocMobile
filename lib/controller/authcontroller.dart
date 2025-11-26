@@ -1,50 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:nhathuoc_mobilee/service/authservice.dart';
 import 'package:nhathuoc_mobilee/manager/usermanager.dart';
+import 'package:nhathuoc_mobilee/service/authservice.dart';
 
 class AuthController extends ChangeNotifier {
-  // Khởi tạo Service xử lý API
+  // ---------------------------------------------------------------------------
+  // 1. SERVICES & DEPENDENCIES
+  // ---------------------------------------------------------------------------
   final AuthService _service = AuthService();
 
-  // ===========================================================================
-  // 1. STATE MANAGEMENT (TRẠNG THÁI UI)
-  // ===========================================================================
+  // ---------------------------------------------------------------------------
+  // 2. STATE VARIABLES (Biến trạng thái)
+  // ---------------------------------------------------------------------------
+  bool isLoading = false; // Hiển thị vòng xoay loading
+  bool obscureText = true; // Ẩn/Hiện mật khẩu
+  String errorMessage = ''; // Lưu thông báo lỗi
 
-  bool isLoading = false; // Trạng thái đang tải (hiện xoay vòng)
-  bool obscureText = true; // Trạng thái ẩn/hiện mật khẩu
-  String errorMessage = ''; // Lưu lỗi nếu có (để hiển thị Text màu đỏ)
-
-  // ===========================================================================
-  // 2. GETTERS (TRUY XUẤT DỮ LIỆU)
-  // ===========================================================================
-
-  /// Kiểm tra xem người dùng đã đăng nhập chưa (lấy từ Singleton)
+  // ---------------------------------------------------------------------------
+  // 3. GETTERS (Dữ liệu cho UI)
+  // ---------------------------------------------------------------------------
   bool get isLoggedIn => UserManager().isLoggedIn;
+  String? get currentUserName => UserManager().hoTen;
 
-  /// Lấy thông tin người dùng hiện tại (nếu cần hiển thị Avatar/Tên)
-  String? get currentUser => UserManager().hoTen;
+  // ---------------------------------------------------------------------------
+  // 4. UI LOGIC (Hành động trên giao diện)
+  // ---------------------------------------------------------------------------
 
-  // ===========================================================================
-  // 3. UI LOGIC (XỬ LÝ GIAO DIỆN)
-  // ===========================================================================
-
-  /// Hàm bật/tắt chế độ xem mật khẩu (Mắt đóng/mở)
+  // Chuyển đổi trạng thái ẩn/hiện mật khẩu
   void togglePasswordVisibility() {
     obscureText = !obscureText;
-    notifyListeners(); // Báo UI vẽ lại icon
-  }
-
-  /// Hàm làm mới UI (thường dùng khi quay lại từ màn hình khác)
-  void refresh() {
     notifyListeners();
   }
 
-  // ===========================================================================
-  // 4. LOGIN LOGIC (ĐĂNG NHẬP)
-  // ===========================================================================
+  // Làm mới UI (dùng khi quay lại từ màn hình khác)
+  void refresh() {
+    errorMessage = '';
+    notifyListeners();
+  }
 
+  // ---------------------------------------------------------------------------
+  // 5. BUSINESS LOGIC (Xử lý nghiệp vụ)
+  // ---------------------------------------------------------------------------
+
+  /// Xử lý Đăng nhập
   Future<Map<String, dynamic>> handleLogin(String phone, String pass) async {
-    // 1. Validate đầu vào
+    // Validate
     if (phone.trim().isEmpty || pass.trim().isEmpty) {
       return {
         'success': false,
@@ -52,72 +51,62 @@ class AuthController extends ChangeNotifier {
       };
     }
 
-    // 2. Bắt đầu loading
-    isLoading = true;
-    errorMessage = '';
-    notifyListeners();
+    try {
+      isLoading = true;
+      errorMessage = '';
+      notifyListeners();
 
-    // 3. Gọi Service
-    final result = await _service.login(phone, pass);
-
-    // 4. Kết thúc loading
-    isLoading = false;
-    notifyListeners();
-
-    return result; // Trả về kết quả cho UI xử lý chuyển màn hình
+      // Gọi API
+      final result = await _service.login(phone, pass);
+      return result;
+    } catch (e) {
+      return {'success': false, 'message': 'Lỗi đăng nhập: $e'};
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
-  // ===========================================================================
-  // 5. REGISTER LOGIC (ĐĂNG KÝ)
-  // ===========================================================================
-
+  /// Xử lý Đăng ký
   Future<Map<String, dynamic>> handleRegister({
     required String name,
     required String phone,
     required String pass,
     required String confirmPass,
     required String gender,
-    required String address, // Nên nhận address từ UI thay vì hardcode
+    required String address,
   }) async {
-    // 1. Validate cơ bản
+    // Validate
     if (name.isEmpty || phone.isEmpty || pass.isEmpty || address.isEmpty) {
       return {'success': false, 'message': 'Vui lòng điền đầy đủ thông tin'};
     }
-
-    // 2. Validate mật khẩu
     if (pass != confirmPass) {
       return {'success': false, 'message': 'Mật khẩu xác nhận không khớp'};
     }
 
-    // 3. Bắt đầu loading
-    isLoading = true;
-    notifyListeners();
+    try {
+      isLoading = true;
+      notifyListeners();
 
-    // 4. Gọi Service
-    final result = await _service.register(
-      name: name,
-      phone: phone,
-      address: address,
-      password: pass,
-      gender: gender,
-    );
-
-    // 5. Kết thúc loading
-    isLoading = false;
-    notifyListeners();
-
-    return result;
+      final result = await _service.register(
+        name: name,
+        phone: phone,
+        address: address,
+        password: pass,
+        gender: gender,
+      );
+      return result;
+    } catch (e) {
+      return {'success': false, 'message': 'Lỗi đăng ký: $e'};
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
-  // ===========================================================================
-  // 6. LOGOUT LOGIC (ĐĂNG XUẤT)
-  // ===========================================================================
-
+  /// Xử lý Đăng xuất
   Future<void> logout() async {
-    // Xóa session và token trong máy
     await UserManager().logout();
-
-    // Cập nhật UI để chuyển về chế độ Khách
-    notifyListeners();
+    notifyListeners(); // Cập nhật UI về trạng thái chưa đăng nhập
   }
 }

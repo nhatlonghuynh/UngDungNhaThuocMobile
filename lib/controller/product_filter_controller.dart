@@ -4,10 +4,13 @@ import 'package:nhathuoc_mobilee/models/thuoc.dart';
 
 class ProductFilterController extends ChangeNotifier {
   final ApiService _service = ApiService();
+
+  // State
   List<Thuoc> products = [];
   bool isLoading = true;
   String message = '';
 
+  /// Tải sản phẩm theo loại hoặc danh mục
   Future<void> loadProducts({int? typeId, int? catId}) async {
     isLoading = true;
     products = [];
@@ -15,15 +18,18 @@ class ProductFilterController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      products = await _service.fetchFilteredProducts(typeId: typeId, catId: catId);
+      products = await _service.fetchFilteredProducts(
+        typeId: typeId,
+        catId: catId,
+      );
       if (products.isEmpty) {
         message = "Không tìm thấy sản phẩm nào.";
       }
     } catch (e) {
       message = "Lỗi kết nối: $e";
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
-
-    isLoading = false;
-    notifyListeners();
   }
 }

@@ -4,7 +4,7 @@ import 'package:nhathuoc_mobilee/service/cartservice.dart';
 
 class CartController extends ChangeNotifier {
   // ---------------------------------------------------------------------------
-  // Singleton: dùng chung 1 instance trong app
+  // 1. SINGLETON (Đảm bảo giỏ hàng đồng bộ toàn app)
   // ---------------------------------------------------------------------------
   static final CartController _instance = CartController._internal();
   factory CartController() => _instance;
@@ -13,27 +13,32 @@ class CartController extends ChangeNotifier {
   final CartService _service = CartService();
 
   // ---------------------------------------------------------------------------
-  // STATE UI
+  // 2. STATE VARIABLES
   // ---------------------------------------------------------------------------
   List<GioHang> cartItems = [];
   bool isLoading = false;
 
   // ---------------------------------------------------------------------------
-  // 1. Tải dữ liệu giỏ hàng từ Service
+  // 3. PUBLIC METHODS (Tương tác dữ liệu)
   // ---------------------------------------------------------------------------
+
+  /// Tải dữ liệu giỏ hàng từ API/Local
   Future<void> loadData() async {
-    isLoading = true;
-    notifyListeners();
+    try {
+      isLoading = true;
+      notifyListeners();
 
-    cartItems = await _service.getFullCartDetails();
-
-    isLoading = false;
-    notifyListeners();
+      cartItems = await _service.getFullCartDetails();
+    } catch (e) {
+      print("Lỗi tải giỏ hàng: $e");
+      cartItems = [];
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
-  // ---------------------------------------------------------------------------
-  // 2. Chọn tất cả / Bỏ chọn tất cả
-  // ---------------------------------------------------------------------------
+  /// Chọn hoặc bỏ chọn tất cả sản phẩm
   void toggleSelectAll(bool isSelected) {
     for (var item in cartItems) {
       item.isSelected = isSelected;
@@ -41,42 +46,47 @@ class CartController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ---------------------------------------------------------------------------
-  // 3. Thay đổi số lượng (+/-)
-  // ---------------------------------------------------------------------------
+  /// Cập nhật số lượng sản phẩm (+/-)
   Future<void> updateQuantity(int index, int change) async {
+    if (index < 0 || index >= cartItems.length) return;
+
     int newQty = cartItems[index].soLuong + change;
     if (newQty > 0) {
+      // Cập nhật UI ngay lập tức
       cartItems[index].soLuong = newQty;
       notifyListeners();
 
-      // Cập nhật dữ liệu cục bộ (local)
+      // Cập nhật ngầm xuống Storage
       await _service.updateLocalCart(cartItems[index].maThuoc, change);
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // 4. Xóa sản phẩm khỏi giỏ
-  // ---------------------------------------------------------------------------
+  /// Xóa sản phẩm khỏi giỏ
   Future<void> deleteItem(int index) async {
+    if (index < 0 || index >= cartItems.length) return;
+
     int maThuoc = cartItems[index].maThuoc;
 
-    // Xóa khỏi UI
+    // Xóa UI
     cartItems.removeAt(index);
     notifyListeners();
 
-    // Xóa khỏi Service/local storage
+    // Xóa Storage
     await _service.removeLocalItem(maThuoc);
   }
 
   // ---------------------------------------------------------------------------
-  // 5. Getter tính toán
+  // 4. COMPUTED PROPS (Tính toán cho UI)
   // ---------------------------------------------------------------------------
+
+  /// Tổng tiền các món đang chọn
   double get totalPayment => _service.calculateTotal(cartItems);
 
+  /// Kiểm tra có chọn tất cả không
   bool get isAllSelected =>
       cartItems.isNotEmpty && cartItems.every((e) => e.isSelected);
 
+  /// Lấy danh sách các món đang chọn để thanh toán
   List<GioHang> get selectedItems =>
       cartItems.where((e) => e.isSelected).toList();
 }

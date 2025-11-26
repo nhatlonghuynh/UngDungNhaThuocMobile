@@ -5,20 +5,20 @@ import 'package:nhathuoc_mobilee/service/rewardservice.dart';
 class RewardController extends ChangeNotifier {
   final RewardService _service = RewardService();
 
+  // State
   List<GiftModel> gifts = [];
   bool isLoading = false;
   String? errorMessage;
 
-  // Hàm tải danh sách quà
+  /// Tải danh sách quà tặng
   Future<void> loadGifts() async {
-    // Nếu chưa đăng nhập thì không tải
     if (!UserManager().isLoggedIn) return;
 
-    isLoading = true;
-    errorMessage = null;
-    notifyListeners();
-
     try {
+      isLoading = true;
+      errorMessage = null;
+      notifyListeners();
+
       gifts = await _service.getGifts();
     } catch (e) {
       errorMessage = e.toString();
@@ -28,21 +28,23 @@ class RewardController extends ChangeNotifier {
     }
   }
 
-  // Hàm đổi quà
+  /// Thực hiện đổi quà
   Future<Map<String, dynamic>> exchangeGift(GiftModel gift) async {
-    // Gọi Service đổi quà
-    final result = await _service.redeemGift(
-      giftId: gift.id,
-      name: gift.name,
-      points: gift.points,
-      type: gift.type,
-    );
+    try {
+      final result = await _service.redeemGift(
+        giftId: gift.id,
+        name: gift.name,
+        points: gift.points,
+        type: gift.type,
+      );
 
-    // Nếu thành công, notifyListeners để UI cập nhật lại số điểm (vì UserManager đã thay đổi)
-    if (result['success'] == true) {
-      notifyListeners();
+      // Nếu thành công, UserManager đã cập nhật điểm, cần báo UI refresh
+      if (result['success'] == true) {
+        notifyListeners();
+      }
+      return result;
+    } catch (e) {
+      return {'success': false, 'message': 'Lỗi đổi quà: $e'};
     }
-
-    return result;
   }
 }

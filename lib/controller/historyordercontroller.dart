@@ -7,87 +7,93 @@ class OrderHistoryController extends ChangeNotifier {
   final OrderService _service = OrderService();
 
   // ---------------------------------------------------------------------------
-  // STATE DANH SÁCH ĐƠN HÀNG
+  // STATE: LIST ORDER
   // ---------------------------------------------------------------------------
   List<OrderSummary> orders = [];
   bool isLoadingList = false;
   String errorList = '';
 
   // ---------------------------------------------------------------------------
-  // STATE CHI TIẾT ĐƠN HÀNG
+  // STATE: ORDER DETAIL
   // ---------------------------------------------------------------------------
   OrderDetail? currentDetail;
   bool isLoadingDetail = false;
   String errorDetail = '';
 
   // ---------------------------------------------------------------------------
-  // 1. Lấy danh sách đơn hàng
+  // PUBLIC METHODS
   // ---------------------------------------------------------------------------
+
+  /// Lấy danh sách đơn hàng theo trạng thái
   Future<void> getMyOrders(String status) async {
-    if (isLoadingList) return; // Tránh gọi API chồng chéo
+    if (isLoadingList) return; // Debounce
 
-    isLoadingList = true;
-    errorList = '';
-    notifyListeners();
-
-    // Kiểm tra User đã login chưa
+    // Kiểm tra đăng nhập
     String userId = UserManager().userId;
     if (userId.isEmpty) {
       await UserManager().loadUser();
       userId = UserManager().userId;
     }
-
     if (userId.isEmpty) {
-      isLoadingList = false;
       errorList = 'Vui lòng đăng nhập lại';
       notifyListeners();
       return;
     }
 
-    // Gọi Service lấy danh sách
-    final result = await _service.fetchOrders(status);
+    try {
+      isLoadingList = true;
+      errorList = '';
+      notifyListeners();
 
-    isLoadingList = false;
-    if (result['success']) {
-      orders = result['data'];
-    } else {
-      errorList = result['message'];
-      // TODO: Xử lý token hết hạn nếu cần
+      final result = await _service.fetchOrders(status);
+      if (result['success']) {
+        orders = result['data'];
+      } else {
+        errorList = result['message'];
+      }
+    } catch (e) {
+      errorList = "Lỗi kết nối: $e";
+    } finally {
+      isLoadingList = false;
+      notifyListeners();
     }
-    notifyListeners();
   }
 
-  // ---------------------------------------------------------------------------
-  // 2. Lấy chi tiết đơn hàng
-  // ---------------------------------------------------------------------------
+  /// Lấy chi tiết đơn hàng
   Future<void> getOrderDetail(int orderId) async {
-    isLoadingDetail = true;
-    errorDetail = '';
-    currentDetail = null;
-    notifyListeners();
+    try {
+      isLoadingDetail = true;
+      errorDetail = '';
+      currentDetail = null;
+      notifyListeners();
 
-    final result = await _service.fetchDetail(orderId);
-
-    isLoadingDetail = false;
-    if (result['success']) {
-      currentDetail = result['data'];
-    } else {
-      errorDetail = result['message'];
+      final result = await _service.fetchDetail(orderId);
+      if (result['success']) {
+        currentDetail = result['data'];
+      } else {
+        errorDetail = result['message'];
+      }
+    } catch (e) {
+      errorDetail = "Lỗi: $e";
+    } finally {
+      isLoadingDetail = false;
+      notifyListeners();
     }
-    notifyListeners();
   }
 
-  // ---------------------------------------------------------------------------
-  // 3. Hủy đơn hàng
-  // ---------------------------------------------------------------------------
+  /// Hủy đơn hàng
   Future<bool> cancelOrder(int orderId) async {
-    final result = await _service.cancelOrder(orderId);
-
-    if (result['success']) {
-      // TODO: Nếu muốn reload danh sách, gọi getMyOrders("ALL");
-      return true;
-    } else {
-      errorDetail = result['message'];
+    try {
+      final result = await _service.cancelOrder(orderId);
+      if (result['success']) {
+        return true;
+      } else {
+        errorDetail = result['message'];
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      errorDetail = "Lỗi khi hủy đơn: $e";
       notifyListeners();
       return false;
     }

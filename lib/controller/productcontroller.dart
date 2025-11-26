@@ -5,35 +5,47 @@ import 'package:nhathuoc_mobilee/service/productservice.dart';
 class ProductDetailController extends ChangeNotifier {
   final ProductService _service = ProductService();
 
-  // State
+  // ---------------------------------------------------------------------------
+  // STATE VARIABLES
+  // ---------------------------------------------------------------------------
+  ThuocDetail? product;
   bool isLoading = true;
   String errorMessage = '';
-  ThuocDetail? product;
 
-  // State UI (Số lượng mua)
+  // State UI
   int quantity = 1;
 
-  // Hàm load dữ liệu
+  // ---------------------------------------------------------------------------
+  // PUBLIC METHODS
+  // ---------------------------------------------------------------------------
+
+  /// Tải chi tiết sản phẩm theo ID
   Future<void> loadProduct(int id) async {
     isLoading = true;
     errorMessage = '';
     product = null;
-    notifyListeners(); // Báo UI hiện vòng xoay loading
-    print("--- BẮT ĐẦU LOAD CHI TIẾT ---");
-    print("ID cần tìm: $id");
-    final result = await _service.fetchProductDetail(id);
+    quantity = 1; // Reset số lượng khi xem sản phẩm mới
+    notifyListeners();
 
-    print("Kết quả API trả về: $result");
-    isLoading = false;
-    if (result['success']) {
-      product = result['data'];
-    } else {
-      errorMessage = result['message'];
+    try {
+      final result = await _service.fetchProductDetail(id);
+      if (result['success']) {
+        product = result['data'];
+      } else {
+        errorMessage = result['message'];
+      }
+    } catch (e) {
+      errorMessage = "Lỗi kết nối: $e";
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
-    notifyListeners(); // Báo UI vẽ lại dữ liệu hoặc lỗi
   }
 
-  // Logic tăng giảm số lượng
+  // ---------------------------------------------------------------------------
+  // UI ACTIONS
+  // ---------------------------------------------------------------------------
+
   void increaseQuantity() {
     if (product != null && quantity < product!.soLuong) {
       quantity++;
@@ -48,18 +60,24 @@ class ProductDetailController extends ChangeNotifier {
     }
   }
 
+  // ---------------------------------------------------------------------------
+  // GETTERS
+  // ---------------------------------------------------------------------------
+
+  /// Tính giá cuối cùng (sau khi trừ khuyến mãi)
   double get finalPrice {
     if (product == null) return 0;
+
     double price = product!.giaBan;
-    if (product?.khuyenMai != null) {
-      final km = product!.khuyenMai!;
+    final km = product!.khuyenMai;
+
+    if (km != null) {
       if (km.phanTramKM > 0) {
         price = price * (1 - km.phanTramKM / 100);
       } else if (km.tienGiam > 0) {
         price = price - km.tienGiam;
       }
     }
-    if (price < 0) price = 0;
     return price < 0 ? 0 : price;
   }
 }
