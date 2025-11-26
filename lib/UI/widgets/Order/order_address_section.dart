@@ -240,29 +240,32 @@ class _AddressModalContentState extends State<_AddressModalContent> {
                 );
                 return;
               }
+              try {
+                // Xử lý chuỗi địa chỉ từ AddressSelectionField
+                // Định dạng trả về mặc định: "Xã A, Huyện B, Tỉnh C"
+                List<String> parts = addressCtrl.text.split(', ');
+                String ward = parts.isNotEmpty ? parts[0] : "";
+                String district = parts.length > 1 ? parts[1] : "";
+                String province = parts.length > 2 ? parts[2] : "";
 
-              // Xử lý chuỗi địa chỉ từ AddressSelectionField
-              // Định dạng trả về mặc định: "Xã A, Huyện B, Tỉnh C"
-              List<String> parts = addressCtrl.text.split(', ');
-              String ward = parts.isNotEmpty ? parts[0] : "";
-              String district = parts.length > 1 ? parts[1] : "";
-              String province = parts.length > 2 ? parts[2] : "";
+                // Gọi Controller thêm mới
+                await widget.controller.addNewAddress(
+                  UserAddress(
+                    addressID: 0,
+                    province: province,
+                    district: district,
+                    ward: ward,
+                    street: detailCtrl.text,
+                    isDefault: true, // Mặc định chọn luôn địa chỉ mới thêm
+                  ),
+                  widget.controller.selectedAddress?.addressID.toString() ?? "",
+                );
 
-              // Gọi Controller thêm mới
-              await widget.controller.addNewAddress(
-                UserAddress(
-                  addressID: 0,
-                  province: province,
-                  district: district,
-                  ward: ward,
-                  street: detailCtrl.text,
-                  isDefault: true, // Mặc định chọn luôn địa chỉ mới thêm
-                ),
-                widget.controller.selectedAddress?.addressID.toString() ?? "",
-              );
-
-              Navigator.pop(ctx); // Đóng dialog thêm
-              setState(() {}); // Refresh list bên ngoài
+                Navigator.pop(ctx); // Đóng dialog thêm
+                Navigator.pop(context);
+              } catch (e) {
+                DialogHelper.showError(context, message: e.toString());
+              }
             },
             child: const Text("Lưu", style: TextStyle(color: Colors.white)),
           ),

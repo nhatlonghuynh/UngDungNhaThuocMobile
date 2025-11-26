@@ -98,11 +98,12 @@ class OrderController extends ChangeNotifier {
   Future<void> loadUserAddresses({required String userId}) async {
     try {
       addresses = await _userService.getAddresses(userId);
-      if (addresses.isNotEmpty) {
+      if (selectedAddress == null && addresses.isNotEmpty) {
         selectedAddress = addresses.firstWhere(
-          (e) => e.isDefault,
+          (addr) => addr.isDefault,
           orElse: () => addresses.first,
         );
+        notifyListeners();
       } else {
         selectedAddress = null;
       }
@@ -113,8 +114,12 @@ class OrderController extends ChangeNotifier {
   }
 
   Future<void> addNewAddress(UserAddress addr, String userId) async {
-    await _userService.addAddress(userId, addr);
-    await loadUserAddresses(userId: userId);
+    try {
+      await _userService.addAddress(userId, addr);
+      await loadUserAddresses(userId: userId);
+    } catch (e) {
+      throw Exception("Thêm địa chỉ thất bại: $e");
+    }
   }
 
   Future<void> editAddress(UserAddress addr) async {
