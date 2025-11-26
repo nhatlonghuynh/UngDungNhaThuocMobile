@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:nhathuoc_mobilee/common/constants/api_constants.dart';
+import 'package:nhathuoc_mobilee/UI/common/constants/api_constants.dart';
 
 class AuthRepository {
-
   // 1. Gọi API Login
   Future<http.Response> loginRequest(String phone, String password) async {
     final url = Uri.parse('${ApiConstants.baseUrl}/account/login');

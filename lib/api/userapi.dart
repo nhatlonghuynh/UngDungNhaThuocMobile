@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:nhathuoc_mobilee/UI/common/constants/api_constants.dart';
 import 'package:nhathuoc_mobilee/manager/usermanager.dart';
-import 'package:nhathuoc_mobilee/common/constants/api_constants.dart';
 
 class ProfileRepository {
-  
   // --- Helper: Lấy Header (Xử lý có hoặc không cần Token) ---
   Map<String, String> _getHeaders({bool requireAuth = true}) {
     Map<String, String> headers = {
@@ -61,7 +60,9 @@ class ProfileRepository {
 
     return await http.post(
       url,
-      headers: _getHeaders(requireAuth: false), // Không cần token vì chưa đăng nhập
+      headers: _getHeaders(
+        requireAuth: false,
+      ), // Không cần token vì chưa đăng nhập
       body: jsonEncode({'Username': username}),
     );
   }

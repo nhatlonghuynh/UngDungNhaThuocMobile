@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
+import 'package:nhathuoc_mobilee/UI/screens/cart_screen.dart';
+import 'package:nhathuoc_mobilee/UI/screens/home_screen.dart';
+import 'package:nhathuoc_mobilee/UI/screens/profile_screen.dart';
+import 'package:nhathuoc_mobilee/UI/screens/reward_screen.dart';
 import 'package:nhathuoc_mobilee/controller/categorycontroller.dart';
 import 'package:nhathuoc_mobilee/controller/historyordercontroller.dart';
 import 'package:nhathuoc_mobilee/controller/home_controller.dart';
 import 'package:provider/provider.dart'; // Thêm thư viện Provider
 import 'package:nhathuoc_mobilee/manager/usermanager.dart';
-import 'package:nhathuoc_mobilee/screens/home_screen.dart';
-import 'package:nhathuoc_mobilee/screens/profile_screen.dart';
-import 'package:nhathuoc_mobilee/screens/cart_screen.dart';
-import 'package:nhathuoc_mobilee/screens/reward_screen.dart';
-import 'package:nhathuoc_mobilee/common/constants/appcolor.dart';
 
 // 1. Biến toàn cục để điều khiển MainScreen từ xa
 final GlobalKey<MainScreenState> mainScreenKey = GlobalKey<MainScreenState>();

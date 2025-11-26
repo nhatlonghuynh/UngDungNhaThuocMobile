@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:nhathuoc_mobilee/UI/common/constants/api_constants.dart';
 import 'package:nhathuoc_mobilee/manager/usermanager.dart';
 import 'package:nhathuoc_mobilee/models/order_request.dart';
-// 1. Import file Constants
-import 'package:nhathuoc_mobilee/common/constants/api_constants.dart';
 
 class OrderRepository {
   /// =========================================================
