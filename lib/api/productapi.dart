@@ -1,69 +1,64 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart'; // DebugPrint
 import 'package:http/http.dart' as http;
+import 'package:nhathuoc_mobilee/UI/common/constants/api_constants.dart';
 import 'package:nhathuoc_mobilee/models/thuoc.dart';
 
 class ProductRepository {
-  // ==========================================================
-  // Base URL Backend
-  // ----------------------------------------------------------
-  // Lưu ý thay IP khi đổi máy chủ Backend
-  // ==========================================================
-  static const String _baseUrl = 'http://192.168.2.9:8476/api';
-
-  // ==========================================================
-  // 1. Lấy danh sách tất cả sản phẩm
-  // ----------------------------------------------------------
-  // API: GET /thuoc/all
-  // Trả về List<Thuoc>
-  // ==========================================================
+  // 1. Lấy tất cả sản phẩm
   Future<List<Thuoc>> fetchAllProducts() async {
-    final url = Uri.parse('$_baseUrl/thuoc/all');
+    final url = Uri.parse('${ApiConstants.baseUrl}/thuoc/all');
+
+    debugPrint('📦 [ProductRepo] GET All: $url');
 
     try {
       final response = await http.get(url);
 
+      debugPrint('⬅️ [ProductRepo] Status: ${response.statusCode}');
+
       if (response.statusCode == 200) {
-        final data = json.decode(response.body) as List;
+        // Decode UTF8 để tránh lỗi font tiếng Việt
+        final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
+        debugPrint('📦 [ProductRepo] Loaded ${data.length} items');
         return data.map((e) => Thuoc.fromJson(e)).toList();
       } else {
         throw Exception("Lỗi tải dữ liệu: ${response.statusCode}");
       }
     } catch (e) {
+      debugPrint("❌ [ProductRepo] Error: $e");
       throw Exception("Lỗi kết nối: $e");
     }
   }
 
-  // ==========================================================
-  // 2. Lấy chi tiết 1 sản phẩm
-  // ----------------------------------------------------------
-  // API: GET /thuoc/detail/{id}
-  // Trả về http.Response (Controller xử lý tiếp)
-  // ==========================================================
+  // 2. Lấy chi tiết (Trả về Response thô để Service xử lý)
   Future<http.Response> getDetailRequest(int id) async {
-    final url = Uri.parse('$_baseUrl/thuoc/detail/$id');
+    final url = Uri.parse('${ApiConstants.baseUrl}/thuoc/detail/$id');
+    debugPrint('📦 [ProductRepo] GET Detail ID: $id');
     return await http.get(url);
   }
 
-  // ==========================================================
-  // 3. Tìm kiếm sản phẩm theo từ khóa
-  // ----------------------------------------------------------
-  // API: GET /thuoc/filter?keyword=...
-  // Có encode UTF8 để hỗ trợ tiếng Việt
-  // ==========================================================
+  // 3. Tìm kiếm
   Future<List<Thuoc>> searchProducts(String keyword) async {
+    // Encode từ khóa để tránh lỗi URL
     final encodedKeyword = Uri.encodeComponent(keyword);
-    final url = Uri.parse('$_baseUrl/thuoc/filter?keyword=$encodedKeyword');
+    final url = Uri.parse(
+      '${ApiConstants.baseUrl}/thuoc/filter?keyword=$encodedKeyword',
+    );
+
+    debugPrint('🔍 [ProductRepo] Search: $keyword');
 
     try {
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body) as List;
+        final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
+        debugPrint('🔍 [ProductRepo] Found ${data.length} results');
         return data.map((e) => Thuoc.fromJson(e)).toList();
       } else {
         throw Exception("Lỗi tìm kiếm: ${response.statusCode}");
       }
     } catch (e) {
+      debugPrint("❌ [ProductRepo] Search Error: $e");
       throw Exception("Lỗi kết nối: $e");
     }
   }

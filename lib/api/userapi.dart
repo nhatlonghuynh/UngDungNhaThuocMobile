@@ -81,4 +81,67 @@ class ProfileRepository {
       body: jsonEncode(data),
     );
   }
+
+  // =========================================================
+  // Hàm 5: getAddressesRequest
+  // Tác dụng: Lấy danh sách địa chỉ của người dùng
+  // Endpoint: /api/UserAddress/{userId}
+  // =========================================================
+  Future<http.Response> getAddressesRequest(String userId) async {
+    final url = Uri.parse(
+      '${ApiConstants.baseUrl}/$userId',
+    ); // Cần định nghĩa userAddressBaseUrl mới
+
+    return await http.get(
+      url,
+      headers: _getHeaders(requireAuth: true), // Cần Token
+    );
+  }
+
+  // =========================================================
+  // Hàm 6: addAddressRequest
+  // Tác dụng: Thêm địa chỉ mới
+  // Endpoint: /api/UserAddress/{userId} (POST)
+  // =========================================================
+  Future<http.Response> addAddressRequest(
+    String userId,
+    Map<String, dynamic> data,
+  ) async {
+    final url = Uri.parse('${ApiConstants.baseUrl}/$userId');
+
+    return await http.post(
+      url,
+      headers: _getHeaders(requireAuth: true),
+      body: jsonEncode(data),
+    );
+  }
+
+  // =========================================================
+  // Hàm 7: updateAddressRequest
+  // Tác dụng: Cập nhật địa chỉ hiện có
+  // Endpoint: /api/UserAddress/{addressID} (PUT)
+  // =========================================================
+  Future<http.Response> updateAddressRequest(
+    int addressID,
+    Map<String, dynamic> data,
+  ) async {
+    final url = Uri.parse('${ApiConstants.baseUrl}/$addressID');
+
+    return await http.put(
+      url,
+      headers: _getHeaders(requireAuth: true),
+      body: jsonEncode(data),
+    );
+  }
+
+  // =========================================================
+  // Hàm 8: deleteAddressRequest
+  // Tác dụng: Xóa địa chỉ
+  // Endpoint: /api/UserAddress/{addressID} (DELETE)
+  // =========================================================
+  Future<http.Response> deleteAddressRequest(int addressID) async {
+    final url = Uri.parse('${ApiConstants.baseUrl}/$addressID');
+
+    return await http.delete(url, headers: _getHeaders(requireAuth: true));
+  }
 }

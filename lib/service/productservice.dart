@@ -1,7 +1,7 @@
 import 'dart:convert';
+import 'package:intl/intl.dart';
 import 'package:nhathuoc_mobilee/api/productapi.dart';
 import 'package:nhathuoc_mobilee/models/thuoc.dart';
-import 'package:intl/intl.dart';
 import 'package:nhathuoc_mobilee/models/thuoc_detail.dart';
 
 class ProductService {
@@ -12,10 +12,37 @@ class ProductService {
     return await _repo.fetchAllProducts();
   }
 
-  // --- LOGIC TÍNH TOÁN KHUYẾN MÃI (Chuyển từ Widget sang đây) ---
+  Future<List<Thuoc>> searchProductByNameOrUse(String keyword) async {
+    return await _repo.searchProducts(keyword);
+  }
 
-  // 1. Kiểm tra có khuyến mãi không
-  bool hasPromotion(Thuoc thuoc) {
+  Future<Map<String, dynamic>> fetchProductDetail(int id) async {
+    try {
+      final response = await _repo.getDetailRequest(id);
+
+      if (response.statusCode == 200) {
+        // Decode UTF8 quan trọng
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+        final product = ThuocDetail.fromJson(data);
+        return {'success': true, 'data': product};
+      } else if (response.statusCode == 404) {
+        return {'success': false, 'message': 'Không tìm thấy sản phẩm'};
+      } else {
+        return {
+          'success': false,
+          'message': 'Lỗi server: ${response.statusCode}',
+        };
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Lỗi kết nối: $e'};
+    }
+  }
+
+  // --- LOGIC TÍNH TOÁN DÙNG CHUNG ---
+
+  // 1. Kiểm tra hiệu lực khuyến mãi
+  bool hasPromotion(dynamic thuoc) {
+    // Chấp nhận cả Model Thuoc và ThuocDetail (Duck typing logic)
     if (thuoc.khuyenMai == null) return false;
     try {
       DateTime now = DateTime.now();
@@ -28,61 +55,33 @@ class ProductService {
   }
 
   // 2. Tính giá sau giảm
-  double getDiscountedPrice(Thuoc thuoc) {
-    if (!hasPromotion(thuoc)) return thuoc.donGia;
+  double getDiscountedPrice(dynamic thuoc) {
+    // Lấy giá gốc (Thuoc có donGia, ThuocDetail có giaBan - Check null safety)
+    double originalPrice = (thuoc is Thuoc)
+        ? thuoc.donGia
+        : (thuoc as ThuocDetail).giaBan;
+
+    if (!hasPromotion(thuoc)) return originalPrice;
 
     final km = thuoc.khuyenMai!;
     if (km.phanTramKM > 0) {
-      return thuoc.donGia * (1 - (km.phanTramKM / 100));
+      return originalPrice * (1 - (km.phanTramKM / 100));
     } else if (km.tienGiam > 0) {
-      double price = thuoc.donGia - km.tienGiam;
+      double price = originalPrice - km.tienGiam;
       return price > 0 ? price : 0;
     }
-    return thuoc.donGia;
+    return originalPrice;
   }
 
-  // 3. Lấy text hiển thị badge (VD: -10%)
-  String getBadgeText(Thuoc thuoc) {
+  // 3. Format tiền
+  String formatMoney(double amount) => _formatter.format(amount);
+
+  // 4. Badge Text
+  String getBadgeText(dynamic thuoc) {
     if (!hasPromotion(thuoc)) return "";
     final km = thuoc.khuyenMai!;
-
-    if (km.phanTramKM > 0) {
-      return "-${km.phanTramKM.toInt()}%";
-    } else if (km.tienGiam > 0) {
-      double val = km.tienGiam;
-      if (val >= 1000) return "-${(val / 1000).toInt()}k";
-      return "-${_formatter.format(val)}";
-    }
+    if (km.phanTramKM > 0) return "-${km.phanTramKM.toInt()}%";
+    if (km.tienGiam > 0) return "-${(km.tienGiam / 1000).toInt()}k";
     return "";
-  }
-
-  // Format tiền tệ
-  String formatMoney(double amount) {
-    return _formatter.format(amount);
-  }
-
-  Future<List<Thuoc>> searchProductByNameOrUse(String keyword) async {
-    return await _repo.searchProducts(keyword);
-  }
-
-  Future<Map<String, dynamic>> fetchProductDetail(int id) async {
-    try {
-      final response = await _repo.getDetailRequest(id);
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final product = ThuocDetail.fromJson(data);
-        return {'success': true, 'data': product};
-      } else if (response.statusCode == 404) {
-        return {'success': false, 'message': 'Không tìm thấy sản phẩm'};
-      } else {
-        return {
-          'success': false,
-          'message': 'Lỗi máy chủ: ${response.statusCode}',
-        };
-      }
-    } catch (e) {
-      return {'success': false, 'message': 'Lỗi kết nối: $e'};
-    }
   }
 }

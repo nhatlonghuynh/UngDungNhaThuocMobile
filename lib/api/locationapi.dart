@@ -1,24 +1,34 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart'; // Để dùng debugPrint
 import 'package:nhathuoc_mobilee/models/diachi.dart';
 
-class LocationService {
-  final String baseUrl = "https://provinces.open-api.vn/api/v1/?depth=3";
-
+class LocationRepository {
   // ==========================================================
-  // 1. Lấy danh sách tỉnh / thành phố (kèm quận, phường)
-  // ----------------------------------------------------------
-  // Gọi API từ provinces.open-api.vn
-  // Trả về List<Province>
+  // Lấy danh sách tỉnh/thành từ assets
   // ==========================================================
   Future<List<Province>> getProvinces() async {
-    final res = await http.get(Uri.parse(baseUrl));
+    try {
+      debugPrint(
+        "📍 [LocationRepo] Đang đọc file assets/data/provinces.json...",
+      );
 
-    if (res.statusCode != 200) {
-      throw Exception("Failed to load provinces");
+      // Đọc file JSON
+      final jsonString = await rootBundle.loadString(
+        'assets/data/provinces.json',
+      );
+
+      // Parse JSON
+      final list = json.decode(jsonString) as List;
+
+      debugPrint("📍 [LocationRepo] Đã load được ${list.length} tỉnh/thành");
+
+      // Chuyển sang danh sách Province
+      return list.map((e) => Province.fromJson(e)).toList();
+    } catch (e) {
+      debugPrint("❌ [LocationRepo] Lỗi đọc file địa chính: $e");
+      // Trả về list rỗng để không crash app
+      return [];
     }
-
-    final list = json.decode(res.body) as List;
-    return list.map((e) => Province.fromJson(e)).toList();
   }
 }

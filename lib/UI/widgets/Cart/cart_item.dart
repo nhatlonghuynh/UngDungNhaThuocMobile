@@ -7,34 +7,29 @@ import 'package:nhathuoc_mobilee/controller/cartcontroller.dart';
 class CartItemWidget extends StatelessWidget {
   final int index;
   final CartController controller;
-  final VoidCallback onRefresh;
 
   const CartItemWidget({
     super.key,
     required this.index,
     required this.controller,
-    required this.onRefresh,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Kiểm tra an toàn: Nếu index vượt quá độ dài list (do xóa nhanh quá), return rỗng
+    // Kiểm tra an toàn
     if (index >= controller.cartItems.length) return const SizedBox();
 
     final item = controller.cartItems[index];
     final formatter = NumberFormat('#,###', 'vi_VN');
 
     return Container(
-      // margin: const EdgeInsets.only(bottom: 16), // Bật lên nếu muốn các item cách xa nhau
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.neutralGrey.withOpacity(
-              0.15,
-            ), // Giảm shadow xíu cho nhẹ
+            color: AppColors.neutralGrey.withOpacity(0.15),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -43,18 +38,16 @@ class CartItemWidget extends StatelessWidget {
       child: Stack(
         children: [
           // -----------------------------------------------------------
-          // LAYER 1: NỘI DUNG CHÍNH (Checkbox - Ảnh - Thông tin)
+          // LAYER 1: NỘI DUNG CHÍNH
           // -----------------------------------------------------------
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. Checkbox
+              // 1. Checkbox (ĐÃ SỬA: Gọi Controller để update Tổng tiền)
               Padding(
-                padding: const EdgeInsets.only(
-                  right: 0,
-                ), // Tinh chỉnh khoảng cách nếu cần
+                padding: const EdgeInsets.only(right: 0),
                 child: Transform.scale(
-                  scale: 1.1, // Scale nhỏ lại xíu cho tinh tế
+                  scale: 1.1,
                   child: Checkbox(
                     value: item.isSelected,
                     activeColor: AppColors.primaryPink,
@@ -66,8 +59,8 @@ class CartItemWidget extends StatelessWidget {
                       width: 1.2,
                     ),
                     onChanged: (val) {
-                      item.isSelected = val ?? false;
-                      onRefresh();
+                      // Gọi hàm toggleItem vừa thêm ở Bước 1
+                      controller.toggleItem(index);
                     },
                   ),
                 ),
@@ -78,7 +71,7 @@ class CartItemWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 child: Image.network(
                   item.anhURL,
-                  width: 80, // Giảm nhẹ xuống 80 để tiết kiệm không gian ngang
+                  width: 80,
                   height: 80,
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => Container(
@@ -95,12 +88,11 @@ class CartItemWidget extends StatelessWidget {
 
               const SizedBox(width: 10),
 
-              // 3. Cột thông tin (Dùng Expanded để chiếm phần còn lại)
+              // 3. Cột thông tin
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Tên thuốc: Padding phải 30px để né nút Xóa ở góc
                     Padding(
                       padding: const EdgeInsets.only(right: 30.0),
                       child: Text(
@@ -111,27 +103,23 @@ class CartItemWidget extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           fontSize: 15,
                           color: AppColors.textBrown,
-                          height: 1.2, // Tăng độ thoáng dòng
+                          height: 1.2,
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 4),
-
                     Text(
                       "Đơn vị: ${item.donVi}",
                       style: TextStyle(color: Colors.grey[500], fontSize: 12),
                     ),
-
                     const SizedBox(height: 8),
 
-                    // --- KHU VỰC "GIÁ & SỐ LƯỢNG" (Dùng Wrap là chuẩn nhất) ---
+                    // --- GIÁ & SỐ LƯỢNG ---
                     Wrap(
                       crossAxisAlignment: WrapCrossAlignment.center,
-                      spacing: 10, // Khoảng cách ngang giữa Giá và Nút
-                      runSpacing: 5, // Khoảng cách dọc nếu bị rớt dòng
+                      spacing: 10,
+                      runSpacing: 5,
                       children: [
-                        // Giá tiền
                         Text(
                           "${formatter.format(item.donGia)}đ",
                           style: const TextStyle(
@@ -139,31 +127,23 @@ class CartItemWidget extends StatelessWidget {
                             fontWeight: FontWeight.w700,
                             fontSize: 16,
                           ),
-                          overflow:
-                              TextOverflow.ellipsis, // Đề phòng giá quá dài
                         ),
 
-                        // Bộ điều khiển số lượng
+                        // Bộ điều khiển số lượng (ĐÃ SỬA: Xóa onRefresh)
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey[50], // Màu nền nhẹ
+                            color: Colors.grey[50],
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.grey[300]!),
                           ),
                           child: Row(
-                            mainAxisSize: MainAxisSize
-                                .min, // Quan trọng: Co lại vừa đủ nội dung
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              _qtyBtn(Icons.remove, () async {
-                                await controller.updateQuantity(index, -1);
-                                onRefresh();
+                              _qtyBtn(Icons.remove, () {
+                                controller.updateQuantity(index, -1);
                               }),
-
-                              // Số lượng (Dùng Container + ConstrainedBox để an toàn)
                               Container(
-                                constraints: const BoxConstraints(
-                                  minWidth: 24,
-                                ), // Chiều rộng tối thiểu
+                                constraints: const BoxConstraints(minWidth: 24),
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 4,
                                 ),
@@ -177,10 +157,8 @@ class CartItemWidget extends StatelessWidget {
                                   ),
                                 ),
                               ),
-
-                              _qtyBtn(Icons.add, () async {
-                                await controller.updateQuantity(index, 1);
-                                onRefresh();
+                              _qtyBtn(Icons.add, () {
+                                controller.updateQuantity(index, 1);
                               }),
                             ],
                           ),
@@ -194,11 +172,11 @@ class CartItemWidget extends StatelessWidget {
           ),
 
           // -----------------------------------------------------------
-          // LAYER 2: NÚT XÓA (Nằm đè lên trên cùng, góc phải)
+          // LAYER 2: NÚT XÓA (ĐÃ SỬA: Xóa onRefresh)
           // -----------------------------------------------------------
           Positioned(
-            top: -5, // Đẩy lên cao một chút để cân đối
-            right: -5, // Đẩy sang phải sát lề
+            top: -5,
+            right: -5,
             child: Material(
               color: Colors.transparent,
               child: InkWell(
@@ -211,17 +189,12 @@ class CartItemWidget extends StatelessWidget {
                     confirmText: "Xóa",
                   );
                   if (confirm == true) {
-                    await controller.deleteItem(index);
-                    onRefresh();
+                    controller.deleteItem(index);
                   }
                 },
                 child: const Padding(
-                  padding: EdgeInsets.all(8.0), // Vùng bấm rộng dễ thao tác
-                  child: Icon(
-                    Icons.close, // Dùng icon close hoặc delete_outline đều đẹp
-                    color: Colors.grey,
-                    size: 20,
-                  ),
+                  padding: EdgeInsets.all(8.0),
+                  child: Icon(Icons.close, color: Colors.grey, size: 20),
                 ),
               ),
             ),
@@ -231,7 +204,6 @@ class CartItemWidget extends StatelessWidget {
     );
   }
 
-  // Widget con cho nút cộng trừ
   Widget _qtyBtn(IconData icon, VoidCallback onTap) {
     return InkWell(
       onTap: onTap,

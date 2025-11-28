@@ -1,8 +1,9 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:nhathuoc_mobilee/api/rewardapi.dart';
 import 'package:nhathuoc_mobilee/manager/usermanager.dart';
 
-// Model Gift (Đặt ở đây hoặc tách file riêng tùy bạn)
+// Model Gift (Giữ nguyên, thêm debugPrint nếu cần check parse)
 class GiftModel {
   final int id;
   final String name;
@@ -20,12 +21,11 @@ class GiftModel {
 
   factory GiftModel.fromJson(Map<String, dynamic> json) {
     return GiftModel(
-      id: json['Id'],
-      name: json['TenQua'],
-      points: json['DiemCanDoi'],
-      // API trả về đường dẫn hoặc null thì lấy ảnh mặc định
+      id: json['Id'] ?? 0,
+      name: json['TenQua'] ?? '',
+      points: json['DiemCanDoi'] ?? 0,
       imagePath: json['AnhMinhHoa'] ?? "assets/images/voucher20.png",
-      type: json['LoaiQua'],
+      type: json['LoaiQua'] ?? '',
     );
   }
 }
@@ -33,23 +33,29 @@ class GiftModel {
 class RewardService {
   final RewardRepository _repo = RewardRepository();
 
-  // 1. Lấy danh sách và parse sang List<GiftModel>
+  // 1. Lấy danh sách
   Future<List<GiftModel>> getGifts() async {
     try {
+      debugPrint("🎁 [Service] Fetching gifts...");
       final response = await _repo.fetchGiftsRequest();
 
+      debugPrint("⬅️ [Service] Status: ${response.statusCode}");
+
       if (response.statusCode == 200) {
-        List<dynamic> list = jsonDecode(response.body);
+        // Decode UTF8 cho tiếng Việt
+        List<dynamic> list = jsonDecode(utf8.decode(response.bodyBytes));
+        debugPrint("✅ [Service] Loaded ${list.length} gifts");
         return list.map((e) => GiftModel.fromJson(e)).toList();
       } else {
         throw Exception("Lỗi tải danh sách: ${response.statusCode}");
       }
     } catch (e) {
+      debugPrint("❌ [Service] Error: $e");
       throw Exception("Lỗi kết nối: $e");
     }
   }
 
-  // 2. Xử lý đổi quà và CẬP NHẬT ĐIỂM
+  // 2. Đổi quà
   Future<Map<String, dynamic>> redeemGift({
     required int giftId,
     required String name,
@@ -58,8 +64,8 @@ class RewardService {
   }) async {
     try {
       final user = UserManager();
+      debugPrint("🎁 [Service] Redeeming: $name (-$points pts)");
 
-      // Tạo body gửi lên server
       final body = {
         "MaKH": user.userId,
         "MaQua": giftId,
@@ -69,20 +75,24 @@ class RewardService {
       };
 
       final response = await _repo.redeemGiftRequest(body);
-      final data = jsonDecode(response.body);
+
+      // Decode để đọc tiếng Việt trong message lỗi/thành công
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
 
       if (response.statusCode == 200) {
-        // --- QUAN TRỌNG: API trả về điểm còn lại -> Cập nhật ngay vào App ---
-        int newPoints = data['DiemConLai'];
+        // Cập nhật điểm mới
+        int newPoints = data['DiemConLai'] ?? (user.diemTichLuy - points);
         await user.updateDiem(newPoints);
 
+        debugPrint("✅ [Service] Success! New Points: $newPoints");
         return {'success': true, 'message': 'Đổi quà thành công!'};
       } else {
-        // Xử lý lỗi từ Server trả về (VD: Không đủ điểm)
         String msg = data['Message'] ?? "Đổi quà thất bại";
+        debugPrint("❌ [Service] Fail: $msg");
         return {'success': false, 'message': msg};
       }
     } catch (e) {
+      debugPrint("❌ [Service] Exception: $e");
       return {'success': false, 'message': 'Lỗi kết nối: $e'};
     }
   }

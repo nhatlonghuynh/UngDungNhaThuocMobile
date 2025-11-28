@@ -114,10 +114,8 @@ class OrderScreen extends StatelessWidget {
         final payResult = await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => PayOSPaymentScreen(
-              paymentUrl: result["CheckoutUrl"],
-              returnUrlScheme: "nhathuoc://payment-result",
-            ),
+            builder: (_) =>
+                PayOSPaymentScreen(paymentUrl: result["CheckoutUrl"]),
           ),
         );
 
@@ -152,7 +150,7 @@ class OrderScreen extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         content: const Text(
-          "Cảm ơn bạn đã mua sắm tại Nhà thuốc HUIT.",
+          "Cảm ơn bạn đã mua sắm tại Nhà thuốc",
           textAlign: TextAlign.center,
         ),
         actions: [

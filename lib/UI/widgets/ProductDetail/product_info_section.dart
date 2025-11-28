@@ -38,7 +38,7 @@ class ProductInfoSection extends StatelessWidget {
           Row(
             children: [
               Text(
-                currencyFormat.format(finalPrice),
+                "${currencyFormat.format(finalPrice)} / ${product.donVi}",
                 style: const TextStyle(
                   fontSize: 24,
                   color: AppColors.primaryPink,
@@ -62,6 +62,7 @@ class ProductInfoSection extends StatelessWidget {
           const Divider(height: 30),
 
           // Thông tin chi tiết
+          _buildInfoRow("Thương hiệu", product.tenNCC),
           _buildInfoRow("Công dụng", product.congDung),
           _buildInfoRow("Thành phần", product.thanhPhan),
           _buildInfoRow("Cách dùng", product.cachSD),

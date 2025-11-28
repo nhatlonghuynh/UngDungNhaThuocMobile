@@ -1,5 +1,6 @@
 import 'dart:convert';
-import 'package:nhathuoc_mobilee/api/authapi.dart'; // Đổi lại đúng đường dẫn file Repository của bạn
+import 'package:flutter/foundation.dart';
+import 'package:nhathuoc_mobilee/api/authapi.dart'; // Đổi lại đúng path Repository
 import 'package:nhathuoc_mobilee/manager/usermanager.dart';
 
 class AuthService {
@@ -9,27 +10,34 @@ class AuthService {
   Future<Map<String, dynamic>> login(String phone, String password) async {
     try {
       final response = await _repository.loginRequest(phone, password);
-      final body = jsonDecode(response.body); // Đây là toàn bộ cục JSON trả về
 
-      // Check success từ Backend (vì Backend trả về 200 kèm success: false nếu lỗi logic)
-      if (response.statusCode == 200 && body['success'] == true) {
-        // --- QUAN TRỌNG: Lấy dữ liệu từ trong cục 'data' ---
+      // [DEBUG] Log Response Raw
+      debugPrint('⬅️ [RESPONSE] Status: ${response.statusCode}');
+      debugPrint('⬅️ [RESPONSE] Body: ${response.body}');
+
+      if (response.statusCode != 200) {
+        return {
+          'success': false,
+          'message': 'Lỗi Server: ${response.statusCode}',
+        };
+      }
+
+      final body = jsonDecode(response.body);
+
+      // Check success từ logic Backend
+      if (body['success'] == true) {
         final userData = body['data'];
 
-        // Mapping dữ liệu: Key bên trái (Lưu Local) = Key bên phải (Từ API Backend)
+        // [DEBUG] Kiểm tra data trước khi map
+        debugPrint('✅ [LOGIN DATA]: $userData');
+
+        // Mapping dữ liệu
         Map<String, dynamic> userSaveData = {
-          // 1. Token (C# trả về key 'token')
           'access_token': userData['token'],
-
-          // 2. User ID (C# trả về key 'maKH')
           'user_id': userData['maKH'],
-
-          // 3. Các thông tin khác
-          'HoTen':
-              userData['hoTen'] ??
-          'Khách hàng', // C# trả về 'hoTen' (chữ thường đầu)
+          'HoTen': userData['hoTen'] ?? 'Khách hàng',
           'SoDienThoai': userData['soDienThoai'] ?? phone,
-          'GioiTinh': userData['gender'] ?? 'Nam', // C# trả về 'gender'
+          'GioiTinh': userData['gender'] ?? 'Nam',
           'DiaChi': userData['DiaChi'] ?? '',
           'DiemTichLuy': userData['DiemTichLuy'] ?? 0,
           'tongDiemTichLuy': userData['tongDiemTichLuy'] ?? 0,
@@ -40,13 +48,15 @@ class AuthService {
         await UserManager().saveUser(userSaveData);
         return {'success': true};
       } else {
-        // Lấy message lỗi từ body
         return {
           'success': false,
-          'message': body['message'] ?? 'Đăng nhập thất bại',
+          'message': body['message'] ?? 'Đăng nhập thất bại (Logic)',
         };
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      // [DEBUG] In lỗi chi tiết
+      debugPrint('❌ [LOGIN ERROR]: $e');
+      debugPrint('Stacktrace: $stackTrace');
       return {'success': false, 'message': 'Lỗi kết nối: $e'};
     }
   }
@@ -62,7 +72,6 @@ class AuthService {
     try {
       final cleanedPhone = phone.trim().replaceAll(' ', '');
 
-      // Key gửi lên Backend phải khớp với RegisterDTO trong C#
       final Map<String, dynamic> requestBody = {
         "Username": cleanedPhone,
         "Password": password,
@@ -72,27 +81,31 @@ class AuthService {
         "Address": address,
         "Gender": gender,
         "RoleType": "KhachHang",
-        "Email":
-            "$cleanedPhone@nhathuoc.com", // Fake email nếu backend bắt buộc
+        "Email": "$cleanedPhone@nhathuoc.com",
       };
 
       final response = await _repository.registerRequest(requestBody);
+
+      // [DEBUG] Log Response
+      debugPrint('⬅️ [RESPONSE REGISTER] Status: ${response.statusCode}');
+      debugPrint('⬅️ [RESPONSE REGISTER] Body: ${response.body}');
+
       final body = jsonDecode(response.body);
 
       if (response.statusCode == 200 && body['success'] == true) {
         return {
           'success': true,
-          'message':
-              body['message'] ?? 'Đăng ký thành công! Vui lòng đăng nhập.',
+          'message': body['message'] ?? 'Đăng ký thành công!',
         };
       } else {
-        // Backend trả về message lỗi trực tiếp trong field 'message'
         return {
           'success': false,
           'message': body['message'] ?? 'Đăng ký thất bại',
         };
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('❌ [REGISTER ERROR]: $e');
+      debugPrint('Stacktrace: $stackTrace');
       return {'success': false, 'message': 'Lỗi kết nối: $e'};
     }
   }

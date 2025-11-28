@@ -1,36 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:nhathuoc_mobilee/api/categoryapi.dart';
+import 'package:nhathuoc_mobilee/api/categoryapi.dart'; // Đổi lại đúng path Repository
 import 'package:nhathuoc_mobilee/models/DanhMuc.dart';
 
 class CategoryController extends ChangeNotifier {
-  final ApiService _service = ApiService();
+  final DanhMucRepository _service = DanhMucRepository();
 
-  // ---------------------------------------------------------------------------
-  // STATE VARIABLES
-  // ---------------------------------------------------------------------------
-  List<LoaiDanhMuc> tree = []; // Danh sách danh mục dạng cây
+  List<LoaiDanhMuc> tree = [];
   bool isLoading = false;
-
-  // ---------------------------------------------------------------------------
-  // PUBLIC METHODS
-  // ---------------------------------------------------------------------------
 
   /// Tải cây danh mục
   Future<void> loadCategories() async {
-    // Nếu đã có dữ liệu thì không load lại (Cache đơn giản)
+    // Cache đơn giản: Có rồi thì không load lại
     if (tree.isNotEmpty) return;
 
     try {
       isLoading = true;
       notifyListeners();
 
+      debugPrint("📂 [Controller] Loading Categories...");
       tree = await _service.fetchCategoryTree();
     } catch (e) {
-      print("Lỗi tải danh mục: $e");
+      debugPrint("❌ [Controller] Load Error: $e");
       tree = [];
     } finally {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  // Hàm force refresh nếu cần (ví dụ vuốt xuống để làm mới)
+  Future<void> refreshCategories() async {
+    tree.clear();
+    await loadCategories();
   }
 }

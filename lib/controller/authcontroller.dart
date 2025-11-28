@@ -1,54 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:nhathuoc_mobilee/manager/usermanager.dart';
-import 'package:nhathuoc_mobilee/service/authservice.dart';
+import 'package:nhathuoc_mobilee/service/authservice.dart'; // Đổi lại đúng path
 
 class AuthController extends ChangeNotifier {
-  // ---------------------------------------------------------------------------
-  // 1. SERVICES & DEPENDENCIES
-  // ---------------------------------------------------------------------------
   final AuthService _service = AuthService();
 
-  // ---------------------------------------------------------------------------
-  // 2. STATE VARIABLES (Biến trạng thái)
-  // ---------------------------------------------------------------------------
-  bool isLoading = false; // Hiển thị vòng xoay loading
-  bool obscureText = true; // Ẩn/Hiện mật khẩu
-  String errorMessage = ''; // Lưu thông báo lỗi
+  bool isLoading = false;
+  bool obscureText = true;
+  String errorMessage = '';
 
-  // ---------------------------------------------------------------------------
-  // 3. GETTERS (Dữ liệu cho UI)
-  // ---------------------------------------------------------------------------
+  // Getters
   bool get isLoggedIn => UserManager().isLoggedIn;
   String? get currentUserName => UserManager().hoTen;
 
-  // ---------------------------------------------------------------------------
-  // 4. UI LOGIC (Hành động trên giao diện)
-  // ---------------------------------------------------------------------------
-
-  // Chuyển đổi trạng thái ẩn/hiện mật khẩu
+  // UI Logic
   void togglePasswordVisibility() {
     obscureText = !obscureText;
     notifyListeners();
   }
 
-  // Làm mới UI (dùng khi quay lại từ màn hình khác)
   void refresh() {
     errorMessage = '';
     notifyListeners();
   }
 
-  // ---------------------------------------------------------------------------
-  // 5. BUSINESS LOGIC (Xử lý nghiệp vụ)
-  // ---------------------------------------------------------------------------
+  // --- BUSINESS LOGIC ---
 
   /// Xử lý Đăng nhập
   Future<Map<String, dynamic>> handleLogin(String phone, String pass) async {
-    // Validate
+    debugPrint("👉 [Controller] Bắt đầu Login: $phone");
+
     if (phone.trim().isEmpty || pass.trim().isEmpty) {
-      return {
-        'success': false,
-        'message': 'Vui lòng nhập số điện thoại và mật khẩu',
-      };
+      return {'success': false, 'message': 'Vui lòng nhập đủ thông tin'};
     }
 
     try {
@@ -56,11 +39,15 @@ class AuthController extends ChangeNotifier {
       errorMessage = '';
       notifyListeners();
 
-      // Gọi API
       final result = await _service.login(phone, pass);
+
+      if (!result['success']) {
+        errorMessage = result['message'];
+      }
       return result;
     } catch (e) {
-      return {'success': false, 'message': 'Lỗi đăng nhập: $e'};
+      debugPrint("❌ [Controller Exception]: $e");
+      return {'success': false, 'message': 'Lỗi không xác định: $e'};
     } finally {
       isLoading = false;
       notifyListeners();
@@ -76,7 +63,8 @@ class AuthController extends ChangeNotifier {
     required String gender,
     required String address,
   }) async {
-    // Validate
+    debugPrint("👉 [Controller] Bắt đầu Register: $phone");
+
     if (name.isEmpty || phone.isEmpty || pass.isEmpty || address.isEmpty) {
       return {'success': false, 'message': 'Vui lòng điền đầy đủ thông tin'};
     }
@@ -97,6 +85,7 @@ class AuthController extends ChangeNotifier {
       );
       return result;
     } catch (e) {
+      debugPrint("❌ [Controller Exception]: $e");
       return {'success': false, 'message': 'Lỗi đăng ký: $e'};
     } finally {
       isLoading = false;
@@ -107,6 +96,7 @@ class AuthController extends ChangeNotifier {
   /// Xử lý Đăng xuất
   Future<void> logout() async {
     await UserManager().logout();
-    notifyListeners(); // Cập nhật UI về trạng thái chưa đăng nhập
+    notifyListeners();
+    debugPrint("👉 [Controller] Đã đăng xuất");
   }
 }

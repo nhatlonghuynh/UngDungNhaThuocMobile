@@ -1,57 +1,72 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart'; // Để dùng debugPrint
 import 'package:http/http.dart' as http;
+import 'package:nhathuoc_mobilee/UI/common/constants/api_constants.dart';
 import 'package:nhathuoc_mobilee/models/DanhMuc.dart';
 import 'package:nhathuoc_mobilee/models/thuoc.dart';
 
-class ApiService {
-  static const String baseUrl = 'http://192.168.2.9:8476/api';
-
+class DanhMucRepository {
   // ==========================================================
   // 1. Lấy cây danh mục
-  // ----------------------------------------------------------
-  // Gọi API lấy danh sách cây danh mục (Category Tree)
-  // Trả về List<LoaiDanhMuc>
   // ==========================================================
   Future<List<LoaiDanhMuc>> fetchCategoryTree() async {
+    final url = Uri.parse('${ApiConstants.baseUrl}/categories/tree');
+
+    // [DEBUG]
+    debugPrint('📂 [CategoryRepo] GET Tree: $url');
+
     try {
-      final response = await http.get(Uri.parse('$baseUrl/categories/tree'));
+      final response = await http.get(url);
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
+        debugPrint('📂 [CategoryRepo] Loaded ${data.length} parent categories');
         return data.map((e) => LoaiDanhMuc.fromJson(e)).toList();
+      } else {
+        debugPrint(
+          '❌ [CategoryRepo] Error ${response.statusCode}: ${response.body}',
+        );
+        return [];
       }
-
-      return [];
     } catch (e) {
-      print("Lỗi tải danh mục: $e");
+      debugPrint("❌ [CategoryRepo] Exception: $e");
       return [];
     }
   }
 
   // ==========================================================
-  // 2. Lấy thuốc theo bộ lọc
-  // ----------------------------------------------------------
-  // Gọi API filter backend đã xây dựng
-  // Tham số lọc gồm typeId và catId (tùy chọn)
-  // Trả về List<Thuoc>
+  // 2. Lấy thuốc theo bộ lọc (Xử lý Query Param chuẩn)
   // ==========================================================
   Future<List<Thuoc>> fetchFilteredProducts({int? typeId, int? catId}) async {
     try {
-      String url = '$baseUrl/thuoc/filter?';
+      // 1. Tạo Map chứa tham số (Chỉ thêm cái nào khác null)
+      final Map<String, String> queryParams = {};
+      if (typeId != null) queryParams['typeId'] = typeId.toString();
+      if (catId != null) queryParams['catId'] = catId.toString();
 
-      if (typeId != null) url += 'typeId=$typeId&';
-      if (catId != null) url += 'catId=$catId&';
+      // 2. Tạo URI chuẩn (Tự động thêm ? và &)
+      // Lưu ý: ApiConstants.baseUrl thường là "http://ip:port/api".
+      // Cần cẩn thận khi dùng queryParameters với Uri.parse nếu baseUrl đã có query.
+      // Cách an toàn nhất cho trường hợp này:
+      final uri = Uri.parse(
+        '${ApiConstants.baseUrl}/thuoc/filter',
+      ).replace(queryParameters: queryParams);
 
-      final response = await http.get(Uri.parse(url));
+      // [DEBUG]
+      debugPrint('🔍 [FilterRepo] GET: $uri');
+
+      final response = await http.get(uri);
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
+        debugPrint('🔍 [FilterRepo] Found ${data.length} products');
         return data.map((e) => Thuoc.fromJson(e)).toList();
       }
 
+      debugPrint('❌ [FilterRepo] Error ${response.statusCode}');
       return [];
     } catch (e) {
-      print("Lỗi tải thuốc: $e");
+      debugPrint("❌ [FilterRepo] Exception: $e");
       return [];
     }
   }

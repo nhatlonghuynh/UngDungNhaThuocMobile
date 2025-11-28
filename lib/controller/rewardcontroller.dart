@@ -5,12 +5,10 @@ import 'package:nhathuoc_mobilee/service/rewardservice.dart';
 class RewardController extends ChangeNotifier {
   final RewardService _service = RewardService();
 
-  // State
   List<GiftModel> gifts = [];
   bool isLoading = false;
   String? errorMessage;
 
-  /// Tải danh sách quà tặng
   Future<void> loadGifts() async {
     if (!UserManager().isLoggedIn) return;
 
@@ -19,16 +17,17 @@ class RewardController extends ChangeNotifier {
       errorMessage = null;
       notifyListeners();
 
+      debugPrint("🎮 [Controller] Loading Gifts...");
       gifts = await _service.getGifts();
     } catch (e) {
       errorMessage = e.toString();
+      debugPrint("❌ [Controller] Load Error: $e");
     } finally {
       isLoading = false;
       notifyListeners();
     }
   }
 
-  /// Thực hiện đổi quà
   Future<Map<String, dynamic>> exchangeGift(GiftModel gift) async {
     try {
       final result = await _service.redeemGift(
@@ -38,9 +37,8 @@ class RewardController extends ChangeNotifier {
         type: gift.type,
       );
 
-      // Nếu thành công, UserManager đã cập nhật điểm, cần báo UI refresh
       if (result['success'] == true) {
-        notifyListeners();
+        notifyListeners(); // Refresh UI để cập nhật số điểm hiển thị
       }
       return result;
     } catch (e) {

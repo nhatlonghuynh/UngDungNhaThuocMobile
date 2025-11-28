@@ -1,36 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:nhathuoc_mobilee/models/giohang.dart';
-import 'package:nhathuoc_mobilee/service/cartservice.dart';
+import 'package:nhathuoc_mobilee/service/cartservice.dart'; // Import đúng Service
 
 class CartController extends ChangeNotifier {
-  // ---------------------------------------------------------------------------
-  // 1. SINGLETON (Đảm bảo giỏ hàng đồng bộ toàn app)
-  // ---------------------------------------------------------------------------
+  // Singleton
   static final CartController _instance = CartController._internal();
   factory CartController() => _instance;
   CartController._internal();
 
   final CartService _service = CartService();
 
-  // ---------------------------------------------------------------------------
-  // 2. STATE VARIABLES
-  // ---------------------------------------------------------------------------
   List<GioHang> cartItems = [];
   bool isLoading = false;
 
-  // ---------------------------------------------------------------------------
-  // 3. PUBLIC METHODS (Tương tác dữ liệu)
-  // ---------------------------------------------------------------------------
+  // --- ACTIONS ---
 
-  /// Tải dữ liệu giỏ hàng từ API/Local
   Future<void> loadData() async {
     try {
       isLoading = true;
-      notifyListeners();
+      // notifyListeners(); // Có thể comment dòng này để tránh nháy màn hình không cần thiết
 
+      debugPrint("🛒 [Controller] Bắt đầu load giỏ hàng...");
       cartItems = await _service.getFullCartDetails();
+      debugPrint("🛒 [Controller] Load xong: ${cartItems.length} sản phẩm");
     } catch (e) {
-      print("Lỗi tải giỏ hàng: $e");
+      debugPrint("❌ [Controller] Lỗi load data: $e");
       cartItems = [];
     } finally {
       isLoading = false;
@@ -38,55 +32,60 @@ class CartController extends ChangeNotifier {
     }
   }
 
-  /// Chọn hoặc bỏ chọn tất cả sản phẩm
   void toggleSelectAll(bool isSelected) {
     for (var item in cartItems) {
       item.isSelected = isSelected;
     }
     notifyListeners();
   }
+  // Mở file controller/cartcontroller.dart và thêm hàm này vào:
 
-  /// Cập nhật số lượng sản phẩm (+/-)
-  Future<void> updateQuantity(int index, int change) async {
-    if (index < 0 || index >= cartItems.length) return;
-
-    int newQty = cartItems[index].soLuong + change;
-    if (newQty > 0) {
-      // Cập nhật UI ngay lập tức
-      cartItems[index].soLuong = newQty;
-      notifyListeners();
-
-      // Cập nhật ngầm xuống Storage
-      await _service.updateLocalCart(cartItems[index].maThuoc, change);
+  /// Đảo ngược trạng thái chọn của 1 item
+  void toggleItem(int index) {
+    if (index >= 0 && index < cartItems.length) {
+      cartItems[index].isSelected = !cartItems[index].isSelected;
+      notifyListeners(); // Quan trọng: Báo hiệu để cập nhật Tổng tiền
     }
   }
 
-  /// Xóa sản phẩm khỏi giỏ
-  Future<void> deleteItem(int index) async {
+  // Optimistic UI: Update UI -> Update Local sau
+  Future<void> updateQuantity(int index, int change) async {
     if (index < 0 || index >= cartItems.length) return;
 
+    int currentQty = cartItems[index].soLuong;
+    int newQty = currentQty + change;
     int maThuoc = cartItems[index].maThuoc;
 
-    // Xóa UI
+    if (newQty > 0) {
+      // 1. Cập nhật UI ngay
+      cartItems[index].soLuong = newQty;
+      notifyListeners();
+      debugPrint("⚡ [Optimistic] Đã cập nhật UI item $maThuoc thành $newQty");
+
+      // 2. Lưu xuống Local (Chạy ngầm)
+      await _service.updateLocalCart(maThuoc, change);
+    }
+  }
+
+  Future<void> deleteItem(int index) async {
+    if (index < 0 || index >= cartItems.length) return;
+    int maThuoc = cartItems[index].maThuoc;
+
+    // 1. Xóa UI ngay
     cartItems.removeAt(index);
     notifyListeners();
+    debugPrint("⚡ [Optimistic] Đã xóa item khỏi UI");
 
-    // Xóa Storage
+    // 2. Xóa Local (Chạy ngầm)
     await _service.removeLocalItem(maThuoc);
   }
 
-  // ---------------------------------------------------------------------------
-  // 4. COMPUTED PROPS (Tính toán cho UI)
-  // ---------------------------------------------------------------------------
-
-  /// Tổng tiền các món đang chọn
+  // --- GETTERS ---
   double get totalPayment => _service.calculateTotal(cartItems);
 
-  /// Kiểm tra có chọn tất cả không
   bool get isAllSelected =>
       cartItems.isNotEmpty && cartItems.every((e) => e.isSelected);
 
-  /// Lấy danh sách các món đang chọn để thanh toán
   List<GioHang> get selectedItems =>
       cartItems.where((e) => e.isSelected).toList();
 }

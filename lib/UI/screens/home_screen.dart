@@ -39,7 +39,7 @@ class HomeBody extends StatelessWidget {
           snap: true,
           centerTitle: true,
           title: Text(
-            'Nhà Thuốc HUIT',
+            'Nhà Thuốc ',
             style: const TextStyle(
               fontFamily: 'Inter',
               color: AppColors.textBrown,

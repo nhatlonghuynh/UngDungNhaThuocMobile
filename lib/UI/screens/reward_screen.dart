@@ -72,8 +72,8 @@ class _RewardBodyState extends State<RewardBody> {
           "Tích điểm đổi quà",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.green, // Màu riêng của màn hình này
-        foregroundColor: Colors.white,
+        backgroundColor: const Color.fromARGB(255, 255, 213, 4), // Màu riêng của màn hình này
+        foregroundColor: const Color.fromARGB(255, 235, 0, 0),
         centerTitle: true,
       ),
       backgroundColor: AppColors.scaffoldBackground,

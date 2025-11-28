@@ -4,8 +4,9 @@ import 'package:nhathuoc_mobilee/UI/common/widget/address_selection_field.dart';
 import 'package:nhathuoc_mobilee/UI/common/widget/custom_text_field.dart';
 import 'package:provider/provider.dart';
 import 'package:nhathuoc_mobilee/controller/ordercontroller.dart';
-import 'package:nhathuoc_mobilee/models/useraddress.dart';
+import 'package:nhathuoc_mobilee/models/diachikhachhang.dart'; // Import đúng file model của bạn
 import 'package:nhathuoc_mobilee/UI/common/utils/dialog_helper.dart';
+import 'package:nhathuoc_mobilee/manager/usermanager.dart'; // [MỚI] Import để lấy UserId
 
 class OrderAddressSection extends StatelessWidget {
   const OrderAddressSection({super.key});
@@ -59,7 +60,6 @@ class OrderAddressSection extends StatelessWidget {
     );
   }
 
-  // Hàm mở Modal danh sách địa chỉ
   void _showAddressModal(BuildContext context, OrderController c) {
     showModalBottomSheet(
       context: context,
@@ -73,7 +73,6 @@ class OrderAddressSection extends StatelessWidget {
   }
 }
 
-// --- Widget nội bộ: Nội dung Modal ---
 class _AddressModalContent extends StatefulWidget {
   final OrderController controller;
   const _AddressModalContent({required this.controller});
@@ -101,7 +100,6 @@ class _AddressModalContentState extends State<_AddressModalContent> {
           ),
           const SizedBox(height: 10),
 
-          // Danh sách địa chỉ
           SizedBox(
             height: 250,
             child: widget.controller.addresses.isEmpty
@@ -124,7 +122,7 @@ class _AddressModalContentState extends State<_AddressModalContent> {
                           activeColor: AppColors.primaryPink,
                           onChanged: (val) {
                             widget.controller.setSelectedAddress(val!);
-                            Navigator.pop(context); // Chọn xong đóng modal luôn
+                            Navigator.pop(context);
                           },
                         ),
                         trailing: IconButton(
@@ -138,10 +136,8 @@ class _AddressModalContentState extends State<_AddressModalContent> {
                     },
                   ),
           ),
-
           const SizedBox(height: 10),
 
-          // Nút Thêm Mới
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
@@ -163,7 +159,6 @@ class _AddressModalContentState extends State<_AddressModalContent> {
     );
   }
 
-  // Logic Xóa Địa Chỉ
   void _deleteAddress(UserAddress addr) async {
     final confirm = await DialogHelper.showConfirmDialog(
       context,
@@ -174,15 +169,12 @@ class _AddressModalContentState extends State<_AddressModalContent> {
     );
 
     if (confirm == true) {
-      await widget.controller.deleteAddress(
-        addr,
-        widget.controller.selectedAddress?.addressID.toString() ?? "",
-      );
-      setState(() {}); // Refresh list sau khi xóa
+      // SỬA: Lấy UserId từ UserManager
+      await widget.controller.deleteAddress(addr, UserManager().userId);
+      if (mounted) setState(() {});
     }
   }
 
-  // Logic Thêm Mới Địa Chỉ (Sử dụng Common Widgets)
   void _showAddNewAddressDialog() {
     final addressCtrl = TextEditingController();
     final detailCtrl = TextEditingController();
@@ -199,15 +191,13 @@ class _AddressModalContentState extends State<_AddressModalContent> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // 1. Chọn Tỉnh/Huyện/Xã (Dùng Widget dùng chung siêu gọn)
+              // Chọn Tỉnh/Huyện/Xã
               AddressSelectionField(
                 controller: addressCtrl,
                 labelText: "Tỉnh/Thành, Quận/Huyện...",
               ),
-
               const SizedBox(height: 15),
-
-              // 2. Nhập số nhà/đường (Dùng CustomTextField)
+              // Nhập đường
               CustomTextField(
                 controller: detailCtrl,
                 labelText: "Số nhà, tên đường",
@@ -232,7 +222,6 @@ class _AddressModalContentState extends State<_AddressModalContent> {
               ),
             ),
             onPressed: () async {
-              // Validate đơn giản
               if (addressCtrl.text.isEmpty || detailCtrl.text.isEmpty) {
                 DialogHelper.showError(
                   context,
@@ -241,27 +230,30 @@ class _AddressModalContentState extends State<_AddressModalContent> {
                 return;
               }
               try {
-                // Xử lý chuỗi địa chỉ từ AddressSelectionField
-                // Định dạng trả về mặc định: "Xã A, Huyện B, Tỉnh C"
+                // Parse địa chỉ
                 List<String> parts = addressCtrl.text.split(', ');
                 String ward = parts.isNotEmpty ? parts[0] : "";
                 String district = parts.length > 1 ? parts[1] : "";
                 String province = parts.length > 2 ? parts[2] : "";
 
-                // Gọi Controller thêm mới
+                // [SỬA QUAN TRỌNG] Lấy UserId chuẩn
+                String currentUserId = UserManager().userId;
+
                 await widget.controller.addNewAddress(
                   UserAddress(
-                    addressID: 0,
+                    tempId:
+                        'abc', // <-- BỎ DÒNG NÀY nếu Model của bạn không có field tempId
+                    addressID: 0, // ID tạm = 0, Service sẽ trả về ID thật
                     province: province,
                     district: district,
                     ward: ward,
                     street: detailCtrl.text,
-                    isDefault: true, // Mặc định chọn luôn địa chỉ mới thêm
+                    isDefault: true,
                   ),
-                  widget.controller.selectedAddress?.addressID.toString() ?? "",
+                  currentUserId, // <-- Truyền đúng UserId vào đây
                 );
 
-                Navigator.pop(ctx); // Đóng dialog thêm
+                Navigator.pop(ctx);
                 Navigator.pop(context);
               } catch (e) {
                 DialogHelper.showError(context, message: e.toString());

@@ -5,32 +5,25 @@ import 'package:nhathuoc_mobilee/service/productservice.dart';
 class ProductDetailController extends ChangeNotifier {
   final ProductService _service = ProductService();
 
-  // ---------------------------------------------------------------------------
-  // STATE VARIABLES
-  // ---------------------------------------------------------------------------
   ThuocDetail? product;
   bool isLoading = true;
   String errorMessage = '';
-
-  // State UI
   int quantity = 1;
 
-  // ---------------------------------------------------------------------------
-  // PUBLIC METHODS
-  // ---------------------------------------------------------------------------
-
-  /// Tải chi tiết sản phẩm theo ID
   Future<void> loadProduct(int id) async {
     isLoading = true;
     errorMessage = '';
     product = null;
-    quantity = 1; // Reset số lượng khi xem sản phẩm mới
+    quantity = 1;
     notifyListeners();
 
     try {
+      debugPrint("📱 [Detail] Loading ID: $id");
       final result = await _service.fetchProductDetail(id);
+
       if (result['success']) {
         product = result['data'];
+        debugPrint("✅ [Detail] Loaded: ${product?.tenThuoc}");
       } else {
         errorMessage = result['message'];
       }
@@ -42,14 +35,12 @@ class ProductDetailController extends ChangeNotifier {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // UI ACTIONS
-  // ---------------------------------------------------------------------------
-
   void increaseQuantity() {
     if (product != null && quantity < product!.soLuong) {
       quantity++;
       notifyListeners();
+    } else {
+      debugPrint("⚠️ [Detail] Max stock reached");
     }
   }
 
@@ -60,24 +51,12 @@ class ProductDetailController extends ChangeNotifier {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // GETTERS
-  // ---------------------------------------------------------------------------
-
-  /// Tính giá cuối cùng (sau khi trừ khuyến mãi)
+  // Dùng Service tính toán để đảm bảo logic khuyến mãi nhất quán
   double get finalPrice {
     if (product == null) return 0;
-
-    double price = product!.giaBan;
-    final km = product!.khuyenMai;
-
-    if (km != null) {
-      if (km.phanTramKM > 0) {
-        price = price * (1 - km.phanTramKM / 100);
-      } else if (km.tienGiam > 0) {
-        price = price - km.tienGiam;
-      }
-    }
-    return price < 0 ? 0 : price;
+    return _service.getDiscountedPrice(product);
   }
+
+  // Getter tổng tiền (Giá x Số lượng)
+  double get totalPrice => finalPrice * quantity;
 }

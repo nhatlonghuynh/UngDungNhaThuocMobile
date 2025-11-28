@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:nhathuoc_mobilee/controller/categorycontroller.dart';
-import 'package:nhathuoc_mobilee/UI/screens/filtered_products_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
+import 'package:nhathuoc_mobilee/controller/categorycontroller.dart';
+// Đảm bảo import đúng đường dẫn màn hình Filter
+import 'package:nhathuoc_mobilee/UI/screens/filtered_products_screen.dart';
 
 class MainDrawer extends StatefulWidget {
   const MainDrawer({super.key});
@@ -15,7 +16,7 @@ class _MainDrawerState extends State<MainDrawer> {
   @override
   void initState() {
     super.initState();
-    // Load danh mục khi mở Drawer
+    // Load danh mục ngay khi Drawer được dựng xong
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CategoryController>().loadCategories();
     });
@@ -27,7 +28,7 @@ class _MainDrawerState extends State<MainDrawer> {
     int? typeId,
     int? catId,
   }) {
-    Navigator.pop(context); // Đóng Drawer
+    Navigator.pop(context); // Đóng Drawer trước
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -39,6 +40,7 @@ class _MainDrawerState extends State<MainDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    // Dùng watch để vẽ lại khi tree thay đổi (Loading -> Có data)
     final cateController = context.watch<CategoryController>();
 
     return Drawer(
@@ -46,70 +48,39 @@ class _MainDrawerState extends State<MainDrawer> {
         color: AppColors.scaffoldBackground,
         child: Column(
           children: [
-            // Custom Drawer Header (warm, rounded)
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(20, 40, 20, 24),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.96),
-                borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(20),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.neutralGrey.withOpacity(0.05),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-                border: Border.all(
-                  color: AppColors.neutralBeige.withOpacity(0.5),
-                ),
-              ),
-              child: SafeArea(
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryPink.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: const Icon(
-                        Icons.local_pharmacy,
-                        size: 40,
-                        color: AppColors.primaryPink,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    const Expanded(
-                      child: Text(
-                        'Nhà Thuốc HUIT',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          color: AppColors.textBrown,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            // --- HEADER ---
+            _buildDrawerHeader(),
 
+            // --- LIST CATEGORY ---
             Expanded(
               child: cateController.isLoading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primaryPink,
+                      ),
+                    )
                   : ListView(
                       padding: EdgeInsets.zero,
                       children: [
                         const SizedBox(height: 12),
+
+                        // Map danh sách danh mục
+                        if (cateController.tree.isEmpty)
+                          const Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: Text(
+                              "Không có danh mục nào",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+
                         ...cateController.tree.map((loai) {
+                          // Trường hợp 1: Không có con -> Hiển thị ListTile thường
                           if (loai.danhMucCon.isEmpty) {
                             return ListTile(
                               leading: const Icon(
-                                Icons.category,
+                                Icons.category_outlined,
                                 color: AppColors.primaryPink,
                               ),
                               title: Text(
@@ -124,9 +95,6 @@ class _MainDrawerState extends State<MainDrawer> {
                                 loai.ten,
                                 typeId: loai.id,
                               ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 20,
                                 vertical: 4,
@@ -134,89 +102,104 @@ class _MainDrawerState extends State<MainDrawer> {
                             );
                           }
 
-                          return ExpansionTile(
-                            leading: const Icon(
-                              Icons.medication,
-                              color: AppColors.secondaryGreen,
-                            ),
-                            title: Text(
-                              loai.ten,
-                              style: const TextStyle(
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.textBrown,
+                          // Trường hợp 2: Có con -> Hiển thị ExpansionTile (Menu xổ xuống)
+                          return Theme(
+                            // Xóa border mặc định của ExpansionTile khi mở
+                            data: Theme.of(
+                              context,
+                            ).copyWith(dividerColor: Colors.transparent),
+                            child: ExpansionTile(
+                              leading: const Icon(
+                                Icons.medication,
+                                color: AppColors.secondaryGreen,
                               ),
-                            ),
-                            childrenPadding: const EdgeInsets.only(
-                              left: 24,
-                              right: 8,
-                              bottom: 8,
-                            ),
-                            children: [
-                              ListTile(
-                                leading: const Icon(
-                                  Icons.all_inclusive,
-                                  size: 18,
-                                  color: AppColors.primaryPink,
-                                ),
-                                title: Text(
-                                  "Tất cả ${loai.ten}",
-                                  style: const TextStyle(
-                                    color: AppColors.primaryPink,
-                                    fontFamily: 'Inter',
-                                  ),
-                                ),
-                                onTap: () => _navigateToFilter(
-                                  context,
-                                  loai.ten,
-                                  typeId: loai.id,
+                              title: Text(
+                                loai.ten,
+                                style: const TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.textBrown,
                                 ),
                               ),
-                              ...loai.danhMucCon.map(
-                                (dm) => ListTile(
+                              childrenPadding: const EdgeInsets.only(
+                                left: 16,
+                                bottom: 8,
+                              ),
+                              children: [
+                                // Nút "Tất cả ..."
+                                ListTile(
                                   leading: const Icon(
-                                    Icons.arrow_right,
-                                    color: AppColors.neutralGrey,
+                                    Icons.all_inclusive,
+                                    size: 18,
+                                    color: AppColors.primaryPink,
                                   ),
                                   title: Text(
-                                    dm.ten,
+                                    "Tất cả ${loai.ten}",
                                     style: const TextStyle(
-                                      color: AppColors.textBrown,
+                                      color: AppColors.primaryPink,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                   onTap: () => _navigateToFilter(
                                     context,
-                                    dm.ten,
-                                    catId: dm.id,
+                                    loai.ten,
+                                    typeId: loai.id,
+                                  ),
+                                  dense: true,
+                                ),
+                                // Danh sách con
+                                ...loai.danhMucCon.map(
+                                  (dm) => ListTile(
+                                    leading: const Icon(
+                                      Icons.subdirectory_arrow_right,
+                                      size: 18,
+                                      color: AppColors.neutralGrey,
+                                    ),
+                                    title: Text(
+                                      dm.ten,
+                                      style: const TextStyle(
+                                        color: AppColors.textBrown,
+                                      ),
+                                    ),
+                                    onTap: () => _navigateToFilter(
+                                      context,
+                                      dm.ten,
+                                      catId: dm.id,
+                                    ),
+                                    dense: true,
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           );
-                        }).toList(),
+                        }),
+
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Divider(),
                         ),
+
+                        // Các mục tĩnh khác
                         ListTile(
                           leading: const Icon(
                             Icons.history,
                             color: AppColors.neutralGrey,
                           ),
-                          title: const Text(
-                            'Lịch sử mua hàng',
-                            style: TextStyle(fontFamily: 'Inter'),
-                          ),
+                          title: const Text('Lịch sử mua hàng'),
+                          onTap: () {
+                            /* TODO */
+                          },
                         ),
                         ListTile(
                           leading: const Icon(
-                            Icons.settings,
+                            Icons.settings_outlined,
                             color: AppColors.neutralGrey,
                           ),
-                          title: const Text(
-                            'Cài đặt',
-                            style: TextStyle(fontFamily: 'Inter'),
-                          ),
+                          title: const Text('Cài đặt'),
+                          onTap: () {
+                            /* TODO */
+                          },
                         ),
                         const SizedBox(height: 20),
                       ],
@@ -224,6 +207,54 @@ class _MainDrawerState extends State<MainDrawer> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // Tách Header ra cho code gọn
+  Widget _buildDrawerHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(20, 50, 20, 24),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.96),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.neutralGrey.withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+        border: Border.all(color: AppColors.neutralBeige.withOpacity(0.5)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.primaryPink.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Icon(
+              Icons.local_pharmacy,
+              size: 36,
+              color: AppColors.primaryPink,
+            ),
+          ),
+          const SizedBox(width: 14),
+          const Expanded(
+            child: Text(
+              'Nhà Thuốc HUIT',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                color: AppColors.textBrown,
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

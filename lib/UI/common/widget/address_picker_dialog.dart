@@ -11,11 +11,13 @@ class AddressPickerDialog extends StatefulWidget {
 }
 
 class _AddressPickerDialogState extends State<AddressPickerDialog> {
-  final LocationService _locationService = LocationService();
+  final LocationRepository _locationService = LocationRepository();
+
   List<Province> _provinces = [];
   Province? _selectedProvince;
   District? _selectedDistrict;
   Ward? _selectedWard;
+
   bool _isLoading = true;
 
   @override
@@ -27,14 +29,13 @@ class _AddressPickerDialogState extends State<AddressPickerDialog> {
   void _loadProvinces() async {
     try {
       final data = await _locationService.getProvinces();
-      if (mounted) {
-        setState(() {
-          _provinces = data;
-          _isLoading = false;
-        });
-      }
+      if (!mounted) return;
+
+      setState(() {
+        _provinces = data;
+        _isLoading = false;
+      });
     } catch (e) {
-      // Xử lý lỗi nếu cần hoặc đóng dialog
       if (mounted) Navigator.pop(context);
     }
   }
@@ -55,7 +56,7 @@ class _AddressPickerDialogState extends State<AddressPickerDialog> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // 1. Tỉnh/Thành
+                  // ======= 1. Tỉnh / Thành =======
                   DropdownButtonFormField<Province>(
                     value: _selectedProvince,
                     isExpanded: true,
@@ -76,21 +77,21 @@ class _AddressPickerDialogState extends State<AddressPickerDialog> {
                   ),
                   const SizedBox(height: 10),
 
-                  // 2. Quận/Huyện
+                  // ======= 2. Quận / Huyện =======
                   DropdownButtonFormField<District>(
                     value: _selectedDistrict,
                     isExpanded: true,
                     hint: const Text("Quận/Huyện"),
-                    items:
-                        _selectedProvince?.districts
-                            .map(
-                              (d) => DropdownMenuItem(
-                                value: d,
-                                child: Text(d.name),
-                              ),
-                            )
-                            .toList() ??
-                        [],
+                    items: _selectedProvince == null
+                        ? []
+                        : _selectedProvince!.districts
+                              .map(
+                                (d) => DropdownMenuItem(
+                                  value: d,
+                                  child: Text(d.name),
+                                ),
+                              )
+                              .toList(),
                     onChanged: (val) {
                       setState(() {
                         _selectedDistrict = val;
@@ -98,24 +99,27 @@ class _AddressPickerDialogState extends State<AddressPickerDialog> {
                       });
                     },
                   ),
+
                   const SizedBox(height: 10),
 
-                  // 3. Phường/Xã
+                  // ======= 3. Xã / Phường =======
                   DropdownButtonFormField<Ward>(
                     value: _selectedWard,
                     isExpanded: true,
                     hint: const Text("Phường/Xã"),
-                    items:
-                        _selectedDistrict?.wards
-                            .map(
-                              (w) => DropdownMenuItem(
-                                value: w,
-                                child: Text(w.name),
-                              ),
-                            )
-                            .toList() ??
-                        [],
-                    onChanged: (val) => setState(() => _selectedWard = val),
+                    items: (_selectedDistrict == null)
+                        ? []
+                        : _selectedDistrict!.wards
+                              .map(
+                                (w) => DropdownMenuItem(
+                                  value: w,
+                                  child: Text(w.name),
+                                ),
+                              )
+                              .toList(),
+                    onChanged: (val) {
+                      setState(() => _selectedWard = val);
+                    },
                   ),
                 ],
               ),
@@ -137,12 +141,11 @@ class _AddressPickerDialogState extends State<AddressPickerDialog> {
                   _selectedDistrict != null &&
                   _selectedWard != null)
               ? () {
-                  // Trả về chuỗi địa chỉ đầy đủ
-                  String fullAddress =
+                  final fullAddress =
                       "${_selectedWard!.name}, ${_selectedDistrict!.name}, ${_selectedProvince!.name}";
                   Navigator.pop(context, fullAddress);
                 }
-              : null, // Disable nếu chưa chọn đủ
+              : null,
           child: const Text("Xác nhận", style: TextStyle(color: Colors.white)),
         ),
       ],

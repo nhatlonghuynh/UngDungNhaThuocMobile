@@ -5,56 +5,45 @@ import 'package:nhathuoc_mobilee/service/productservice.dart';
 class HomeController extends ChangeNotifier {
   final ProductService _service = ProductService();
 
-  // ---------------------------------------------------------------------------
-  // STATE VARIABLES
-  // ---------------------------------------------------------------------------
   List<Thuoc> products = [];
   bool isLoading = true;
   String errorMessage = '';
 
-  // ---------------------------------------------------------------------------
-  // CONSTRUCTOR
-  // ---------------------------------------------------------------------------
   HomeController() {
     fetchProducts();
   }
 
-  // ---------------------------------------------------------------------------
-  // PUBLIC METHODS
-  // ---------------------------------------------------------------------------
-
-  /// Tải danh sách sản phẩm mặc định
   Future<void> fetchProducts() async {
     isLoading = true;
     errorMessage = '';
-    notifyListeners();
+    notifyListeners(); // Báo UI hiện loading
 
     try {
+      debugPrint("🏠 [Home] Fetching products...");
       products = await _service.getProducts();
     } catch (e) {
-      errorMessage = "Không thể tải sản phẩm: $e";
+      errorMessage = "Lỗi: $e";
+      debugPrint("❌ [Home] Fetch Error: $e");
     } finally {
       isLoading = false;
       notifyListeners();
     }
   }
 
-  /// Tìm kiếm sản phẩm
   Future<void> onSearch(String keyword) async {
     isLoading = true;
-    errorMessage = '';
     notifyListeners();
 
     try {
       if (keyword.trim().isEmpty) {
-        // Nếu từ khóa rỗng, tải lại danh sách gốc
+        debugPrint("🏠 [Home] Reset list (empty search)");
         products = await _service.getProducts();
       } else {
-        // Gọi API tìm kiếm
+        debugPrint("🏠 [Home] Searching: $keyword");
         products = await _service.searchProductByNameOrUse(keyword);
       }
     } catch (e) {
-      errorMessage = "Không tìm thấy kết quả phù hợp";
+      errorMessage = "Không tìm thấy sản phẩm";
       products = [];
     } finally {
       isLoading = false;
@@ -62,9 +51,7 @@ class HomeController extends ChangeNotifier {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // UI HELPERS (Wrapper gọi Service)
-  // ---------------------------------------------------------------------------
+  // Wrappers
   bool checkPromo(Thuoc t) => _service.hasPromotion(t);
   double finalPrice(Thuoc t) => _service.getDiscountedPrice(t);
   String badgeText(Thuoc t) => _service.getBadgeText(t);

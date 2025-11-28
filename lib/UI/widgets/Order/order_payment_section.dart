@@ -13,62 +13,54 @@ class OrderPaymentSection extends StatelessWidget {
         return Column(
           children: [
             // 1. Vận chuyển
-            Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Hình thức nhận hàng",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  RadioListTile(
-                    title: const Text("Giao tận nơi"),
-                    value: 0,
-                    groupValue: c.deliveryMethod,
-                    activeColor: AppColors.primaryPink,
-                    onChanged: (v) => c.setDeliveryMethod(v!),
-                  ),
-                  RadioListTile(
-                    title: const Text("Nhận tại nhà thuốc"),
-                    value: 1,
-                    groupValue: c.deliveryMethod,
-                    activeColor: AppColors.primaryPink,
-                    onChanged: (v) => c.setDeliveryMethod(v!),
-                  ),
-                ],
-              ),
+            _buildSection(
+              title: "Hình thức nhận hàng",
+              children: [
+                RadioListTile(
+                  title: const Text("Giao tận nơi"),
+                  value: 0,
+                  groupValue: c.deliveryMethod,
+                  activeColor: AppColors.primaryPink,
+                  onChanged: (v) => c.setDeliveryMethod(v!),
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                ),
+                RadioListTile(
+                  title: const Text("Nhận tại nhà thuốc"),
+                  value: 1,
+                  groupValue: c.deliveryMethod,
+                  activeColor: AppColors.primaryPink,
+                  onChanged: (v) => c.setDeliveryMethod(v!),
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                ),
+              ],
             ),
             const SizedBox(height: 10),
 
             // 2. Thanh toán
-            Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Phương thức thanh toán",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  RadioListTile(
-                    title: const Text("Thanh toán khi nhận hàng (COD)"),
-                    value: "COD",
-                    groupValue: c.paymentMethod,
-                    activeColor: AppColors.primaryPink,
-                    onChanged: (v) => c.setPaymentMethod(v!),
-                  ),
-                  RadioListTile(
-                    title: const Text("Thanh toán PayOS (QR Code)"),
-                    value: "PAYOS",
-                    groupValue: c.paymentMethod,
-                    activeColor: AppColors.primaryPink,
-                    onChanged: (v) => c.setPaymentMethod(v!),
-                  ),
-                ],
-              ),
+            _buildSection(
+              title: "Phương thức thanh toán",
+              children: [
+                RadioListTile(
+                  title: const Text("Thanh toán khi nhận hàng (COD)"),
+                  value: "COD",
+                  groupValue: c.paymentMethod,
+                  activeColor: AppColors.primaryPink,
+                  onChanged: (v) => c.setPaymentMethod(v!),
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                ),
+                RadioListTile(
+                  title: const Text("Thanh toán PayOS (QR Code)"),
+                  value: "PAYOS",
+                  groupValue: c.paymentMethod,
+                  activeColor: AppColors.primaryPink,
+                  onChanged: (v) => c.setPaymentMethod(v!),
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                ),
+              ],
             ),
             const SizedBox(height: 10),
 
@@ -87,6 +79,7 @@ class OrderPaymentSection extends StatelessWidget {
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
+                  isDense: true,
                 ),
               ),
             ),
@@ -103,22 +96,33 @@ class OrderPaymentSection extends StatelessWidget {
                       "Dùng điểm (${c.maxPoints})",
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    subtitle: const Text("1 điểm = 10đ"),
+                    subtitle: const Text(
+                      "1 điểm = 10đ",
+                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
                     value: c.usePoints,
                     activeColor: AppColors.primaryPink,
+                    // Disable switch nếu không có điểm
                     onChanged: c.maxPoints > 0 ? c.toggleUsePoints : null,
+                    contentPadding: EdgeInsets.zero,
                   ),
+
+                  // Chỉ hiện ô nhập khi bật Switch
                   if (c.usePoints)
-                    TextField(
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: "Nhập số điểm muốn dùng",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          labelText: "Nhập số điểm (Tối đa ${c.maxPoints})",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          suffixText: "điểm",
+                          isDense: true,
                         ),
+                        onChanged: (val) => c.setPointsToUse(val),
                       ),
-                      onChanged: (val) =>
-                          c.setPointsToUse(int.tryParse(val) ?? 0),
                     ),
                 ],
               ),
@@ -126,6 +130,27 @@ class OrderPaymentSection extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+
+  // Helper widget để code gọn hơn
+  Widget _buildSection({
+    required String title,
+    required List<Widget> children,
+  }) {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.all(15),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          ...children,
+        ],
+      ),
     );
   }
 }

@@ -4,12 +4,14 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class PayOSPaymentScreen extends StatefulWidget {
   final String paymentUrl;
-  final String returnUrlScheme; // Ví dụ: "nhathuoc://"
+  
+  // Return URL Scheme chung (nhathuoc://)
+  final String appScheme; 
 
   const PayOSPaymentScreen({
     super.key,
     required this.paymentUrl,
-    this.returnUrlScheme = "nhathuoc://payment-result",
+    this.appScheme = "nhathuoc://",
   });
 
   @override
@@ -24,40 +26,49 @@ class _PayOSPaymentScreenState extends State<PayOSPaymentScreen> {
   void initState() {
     super.initState();
 
-    // Khởi tạo WebViewController
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0x00000000))
+      ..setBackgroundColor(Colors.white)
       ..setNavigationDelegate(
         NavigationDelegate(
-          onPageStarted: (String url) {
-            if (mounted) setState(() => _isLoading = true);
-          },
-          onPageFinished: (String url) {
-            if (mounted) setState(() => _isLoading = false);
-          },
+          onPageStarted: (_) => setState(() => _isLoading = true),
+          onPageFinished: (_) => setState(() => _isLoading = false),
+          
+          // --- LOGIC BẮT LINK QUAN TRỌNG ---
           onNavigationRequest: (NavigationRequest request) {
-            // LOGIC QUAN TRỌNG: Bắt link redirect
-            if (request.url.startsWith(widget.returnUrlScheme)) {
+            // Kiểm tra xem URL có bắt đầu bằng Scheme của App không (nhathuoc://)
+            if (request.url.startsWith(widget.appScheme)) {
+              
               final uri = Uri.parse(request.url);
-              final status = uri.queryParameters['status'];
-              final orderCode = uri.queryParameters['orderCode'];
+              
+              // Case 1: Hủy thanh toán (nhathuoc://payment-cancel hoặc status=CANCELLED)
+              // Kiểm tra cả đường dẫn lẫn query param để chắc chắn
+              bool isCancel = request.url.contains("payment-cancel") || 
+                              uri.queryParameters['status'] == 'CANCELLED';
 
-              if (status == 'CANCELLED') {
+              if (isCancel) {
                 Navigator.pop(context, {
                   'success': false,
-                  'message': 'Đã hủy thanh toán',
+                  'message': 'Giao dịch đã bị hủy',
                 });
-              } else {
-                // Mặc định coi như thành công hoặc pending
+              } 
+              // Case 2: Thanh toán thành công (nhathuoc://payment-result)
+              else {
+                // Lấy orderCode nếu có (để log hoặc verify lại nếu cần)
+                final orderCode = uri.queryParameters['orderCode'];
+                
                 Navigator.pop(context, {
                   'success': true,
+                  'message': 'Thanh toán thành công',
                   'orderCode': orderCode,
                 });
               }
-              return NavigationDecision
-                  .prevent; // Chặn không cho WebView load link này
+              
+              // Chặn WebView load tiếp (vì đây là Deep Link của App)
+              return NavigationDecision.prevent;
             }
+            
+            // Các link khác (https://payos.vn...) cho phép load bình thường
             return NavigationDecision.navigate;
           },
         ),
@@ -68,20 +79,16 @@ class _PayOSPaymentScreenState extends State<PayOSPaymentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
-          "Thanh toán PayOS",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: const Text("Cổng thanh toán PayOS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        centerTitle: true,
+        elevation: 0,
         backgroundColor: Colors.white,
-        elevation: 1,
         foregroundColor: Colors.black,
         leading: IconButton(
           icon: const Icon(Icons.close),
-          onPressed: () => Navigator.pop(context, {
-            'success': false,
-            'message': 'Đóng cổng thanh toán',
-          }),
+          onPressed: () => Navigator.pop(context, {'success': false, 'message': 'Đã đóng cổng thanh toán'}),
         ),
       ),
       body: Stack(

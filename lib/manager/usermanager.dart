@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserManager {
@@ -12,6 +12,9 @@ class UserManager {
 
   // Biến lưu user trên RAM
   Map<String, dynamic>? _currentUser;
+
+  // KEY LƯU TRỮ (Khai báo 1 lần duy nhất)
+  static const String _storageKey = 'user_session';
 
   // ---------------------------------------------------------------------------
   // 2. GETTERS / SETTERS
@@ -26,6 +29,7 @@ class UserManager {
   set hoTen(String value) => _setUserField('HoTen', value);
 
   String get soDienThoai => _currentUser?['SoDienThoai'] ?? '';
+  // Lưu ý: Số điện thoại thường là key định danh, hạn chế set lại trừ khi có luồng đổi SĐT
   set soDienThoai(String value) => _setUserField('SoDienThoai', value);
 
   String? get diaChi => _currentUser?['DiaChi'];
@@ -40,11 +44,14 @@ class UserManager {
   // Điểm tích luỹ
   int get diemTichLuy => _currentUser?['DiemTichLuy'] ?? 0;
   int get tongDiemTichLuy => _currentUser?['tongDiemTichLuy'] ?? 0;
-  String get capDo => _currentUser?['capDo'] ?? 'Mới';
+  String get capDo => _currentUser?['capDo'] ?? 'Thành viên';
 
+  // Helper set data & tự động lưu xuống đĩa
   void _setUserField(String key, dynamic value) {
-    _currentUser ??= {};
-    _currentUser![key] = value;
+    if (_currentUser != null) {
+      _currentUser![key] = value;
+      saveUser(_currentUser!); // Tự động lưu ngay khi set giá trị
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -59,36 +66,40 @@ class UserManager {
   Future<void> saveUser(Map<String, dynamic> userData) async {
     _currentUser = userData;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user_session', jsonEncode(userData));
+    // Dùng biến _storageKey thay vì hardcode string
+    await prefs.setString(_storageKey, jsonEncode(userData));
 
-    debugPrint("UserManager: Session saved - ${userData['HoTen']}");
+    debugPrint("👤 [UserMgr] Session saved: ${userData['HoTen']}");
   }
 
   Future<void> loadUser() async {
     final prefs = await SharedPreferences.getInstance();
-    final data = prefs.getString('user_session');
+    // Dùng biến _storageKey
+    final data = prefs.getString(_storageKey);
 
     if (data != null) {
       try {
         _currentUser = jsonDecode(data);
-        debugPrint("UserManager: Session restored - ${_currentUser?['HoTen']}");
+        debugPrint("👤 [UserMgr] Session restored: ${_currentUser?['HoTen']}");
       } catch (e) {
-        debugPrint("UserManager: Session parse error: $e");
+        debugPrint("❌ [UserMgr] Parse error: $e");
         await logout();
       }
+    } else {
+      debugPrint("👤 [UserMgr] No session found");
     }
   }
 
   Future<void> logout() async {
     _currentUser = null;
     final prefs = await SharedPreferences.getInstance();
-
-    await prefs.remove('user_session');
-    debugPrint("UserManager: Logged out.");
+    // Dùng biến _storageKey
+    await prefs.remove(_storageKey);
+    debugPrint("👋 [UserMgr] Logged out");
   }
 
   // ---------------------------------------------------------------------------
-  // 4. UPDATE USER FIELDS (VD: Cập nhật điểm)
+  // 4. UPDATE USER FIELDS (Cập nhật điểm)
   // ---------------------------------------------------------------------------
 
   Future<void> updateDiem(int diemMoi, {int? tongDiemMoi}) async {
@@ -100,6 +111,6 @@ class UserManager {
     }
 
     await saveUser(_currentUser!);
-    debugPrint("UserManager: Updated points = $diemMoi");
+    debugPrint("💎 [UserMgr] Updated Points: $diemMoi");
   }
 }

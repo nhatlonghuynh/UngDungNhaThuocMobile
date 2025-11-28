@@ -15,7 +15,7 @@ class ProductImagesSlider extends StatelessWidget {
         height: 300, // Tăng chiều cao chút cho đẹp
         width: double.infinity,
         fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => const SizedBox(
+        errorBuilder: (_, _, _) => const SizedBox(
           height: 300,
           child: Center(
             child: Icon(

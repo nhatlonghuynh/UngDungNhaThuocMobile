@@ -5,13 +5,12 @@ import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
 
 class CartBottomBar extends StatelessWidget {
   final CartController controller;
-  final VoidCallback onRefresh;
+  // Đã xóa: final VoidCallback onRefresh; -> Không cần nữa
   final VoidCallback onCheckout;
 
   const CartBottomBar({
     super.key,
     required this.controller,
-    required this.onRefresh,
     required this.onCheckout,
   });
 
@@ -20,10 +19,7 @@ class CartBottomBar extends StatelessWidget {
     final formatter = NumberFormat('#,###', 'vi_VN');
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 20,
-      ), // Giảm padding ngang xíu cho đỡ chật
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
@@ -38,12 +34,12 @@ class CartBottomBar extends StatelessWidget {
       child: SafeArea(
         child: Row(
           children: [
-            // 1. CỤM TRÁI: Checkbox "Tất cả"
+            // 1. Checkbox "Tất cả"
             Row(
-              mainAxisSize: MainAxisSize.min, // Chỉ chiếm diện tích vừa đủ
+              mainAxisSize: MainAxisSize.min,
               children: [
                 SizedBox(
-                  width: 24, // Cố định size checkbox để dễ căn chỉnh
+                  width: 24,
                   height: 24,
                   child: Checkbox(
                     value: controller.isAllSelected,
@@ -52,8 +48,8 @@ class CartBottomBar extends StatelessWidget {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     onChanged: (val) {
+                      // Chỉ cần gọi hàm controller, UI tự cập nhật
                       controller.toggleSelectAll(val ?? false);
-                      onRefresh();
                     },
                   ),
                 ),
@@ -69,14 +65,12 @@ class CartBottomBar extends StatelessWidget {
               ],
             ),
 
-            // 2. CỤM GIỮA: Giá tiền (Dùng Expanded để chiếm không gian còn lại)
-            // --- SỬA LỖI Ở ĐÂY ---
+            // 2. Tổng tiền
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.end, // Căn lề phải sát nút Mua
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text(
@@ -85,10 +79,7 @@ class CartBottomBar extends StatelessWidget {
                         fontSize: 12,
                         color: AppColors.neutralBeige,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                    // Dùng FittedBox: Nếu giá quá dài (ví dụ 100.000.000đ), chữ sẽ tự nhỏ lại
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.centerRight,
@@ -96,7 +87,7 @@ class CartBottomBar extends StatelessWidget {
                         "${formatter.format(controller.totalPayment)}đ",
                         style: const TextStyle(
                           color: AppColors.primaryPink,
-                          fontSize: 18, // Giảm nhẹ xuống 18 cho hài hòa
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -106,7 +97,7 @@ class CartBottomBar extends StatelessWidget {
               ),
             ),
 
-            // 3. CỤM PHẢI: Nút Mua hàng
+            // 3. Nút Mua hàng
             ElevatedButton(
               onPressed: controller.totalPayment > 0 ? onCheckout : null,
               style: ElevatedButton.styleFrom(
@@ -116,7 +107,7 @@ class CartBottomBar extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 20, // Giảm padding nút một chút
+                  horizontal: 20,
                   vertical: 12,
                 ),
                 elevation: 4,

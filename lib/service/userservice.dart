@@ -1,22 +1,15 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:nhathuoc_mobilee/api/userapi.dart';
+import 'package:nhathuoc_mobilee/api/userapi.dart'; // Đảm bảo import đúng ProfileRepository
 import 'package:nhathuoc_mobilee/manager/usermanager.dart';
-import 'package:nhathuoc_mobilee/models/useraddress.dart';
 
 class UserService {
-  // Repository cho phần Profile/Account
-  final ProfileRepository _profileRepo = ProfileRepository();
-
-  // Base URL cho phần Address (Giữ nguyên từ code cũ của bạn)
-  // Lưu ý: Hãy đảm bảo IP này đúng với server khi chạy máy thật/máy ảo
-  final String _addressBaseUrl = "http://192.168.2.9:8476/api/UserAddress";
+  final ProfileRepository _repo = ProfileRepository();
 
   // =======================================================================
-  // PHẦN 1: QUẢN LÝ TÀI KHOẢN (PROFILE, PASSWORD)
+  // 1. CẬP NHẬT THÔNG TIN CÁ NHÂN
   // =======================================================================
-
-  // --- CẬP NHẬT THÔNG TIN CÁ NHÂN ---
   Future<Map<String, dynamic>> updateProfile({
     required String name,
     required String phoneNumber,
@@ -24,16 +17,18 @@ class UserService {
     required String birthday,
   }) async {
     try {
-      final response = await _profileRepo.updateProfileRequest({
+      debugPrint("👤 [UserService] Update Profile: $name - $phoneNumber");
+
+      final response = await _repo.updateProfileRequest({
         'Name_Customer': name,
         'PhoneNumber': phoneNumber,
         'Gender': gender,
-        'Email': "", // Tùy chọn, để trống nếu server không bắt buộc
+        'Email': "", // Để trống nếu server không yêu cầu
         'Birthday': birthday,
       });
 
       if (response.statusCode == 200) {
-        // Cập nhật thành công -> Lưu ngay vào bộ nhớ máy (Singleton)
+        // Update thành công -> Lưu ngay vào Singleton UserManager
         final userMgr = UserManager();
         userMgr.hoTen = name;
         userMgr.soDienThoai = phoneNumber;
@@ -45,17 +40,21 @@ class UserService {
         return _handleError(response);
       }
     } catch (e) {
+      debugPrint("❌ [UserService] Update Error: $e");
       return {'success': false, 'message': 'Lỗi kết nối: $e'};
     }
   }
 
-  // --- ĐỔI MẬT KHẨU ---
+  // =======================================================================
+  // 2. ĐỔI MẬT KHẨU
+  // =======================================================================
   Future<Map<String, dynamic>> changePassword(
     String oldPass,
     String newPass,
   ) async {
     try {
-      final response = await _profileRepo.changePasswordRequest({
+      debugPrint("🔐 [UserService] Change Password...");
+      final response = await _repo.changePasswordRequest({
         'OldPassword': oldPass,
         'NewPassword': newPass,
         'ConfirmPassword': newPass,
@@ -71,17 +70,20 @@ class UserService {
     }
   }
 
-  // --- QUÊN MẬT KHẨU (Lấy Token) ---
+  // =======================================================================
+  // 3. QUÊN MẬT KHẨU & RESET
+  // =======================================================================
   Future<Map<String, dynamic>> forgotPassword(String username) async {
     try {
-      final response = await _profileRepo.forgotPasswordRequest(username);
+      debugPrint("🔑 [UserService] Forgot Password: $username");
+      final response = await _repo.forgotPasswordRequest(username);
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
         return {
           'success': true,
           'message': data['message'],
-          'resetToken': data['resetToken'], // Token để dùng cho bước reset
+          'resetToken': data['resetToken'],
         };
       } else {
         return _handleError(response);
@@ -91,14 +93,13 @@ class UserService {
     }
   }
 
-  // --- ĐẶT LẠI MẬT KHẨU (Dùng Token) ---
   Future<Map<String, dynamic>> resetPassword({
     required String username,
     required String token,
     required String newPassword,
   }) async {
     try {
-      final response = await _profileRepo.resetPasswordRequest({
+      final response = await _repo.resetPasswordRequest({
         'Username': username,
         'Token': token,
         'NewPassword': newPassword,
@@ -115,13 +116,14 @@ class UserService {
     }
   }
 
-  // Helper xử lý lỗi chung cho phần Profile
+  // --- Helper xử lý lỗi (Dùng chung trong class này) ---
   Map<String, dynamic> _handleError(http.Response response) {
     try {
-      final data = jsonDecode(response.body);
+      // Decode UTF8 để hiển thị tiếng Việt có dấu chuẩn
+      final data = jsonDecode(utf8.decode(response.bodyBytes));
       String msg = data['message'] ?? "Có lỗi xảy ra";
 
-      // Xử lý lỗi ModelState của ASP.NET (Validation error)
+      // Xử lý lỗi ModelState (ASP.NET)
       if (data['ModelState'] != null) {
         msg = data['ModelState'].values.first[0];
       }
@@ -129,73 +131,8 @@ class UserService {
     } catch (_) {
       return {
         'success': false,
-        'message': 'Lỗi server: ${response.statusCode}',
+        'message': 'Lỗi server (${response.statusCode})',
       };
-    }
-  }
-
-  // =======================================================================
-  // PHẦN 2: QUẢN LÝ ĐỊA CHỈ NHẬN HÀNG (ADDRESS)
-  // =======================================================================
-
-  // Lấy danh sách địa chỉ
-  Future<List<UserAddress>> getAddresses(String userId) async {
-    try {
-      final response = await http.get(Uri.parse("$_addressBaseUrl/$userId"));
-      if (response.statusCode == 200) {
-        List data = json.decode(response.body);
-        return data.map((e) => UserAddress.fromJson(e)).toList();
-      } else {
-        throw Exception("Failed to load addresses: ${response.statusCode}");
-      }
-    } catch (e) {
-      throw Exception("Lỗi kết nối khi lấy địa chỉ: $e");
-    }
-  }
-
-  // Thêm địa chỉ mới
-  Future<void> addAddress(String userId, UserAddress addr) async {
-    try {
-      final response = await http.post(
-        Uri.parse("$_addressBaseUrl/$userId"),
-        headers: {"Content-Type": "application/json"},
-        body: json.encode(addr.toJson()),
-      );
-      if (response.statusCode != 200) {
-        throw Exception("Failed to add address: ${response.body}");
-      }
-    } catch (e) {
-      throw Exception("Lỗi kết nối khi thêm địa chỉ: $e");
-    }
-  }
-
-  // Cập nhật địa chỉ
-  Future<void> updateAddress(UserAddress addr) async {
-    try {
-      final response = await http.put(
-        Uri.parse("$_addressBaseUrl/${addr.addressID}"),
-        headers: {"Content-Type": "application/json"},
-        body: json.encode(addr.toJson()),
-      );
-      if (response.statusCode != 200) {
-        throw Exception("Failed to update address: ${response.body}");
-      }
-    } catch (e) {
-      throw Exception("Lỗi kết nối khi sửa địa chỉ: $e");
-    }
-  }
-
-  // Xóa địa chỉ
-  Future<void> deleteAddress(int addressID) async {
-    try {
-      final response = await http.delete(
-        Uri.parse("$_addressBaseUrl/$addressID"),
-      );
-      if (response.statusCode != 200) {
-        throw Exception("Failed to delete address: ${response.body}");
-      }
-    } catch (e) {
-      throw Exception("Lỗi kết nối khi xóa địa chỉ: $e");
     }
   }
 }

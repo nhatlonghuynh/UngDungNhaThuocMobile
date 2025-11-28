@@ -6,34 +6,23 @@ import 'package:nhathuoc_mobilee/service/orderservice.dart';
 class OrderHistoryController extends ChangeNotifier {
   final OrderService _service = OrderService();
 
-  // ---------------------------------------------------------------------------
-  // STATE: LIST ORDER
-  // ---------------------------------------------------------------------------
+  // State List
   List<OrderSummary> orders = [];
   bool isLoadingList = false;
   String errorList = '';
 
-  // ---------------------------------------------------------------------------
-  // STATE: ORDER DETAIL
-  // ---------------------------------------------------------------------------
+  // State Detail
   OrderDetail? currentDetail;
   bool isLoadingDetail = false;
   String errorDetail = '';
 
-  // ---------------------------------------------------------------------------
-  // PUBLIC METHODS
-  // ---------------------------------------------------------------------------
+  // --- METHODS ---
 
-  /// Lấy danh sách đơn hàng theo trạng thái
   Future<void> getMyOrders(String status) async {
-    if (isLoadingList) return; // Debounce
+    if (isLoadingList) return;
 
-    // Kiểm tra đăng nhập
+    // Check Login
     String userId = UserManager().userId;
-    if (userId.isEmpty) {
-      await UserManager().loadUser();
-      userId = UserManager().userId;
-    }
     if (userId.isEmpty) {
       errorList = 'Vui lòng đăng nhập lại';
       notifyListeners();
@@ -45,7 +34,9 @@ class OrderHistoryController extends ChangeNotifier {
       errorList = '';
       notifyListeners();
 
+      debugPrint("🎮 [Controller] Get Orders: $status");
       final result = await _service.fetchOrders(status);
+
       if (result['success']) {
         orders = result['data'];
       } else {
@@ -59,7 +50,6 @@ class OrderHistoryController extends ChangeNotifier {
     }
   }
 
-  /// Lấy chi tiết đơn hàng
   Future<void> getOrderDetail(int orderId) async {
     try {
       isLoadingDetail = true;
@@ -67,7 +57,9 @@ class OrderHistoryController extends ChangeNotifier {
       currentDetail = null;
       notifyListeners();
 
+      debugPrint("🎮 [Controller] Get Detail: $orderId");
       final result = await _service.fetchDetail(orderId);
+
       if (result['success']) {
         currentDetail = result['data'];
       } else {
@@ -81,14 +73,15 @@ class OrderHistoryController extends ChangeNotifier {
     }
   }
 
-  /// Hủy đơn hàng
   Future<bool> cancelOrder(int orderId) async {
     try {
+      debugPrint("🎮 [Controller] Action Cancel: $orderId");
       final result = await _service.cancelOrder(orderId);
+
       if (result['success']) {
         return true;
       } else {
-        errorDetail = result['message'];
+        errorDetail = result['message']; // Hiển thị lỗi hủy lên UI chi tiết
         notifyListeners();
         return false;
       }

@@ -3,7 +3,7 @@ import 'package:nhathuoc_mobilee/api/categoryapi.dart';
 import 'package:nhathuoc_mobilee/models/thuoc.dart';
 
 class ProductFilterController extends ChangeNotifier {
-  final ApiService _service = ApiService();
+  final DanhMucRepository _service = DanhMucRepository();
 
   // State
   List<Thuoc> products = [];
