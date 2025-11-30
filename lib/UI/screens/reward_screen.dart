@@ -72,8 +72,8 @@ class _RewardBodyState extends State<RewardBody> {
           "Tích điểm đổi quà",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: const Color.fromARGB(255, 255, 213, 4), // Màu riêng của màn hình này
-        foregroundColor: const Color.fromARGB(255, 235, 0, 0),
+        backgroundColor: AppColors.primary,
+        foregroundColor: Colors.white,
         centerTitle: true,
       ),
       backgroundColor: AppColors.background,
@@ -85,9 +85,12 @@ class _RewardBodyState extends State<RewardBody> {
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Colors.green, Color(0xFF64DD17)],
+                      colors: [
+                        AppColors.primary,
+                        AppColors.primary.withOpacity(0.8),
+                      ], // Teal gradient
                     ),
                     borderRadius: BorderRadius.vertical(
                       bottom: Radius.circular(25),
@@ -140,7 +143,7 @@ class _RewardBodyState extends State<RewardBody> {
                           title: "Chưa có quà tặng",
                           subtitle: "Hiện tại chưa có quà tặng nào",
                           icon: Icons.card_giftcard_outlined,
-                          iconColor: AppColors.secondaryGreen,
+                          iconColor: AppColors.primary,
                         )
                       : GridView.builder(
                           padding: const EdgeInsets.all(15),
@@ -168,7 +171,7 @@ class _RewardBodyState extends State<RewardBody> {
       title: "Đăng nhập để đổi quà",
       subtitle: "Vui lòng đăng nhập để xem và đổi quà tặng",
       icon: Icons.card_giftcard_outlined,
-      iconColor: AppColors.secondaryGreen,
+      iconColor: AppColors.primary,
       actionButton: ElevatedButton.icon(
         onPressed: () => _checkLogin(),
         icon: const Icon(Icons.login_rounded, size: 20),
@@ -177,7 +180,7 @@ class _RewardBodyState extends State<RewardBody> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.secondaryGreen,
+          backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(

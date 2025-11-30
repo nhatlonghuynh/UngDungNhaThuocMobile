@@ -52,8 +52,8 @@ class HomeController extends ChangeNotifier {
   }
 
   // Wrappers
-  bool checkPromo(Thuoc t) => _service.hasPromotion(t);
-  double finalPrice(Thuoc t) => _service.getDiscountedPrice(t);
-  String badgeText(Thuoc t) => _service.getBadgeText(t);
-  String formatPrice(double p) => _service.formatMoney(p);
+  bool checkPromo(Thuoc t) => ProductService.hasPromotion(t);
+  double finalPrice(Thuoc t) => ProductService.getDiscountedPrice(t);
+  String badgeText(Thuoc t) => ProductService.getBadgeText(t);
+  String formatPrice(double p) => ProductService.formatMoney(p);
 }

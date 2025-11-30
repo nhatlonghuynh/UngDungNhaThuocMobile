@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
-import 'package:nhathuoc_mobilee/controller/home_controller.dart';
+// import 'package:nhathuoc_mobilee/controller/home_controller.dart'; // Removed dependency
 import 'package:nhathuoc_mobilee/controller/productcontroller.dart';
 import 'package:nhathuoc_mobilee/models/thuoc.dart';
 import 'package:nhathuoc_mobilee/UI/widgets/Home/product_buy_sheet.dart';
@@ -184,10 +184,6 @@ class _DetailProductView extends StatelessWidget {
                   ProductBuySheet.show(
                     context,
                     thuoc, // Truyền đối tượng đã convert
-                    context
-                        .read<
-                          HomeController
-                        >(), // Truyền Controller (hoặc tạo mới nếu chỉ dùng hàm format giá)
                     controller.finalPrice, // Truyền giá tiền
                   );
                 },

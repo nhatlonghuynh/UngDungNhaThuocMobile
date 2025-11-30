@@ -7,7 +7,4 @@ class ApiConstants {
 
   // Base URL dùng chung cho toàn app
   static const String baseUrl = 'http://$ipschool:$port/api';
-
-  // Base URL cho hình ảnh (nếu cần)
-  static const String imageBaseUrl = 'http://$ipschool:$port/images';
 }

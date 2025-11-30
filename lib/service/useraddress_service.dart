@@ -14,7 +14,8 @@ class UserAddressService {
     try {
       debugPrint("📍 [AddressService] GET All: $userId");
       final response = await _repo.getAddressesRequest(userId);
-
+      debugPrint("🔍 [DEBUG] Status: ${response.statusCode}");
+      debugPrint("🔍 [DEBUG] Body: ${response.body}");
       if (response.statusCode == 200) {
         // Decode UTF8 cho chắc chắn
         List data = json.decode(utf8.decode(response.bodyBytes));
@@ -47,6 +48,7 @@ class UserAddressService {
         // Logic tìm ID thật trong response trả về từ Server
         // Case 1: Trả về object { "addressID": 105, ... }
         if (body is Map) {
+          if (body.containsKey('ID')) return body['ID'];
           if (body.containsKey('addressID')) return body['addressID'];
           if (body.containsKey('id')) return body['id'];
         }
@@ -105,7 +107,7 @@ class UserAddressService {
   Map<String, dynamic> _handleError(http.Response response) {
     try {
       final data = jsonDecode(utf8.decode(response.bodyBytes));
-      String msg = data['message'] ?? "Có lỗi xảy ra";
+      String msg = data['message'] ?? "Lỗi server (${response.statusCode}): ${response.body}";
       if (data['ModelState'] != null) {
         msg = data['ModelState'].values.first[0];
       }
@@ -113,7 +115,7 @@ class UserAddressService {
     } catch (_) {
       return {
         'success': false,
-        'message': 'Lỗi server (${response.statusCode})',
+        'message': 'Lỗi server (${response.statusCode}): ${response.body}',
       };
     }
   }

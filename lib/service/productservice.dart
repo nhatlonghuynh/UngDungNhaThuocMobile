@@ -43,7 +43,7 @@ class ProductService {
   // --- LOGIC TÍNH TOÁN DÙNG CHUNG ---
 
   // 1. Kiểm tra hiệu lực khuyến mãi
-  bool hasPromotion(dynamic thuoc) {
+  static bool hasPromotion(dynamic thuoc) {
     // Chấp nhận cả Model Thuoc và ThuocDetail (Duck typing logic)
     if (thuoc.khuyenMai == null) return false;
     try {
@@ -57,7 +57,7 @@ class ProductService {
   }
 
   // 2. Tính giá sau giảm
-  double getDiscountedPrice(dynamic thuoc) {
+  static double getDiscountedPrice(dynamic thuoc) {
     // Lấy giá gốc (Thuoc có donGia, ThuocDetail có giaBan - Check null safety)
     double originalPrice = (thuoc is Thuoc)
         ? thuoc.donGia
@@ -76,10 +76,10 @@ class ProductService {
   }
 
   // 3. Format tiền
-  String formatMoney(double amount) => _formatter.format(amount);
+  static String formatMoney(double amount) => _formatter.format(amount);
 
   // 4. Badge Text
-  String getBadgeText(dynamic thuoc) {
+  static String getBadgeText(dynamic thuoc) {
     if (!hasPromotion(thuoc)) return "";
     final km = thuoc.khuyenMai!;
     if (km.phanTramKM > 0) return "-${km.phanTramKM.toInt()}%";

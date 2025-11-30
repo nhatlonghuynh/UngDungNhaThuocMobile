@@ -43,11 +43,7 @@ class DanhMucRepository {
       final Map<String, String> queryParams = {};
       if (typeId != null) queryParams['typeId'] = typeId.toString();
       if (catId != null) queryParams['catId'] = catId.toString();
-
-      // 2. Tạo URI chuẩn (Tự động thêm ? và &)
-      // Lưu ý: ApiConstants.baseUrl thường là "http://ip:port/api".
-      // Cần cẩn thận khi dùng queryParameters với Uri.parse nếu baseUrl đã có query.
-      // Cách an toàn nhất cho trường hợp này:
+      
       final uri = Uri.parse(
         '${ApiConstants.baseUrl}/thuoc/filter',
       ).replace(queryParameters: queryParams);

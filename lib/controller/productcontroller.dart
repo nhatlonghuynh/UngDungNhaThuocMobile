@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:nhathuoc_mobilee/models/thuoc_detail.dart';
 import 'package:nhathuoc_mobilee/service/productservice.dart';
+import 'package:nhathuoc_mobilee/api/productapi.dart';
 
 class ProductDetailController extends ChangeNotifier {
-  final ProductService _service = ProductService();
+  final ProductService _service = ProductService(repo: ProductRepository());
 
   ThuocDetail? product;
   bool isLoading = true;
@@ -54,7 +55,7 @@ class ProductDetailController extends ChangeNotifier {
   // Dùng Service tính toán để đảm bảo logic khuyến mãi nhất quán
   double get finalPrice {
     if (product == null) return 0;
-    return _service.getDiscountedPrice(product);
+    return ProductService.getDiscountedPrice(product);
   }
 
   // Getter tổng tiền (Giá x Số lượng)

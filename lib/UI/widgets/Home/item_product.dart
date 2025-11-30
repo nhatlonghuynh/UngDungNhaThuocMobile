@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nhathuoc_mobilee/UI/screens/detail_product_screen.dart';
-import 'package:provider/provider.dart';
 import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
-import 'package:nhathuoc_mobilee/controller/home_controller.dart';
+import 'package:nhathuoc_mobilee/service/productservice.dart'; 
 import 'package:nhathuoc_mobilee/models/thuoc.dart';
 import 'package:nhathuoc_mobilee/UI/widgets/Home/product_buy_sheet.dart';
 
@@ -12,9 +11,9 @@ class SanPhamItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = context.read<HomeController>();
-    final bool hasPromo = controller.checkPromo(thuoc);
-    final double finalPrice = controller.finalPrice(thuoc);
+    // final controller = context.read<HomeController>(); // Removed
+    final bool hasPromo = ProductService.hasPromotion(thuoc);
+    final double finalPrice = ProductService.getDiscountedPrice(thuoc);
 
     return GestureDetector(
       onTap: () {
@@ -93,7 +92,7 @@ class SanPhamItem extends StatelessWidget {
                           ],
                         ),
                         child: Text(
-                          controller.badgeText(thuoc),
+                          ProductService.getBadgeText(thuoc),
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w800,
@@ -143,7 +142,7 @@ class SanPhamItem extends StatelessWidget {
                         children: [
                           if (hasPromo)
                             Text(
-                              '${controller.formatPrice(thuoc.donGia)}đ',
+                              '${ProductService.formatMoney(thuoc.donGia)}đ',
                               style: const TextStyle(
                                 color: AppColors.textSecondary,
                                 fontSize: 11,
@@ -152,7 +151,7 @@ class SanPhamItem extends StatelessWidget {
                               ),
                             ),
                           Text(
-                            '${controller.formatPrice(finalPrice)}đ',
+                            '${ProductService.formatMoney(finalPrice)}đ',
                             style: const TextStyle(
                               color: AppColors.primary,
                               fontWeight: FontWeight.w900,
@@ -169,7 +168,6 @@ class SanPhamItem extends StatelessWidget {
                           ProductBuySheet.show(
                             context,
                             thuoc,
-                            controller,
                             finalPrice,
                           );
                         },

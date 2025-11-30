@@ -5,6 +5,8 @@ import 'package:nhathuoc_mobilee/UI/widgets/Home/main_drawner.dart';
 import 'package:provider/provider.dart';
 import 'package:nhathuoc_mobilee/controller/home_controller.dart';
 import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
+import 'package:nhathuoc_mobilee/service/productservice.dart';
+import 'package:nhathuoc_mobilee/api/productapi.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -12,7 +14,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => HomeController(),
+      create: (_) => HomeController(service: ProductService(repo: ProductRepository())),
       child: Scaffold(
         drawer: MainDrawer(), // Widget Drawer đã tách
         backgroundColor: AppColors.background,
@@ -39,7 +41,7 @@ class HomeBody extends StatelessWidget {
           snap: true,
           centerTitle: true,
           title: Text(
-            'Nhà Thuốc ',
+            'Nhà Thuốc',
             style: const TextStyle(
               fontFamily: 'Inter',
               color: AppColors.textPrimary,

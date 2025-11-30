@@ -89,8 +89,8 @@ class ProfileRepository {
   // =========================================================
   Future<http.Response> getAddressesRequest(String userId) async {
     final url = Uri.parse(
-      '${ApiConstants.baseUrl}/$userId',
-    ); // Cần định nghĩa userAddressBaseUrl mới
+      '${ApiConstants.baseUrl}/user-address',
+    );
 
     return await http.get(
       url,
@@ -107,7 +107,7 @@ class ProfileRepository {
     String userId,
     Map<String, dynamic> data,
   ) async {
-    final url = Uri.parse('${ApiConstants.baseUrl}/$userId');
+    final url = Uri.parse('${ApiConstants.baseUrl}/user-address');
 
     return await http.post(
       url,
@@ -125,7 +125,7 @@ class ProfileRepository {
     int addressID,
     Map<String, dynamic> data,
   ) async {
-    final url = Uri.parse('${ApiConstants.baseUrl}/$addressID');
+    final url = Uri.parse('${ApiConstants.baseUrl}/user-address/$addressID');
 
     return await http.put(
       url,
@@ -140,7 +140,7 @@ class ProfileRepository {
   // Endpoint: /api/UserAddress/{addressID} (DELETE)
   // =========================================================
   Future<http.Response> deleteAddressRequest(int addressID) async {
-    final url = Uri.parse('${ApiConstants.baseUrl}/$addressID');
+    final url = Uri.parse('${ApiConstants.baseUrl}/user-address/$addressID');
 
     return await http.delete(url, headers: _getHeaders(requireAuth: true));
   }

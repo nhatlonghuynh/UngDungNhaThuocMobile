@@ -3,7 +3,8 @@ import 'package:nhathuoc_mobilee/UI/common/utils/dialog_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:nhathuoc_mobilee/main.dart';
 import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
-import 'package:nhathuoc_mobilee/controller/home_controller.dart';
+import 'package:nhathuoc_mobilee/service/productservice.dart'; // Import Service
+// import 'package:nhathuoc_mobilee/controller/home_controller.dart'; // Removed
 import 'package:nhathuoc_mobilee/controller/authcontroller.dart';
 import 'package:nhathuoc_mobilee/manager/cartmanager.dart';
 import 'package:nhathuoc_mobilee/manager/usermanager.dart';
@@ -14,20 +15,17 @@ import 'package:nhathuoc_mobilee/UI/screens/login_screen.dart';
 
 class ProductBuySheet extends StatefulWidget {
   final Thuoc thuoc;
-  final HomeController controller;
   final double finalPrice;
 
   const ProductBuySheet({
     super.key,
     required this.thuoc,
-    required this.controller,
     required this.finalPrice,
   });
 
   static void show(
     BuildContext context,
     Thuoc thuoc,
-    HomeController controller,
     double finalPrice,
   ) {
     showModalBottomSheet(
@@ -36,7 +34,6 @@ class ProductBuySheet extends StatefulWidget {
       backgroundColor: Colors.transparent,
       builder: (_) => ProductBuySheet(
         thuoc: thuoc,
-        controller: controller,
         finalPrice: finalPrice,
       ),
     );
@@ -94,7 +91,7 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
                 ),
               ),
               Text(
-                '${widget.controller.formatPrice(total)}đ',
+                '${ProductService.formatMoney(total)}đ',
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -155,7 +152,7 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
               ),
               const SizedBox(height: 6),
               Text(
-                '${widget.controller.formatPrice(widget.finalPrice)}đ',
+                '${ProductService.formatMoney(widget.finalPrice)}đ',
                 style: const TextStyle(
                   color: AppColors.secondary,
                   fontSize: 18,

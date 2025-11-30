@@ -24,6 +24,14 @@ class OrderSummarySection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
+            "Danh sách sản phẩm",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const SizedBox(height: 10),
+          ...selectedItems.map((item) => _buildProductRow(item, formatter)),
+          const Divider(height: 30),
+
+          const Text(
             "Chi tiết thanh toán",
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
@@ -98,6 +106,37 @@ class OrderSummarySection extends StatelessWidget {
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
               color: color ?? AppColors.textPrimary,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductRow(GioHang item, NumberFormat fmt) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Text(
+              "${item.tenThuoc}",
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.textPrimary,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Text(
+            "x${item.soLuong}",
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
+          ),
+          const SizedBox(width: 15),
+          Text(
+            "${fmt.format(item.donGia)}đ",
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
         ],
       ),

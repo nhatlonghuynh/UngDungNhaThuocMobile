@@ -21,5 +21,6 @@ class AppColors {
   
   // --- Neutrals ---
   static const Color border = Color(0xFFE0E0E0); // Grey 300 - Dividers
+  static const Color neutralBeige = Color(0xFFF5F5DC); // Beige
   static const Color shadow = Color(0x1A000000); // Black with low opacity
 }

@@ -1,3 +1,5 @@
+import 'package:nhathuoc_mobilee/UI/common/constants/api_constants.dart';
+
 class GioHang {
   final int maThuoc;
   final String tenThuoc;
@@ -19,10 +21,33 @@ class GioHang {
 
   // ====== FROM JSON ======
   factory GioHang.fromJson(Map<String, dynamic> json) {
+    String rawImage = json['Anh']?.toString() ?? '';
+    String finalImageUrl = '';
+
+    if (rawImage.isNotEmpty) {
+      // Nếu server trả về link đầy đủ (vd: https://imgur.com/...) thì giữ nguyên
+      if (rawImage.startsWith('http')) {
+        finalImageUrl = rawImage;
+      } else {
+        // Nếu server chỉ trả về tên file (vd: "thuoc1.jpg" hoặc "/uploads/thuoc1.jpg")
+        // Xóa dấu gạch chéo ở đầu nếu có để tránh bị 2 dấu //
+        if (rawImage.startsWith('/')) {
+          rawImage = rawImage.substring(1);
+        }
+
+        // Ghép chuỗi: http://IP:PORT/path_anh
+        // Lưu ý: Không dùng ApiConstants.baseUrl vì nó có đuôi /api
+        finalImageUrl =
+            'http://${ApiConstants.ipschool}:${ApiConstants.port}/$rawImage';
+      }
+    } else {
+      // Có thể gán ảnh mặc định nếu không có ảnh
+      finalImageUrl = 'https://via.placeholder.com/150';
+    }
     return GioHang(
       maThuoc: _parseInt(json['MaThuoc'] ?? json['maThuoc'], defaultValue: -1),
       tenThuoc: json['TenThuoc'] ?? json['tenThuoc'] ?? '',
-      anhURL: json['AnhURL'] ?? json['anhURL'] ?? '',
+      anhURL: finalImageUrl,
       donVi: json['DonVi'] ?? json['donVi'] ?? 'hộp',
       donGia: _parseDouble(json['DonGia'] ?? json['donGia'], defaultValue: 0),
       soLuong: _parseInt(json['SoLuong'] ?? json['soLuong'], defaultValue: 1),

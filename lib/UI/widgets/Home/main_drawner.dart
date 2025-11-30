@@ -245,7 +245,7 @@ class _MainDrawerState extends State<MainDrawer> {
           const SizedBox(width: 14),
           const Expanded(
             child: Text(
-              'Nhà Thuốc HUIT',
+              'Nhà Thuốc Online',
               style: TextStyle(
                 fontFamily: 'Inter',
                 color: AppColors.textPrimary,

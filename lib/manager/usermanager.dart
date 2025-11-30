@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class UserManager {
   // ---------------------------------------------------------------------------
@@ -15,6 +15,11 @@ class UserManager {
 
   // KEY LƯU TRỮ (Khai báo 1 lần duy nhất)
   static const String _storageKey = 'user_session';
+
+  // Secure Storage
+  final _storage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
 
   // ---------------------------------------------------------------------------
   // 2. GETTERS / SETTERS
@@ -65,17 +70,15 @@ class UserManager {
 
   Future<void> saveUser(Map<String, dynamic> userData) async {
     _currentUser = userData;
-    final prefs = await SharedPreferences.getInstance();
-    // Dùng biến _storageKey thay vì hardcode string
-    await prefs.setString(_storageKey, jsonEncode(userData));
+    // Lưu vào Secure Storage
+    await _storage.write(key: _storageKey, value: jsonEncode(userData));
 
-    debugPrint("👤 [UserMgr] Session saved: ${userData['HoTen']}");
+    debugPrint("👤 [UserMgr] Session saved (Secure): ${userData['HoTen']}");
   }
 
   Future<void> loadUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    // Dùng biến _storageKey
-    final data = prefs.getString(_storageKey);
+    // Đọc từ Secure Storage
+    final data = await _storage.read(key: _storageKey);
 
     if (data != null) {
       try {
@@ -92,10 +95,8 @@ class UserManager {
 
   Future<void> logout() async {
     _currentUser = null;
-    final prefs = await SharedPreferences.getInstance();
-    // Dùng biến _storageKey
-    await prefs.remove(_storageKey);
-    debugPrint("👋 [UserMgr] Logged out");
+    await _storage.delete(key: _storageKey);
+    debugPrint("👋 [UserMgr] Logged out (Secure)");
   }
 
   // ---------------------------------------------------------------------------

@@ -29,7 +29,7 @@ class OrderService {
   }
 
   int calcEarnedPoints(double total) =>
-      (total > 0) ? (total / 10000).floor() : 0;
+      (total > 0) ? (total / 1000).floor() : 0;
 
   // --- LOGIC TẠO ĐƠN ---
   Future<Map<String, dynamic>> submitOrder({
@@ -65,6 +65,7 @@ class OrderService {
       debugPrint("⬅️ [Create] Status: ${response.statusCode}");
 
       if (response.statusCode == 200) {
+        debugPrint("✅ [Create] Body: ${response.body}");
         final data = jsonDecode(response.body);
         return {
           "success": true,

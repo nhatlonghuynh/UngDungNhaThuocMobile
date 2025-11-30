@@ -21,20 +21,20 @@ class UserAddress {
 
   // Convert to/from JSON
   factory UserAddress.fromJson(Map<String, dynamic> json) => UserAddress(
-    addressID: json['addressID'],
-    province: json['province'],
-    district: json['district'],
-    ward: json['ward'],
-    street: json['street'],
-    isDefault: json['isDefault'] ?? false,
+    addressID: json['ID'] ?? json['addressID'] ?? 0,
+    province: json['Province'] ?? json['province'] ?? '',
+    district: json['District'] ?? json['district'] ?? '',
+    ward: json['Ward'] ?? json['ward'] ?? '',
+    street: json['Street'] ?? json['street'] ?? '',
+    isDefault: json['IsDefault'] ?? json['isDefault'] ?? false,
   );
 
   Map<String, dynamic> toJson() => {
-    'addressID': addressID,
-    'province': province,
-    'district': district,
-    'ward': ward,
-    'street': street,
-    'isDefault': isDefault,
+    'ID': addressID,
+    'Province': province,
+    'District': district,
+    'Ward': ward,
+    'Street': street,
+    'IsDefault': isDefault,
   };
 }
