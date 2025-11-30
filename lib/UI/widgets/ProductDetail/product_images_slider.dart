@@ -21,7 +21,7 @@ class ProductImagesSlider extends StatelessWidget {
             child: Icon(
               Icons.image_not_supported,
               size: 50,
-              color: AppColors.neutralGrey,
+              color: AppColors.textSecondary,
             ),
           ),
         ),

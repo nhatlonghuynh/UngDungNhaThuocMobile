@@ -69,7 +69,7 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: AppColors.primaryPink,
+              primary: AppColors.primary,
             ),
           ),
           child: child!,
@@ -122,12 +122,12 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
           "Cập nhật thông tin",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: AppColors.primaryPink,
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
       ),
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: AppColors.background,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Form(
@@ -186,7 +186,7 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
                         color: Colors.white.withOpacity(0.95),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: AppColors.neutralBeige.withOpacity(0.6),
+                          color: AppColors.border.withOpacity(0.6),
                           width: 1.5,
                         ),
                       ),
@@ -196,12 +196,12 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
                           decoration: const InputDecoration(
                             labelText: "Giới tính",
                             labelStyle: TextStyle(
-                              color: AppColors.neutralGrey,
+                              color: AppColors.textSecondary,
                               fontWeight: FontWeight.w500,
                             ),
                             prefixIcon: Icon(
                               Icons.wc_rounded,
-                              color: AppColors.primaryPink,
+                              color: AppColors.primary,
                             ),
                             border: InputBorder.none,
                           ),

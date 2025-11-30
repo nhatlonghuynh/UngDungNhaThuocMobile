@@ -61,12 +61,12 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
         top: 18,
       ),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
-        border: Border.all(color: AppColors.neutralBeige.withOpacity(0.4)),
+        border: Border.all(color: AppColors.border.withOpacity(0.4)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.neutralGrey.withOpacity(0.06),
+            color: AppColors.shadow,
             blurRadius: 26,
             offset: const Offset(0, 12),
           ),
@@ -77,7 +77,7 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
         children: [
           _buildHeader(),
           const SizedBox(height: 18),
-          const Divider(color: AppColors.scaffoldBackground, thickness: 1.5),
+          const Divider(color: AppColors.background, thickness: 1.5),
           const SizedBox(height: 18),
           _buildQuantitySelector(),
           const SizedBox(height: 18),
@@ -89,7 +89,7 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
                 "Tạm tính:",
                 style: TextStyle(
                   fontSize: 16,
-                  color: AppColors.textBrown,
+                  color: AppColors.textPrimary,
                   fontFamily: 'Inter',
                 ),
               ),
@@ -98,7 +98,7 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primaryPink,
+                  color: AppColors.primary,
                   fontFamily: 'Inter',
                 ),
               ),
@@ -125,7 +125,7 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
             errorBuilder: (_, _, _) => const Icon(
               Icons.broken_image,
               size: 50,
-              color: AppColors.neutralGrey,
+              color: AppColors.textSecondary,
             ),
           ),
         ),
@@ -139,7 +139,7 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.textBrown,
+                  color: AppColors.textPrimary,
                   fontFamily: 'Inter',
                 ),
                 maxLines: 2,
@@ -149,7 +149,7 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
               Text(
                 "Đơn vị: ${widget.thuoc.donVi}",
                 style: const TextStyle(
-                  color: AppColors.neutralGrey,
+                  color: AppColors.textSecondary,
                   fontFamily: 'Inter',
                 ),
               ),
@@ -157,7 +157,7 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
               Text(
                 '${widget.controller.formatPrice(widget.finalPrice)}đ',
                 style: const TextStyle(
-                  color: AppColors.secondaryGreen,
+                  color: AppColors.secondary,
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   fontFamily: 'Inter',
@@ -167,7 +167,7 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
           ),
         ),
         IconButton(
-          icon: const Icon(Icons.close, color: AppColors.neutralGrey),
+          icon: const Icon(Icons.close, color: AppColors.textSecondary),
           onPressed: () => Navigator.pop(context),
         ),
       ],
@@ -182,24 +182,24 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
           "Số lượng:",
           style: TextStyle(
             fontSize: 16,
-            color: AppColors.textBrown,
+            color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
             fontFamily: 'Inter',
           ),
         ),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.scaffoldBackground,
+            color: AppColors.background,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.neutralBeige.withOpacity(0.5)),
+            border: Border.all(color: AppColors.border.withOpacity(0.5)),
             boxShadow: [
               BoxShadow(
-                color: Colors.white.withOpacity(0.95),
+                color: AppColors.surface.withOpacity(0.95),
                 blurRadius: 6,
                 offset: const Offset(-4, -4),
               ),
               BoxShadow(
-                color: AppColors.neutralGrey.withOpacity(0.03),
+                color: AppColors.shadow,
                 blurRadius: 10,
                 offset: const Offset(6, 6),
               ),
@@ -218,7 +218,7 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textBrown,
+                      color: AppColors.textPrimary,
                       fontFamily: 'Inter',
                     ),
                   ),
@@ -246,7 +246,7 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
       borderRadius: BorderRadius.circular(12),
       child: Padding(
         padding: const EdgeInsets.all(10),
-        child: Icon(icon, size: 18, color: AppColors.textBrown),
+        child: Icon(icon, size: 18, color: AppColors.textPrimary),
       ),
     );
   }
@@ -263,7 +263,7 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text("Đã thêm $_qty ${widget.thuoc.donVi} vào giỏ!"),
-                  backgroundColor: AppColors.secondaryGreen,
+                  backgroundColor: AppColors.secondary,
                   behavior: SnackBarBehavior.floating,
                   action: SnackBarAction(
                     label: "XEM GIỎ",
@@ -279,7 +279,7 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
               );
             },
             style: OutlinedButton.styleFrom(
-              side: BorderSide(color: AppColors.primaryPink, width: 1.5),
+              side: BorderSide(color: AppColors.primary, width: 1.5),
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
@@ -288,7 +288,7 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
             child: const Text(
               "Thêm vào giỏ",
               style: TextStyle(
-                color: AppColors.primaryPink,
+                color: AppColors.primary,
                 fontWeight: FontWeight.w800,
                 fontFamily: 'Inter',
               ),
@@ -341,13 +341,13 @@ class _ProductBuySheetState extends State<ProductBuySheet> {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryPink,
+              backgroundColor: AppColors.primary,
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
               ),
               elevation: 8,
-              shadowColor: AppColors.primaryPink.withOpacity(0.18),
+              shadowColor: AppColors.primary.withOpacity(0.18),
             ),
             child: const Text(
               "Mua ngay",

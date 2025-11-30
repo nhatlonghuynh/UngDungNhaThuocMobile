@@ -21,11 +21,11 @@ class CartBottomBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.neutralGrey.withOpacity(0.2),
+            color: AppColors.shadow,
             blurRadius: 10,
             offset: const Offset(0, -4),
           ),
@@ -43,7 +43,7 @@ class CartBottomBar extends StatelessWidget {
                   height: 24,
                   child: Checkbox(
                     value: controller.isAllSelected,
-                    activeColor: AppColors.primaryPink,
+                    activeColor: AppColors.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -57,7 +57,7 @@ class CartBottomBar extends StatelessWidget {
                 const Text(
                   "Tất cả",
                   style: TextStyle(
-                    color: AppColors.textBrown,
+                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
                   ),
@@ -77,7 +77,7 @@ class CartBottomBar extends StatelessWidget {
                       "Tổng thanh toán",
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.neutralBeige,
+                        color: AppColors.textSecondary,
                       ),
                     ),
                     FittedBox(
@@ -86,7 +86,7 @@ class CartBottomBar extends StatelessWidget {
                       child: Text(
                         "${formatter.format(controller.totalPayment)}đ",
                         style: const TextStyle(
-                          color: AppColors.primaryPink,
+                          color: AppColors.primary,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -101,7 +101,7 @@ class CartBottomBar extends StatelessWidget {
             ElevatedButton(
               onPressed: controller.totalPayment > 0 ? onCheckout : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryPink,
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),

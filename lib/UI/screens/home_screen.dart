@@ -15,7 +15,7 @@ class HomeScreen extends StatelessWidget {
       create: (_) => HomeController(),
       child: Scaffold(
         drawer: MainDrawer(), // Widget Drawer đã tách
-        backgroundColor: AppColors.scaffoldBackground,
+        backgroundColor: AppColors.background,
         body: const HomeBody(),
       ),
     );
@@ -42,20 +42,20 @@ class HomeBody extends StatelessWidget {
             'Nhà Thuốc ',
             style: const TextStyle(
               fontFamily: 'Inter',
-              color: AppColors.textBrown,
+              color: AppColors.textPrimary,
               fontWeight: FontWeight.w700,
               fontSize: 18,
             ),
           ),
-          backgroundColor: AppColors.scaffoldBackground.withOpacity(0.95),
+          backgroundColor: AppColors.background.withOpacity(0.95),
           elevation: 0,
           flexibleSpace: Container(
             decoration: BoxDecoration(
-              color: AppColors.scaffoldBackground.withOpacity(0.6),
+              color: AppColors.background.withOpacity(0.6),
               // subtle glass gradient
               gradient: LinearGradient(
                 colors: [
-                  AppColors.scaffoldBackground.withOpacity(0.80),
+                  AppColors.background.withOpacity(0.80),
                   Colors.white.withOpacity(0.02),
                 ],
                 begin: Alignment.topLeft,
@@ -70,27 +70,27 @@ class HomeBody extends StatelessWidget {
           pinned: true,
           primary: false,
           automaticallyImplyLeading: false,
-          backgroundColor: AppColors.scaffoldBackground,
+          backgroundColor: AppColors.background,
           elevation: 0,
           toolbarHeight: 92,
           title: Container(
             height: 54,
             margin: const EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.92),
+              color: AppColors.surface.withOpacity(0.92),
               borderRadius: BorderRadius.circular(22),
               border: Border.all(
-                color: AppColors.neutralBeige.withOpacity(0.6),
+                color: AppColors.border.withOpacity(0.6),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.neutralGrey.withOpacity(0.09),
+                  color: AppColors.shadow,
                   blurRadius: 18,
                   offset: const Offset(0, 8),
                 ),
                 // subtle top highlight for neumorphism feel
                 BoxShadow(
-                  color: Colors.white.withOpacity(0.9),
+                  color: AppColors.surface.withOpacity(0.9),
                   blurRadius: 6,
                   offset: const Offset(-2, -2),
                 ),
@@ -103,18 +103,18 @@ class HomeBody extends StatelessWidget {
               },
               style: const TextStyle(
                 fontFamily: 'Inter',
-                color: AppColors.textBrown,
+                color: AppColors.textPrimary,
                 fontSize: 14,
               ),
               decoration: InputDecoration(
                 hintText: "Tên, công dụng thuốc ....",
                 hintStyle: TextStyle(
-                  color: AppColors.neutralGrey.withOpacity(0.9),
+                  color: AppColors.textSecondary.withOpacity(0.9),
                   fontSize: 14,
                   fontFamily: 'Inter',
                 ),
-                prefixIcon: Icon(Icons.search, color: AppColors.neutralGrey),
-                suffixIcon: Icon(Icons.mic, color: AppColors.primaryPink),
+                prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
+                suffixIcon: Icon(Icons.mic, color: AppColors.primary),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(vertical: 16),
               ),
@@ -148,7 +148,7 @@ class HomeBody extends StatelessWidget {
                 fontFamily: 'Inter',
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textBrown,
+                color: AppColors.textPrimary,
               ),
             ),
           ),

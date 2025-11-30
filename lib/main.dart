@@ -10,12 +10,15 @@ import 'package:nhathuoc_mobilee/controller/home_controller.dart';
 import 'package:provider/provider.dart'; // Thêm thư viện Provider
 import 'package:nhathuoc_mobilee/manager/usermanager.dart';
 
+import 'package:nhathuoc_mobilee/locator.dart';
+
 // 1. Biến toàn cục để điều khiển MainScreen từ xa
 final GlobalKey<MainScreenState> mainScreenKey = GlobalKey<MainScreenState>();
 
 // 2. Điểm khởi chạy ứng dụng
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  setupLocator(); // Khởi tạo Service Locator
   await UserManager().loadUser();
   runApp(const PharmacyApp());
 }
@@ -30,7 +33,9 @@ class PharmacyApp extends StatelessWidget {
       providers: [
         // Khởi tạo CategoryController để toàn bộ App có thể dùng
         ChangeNotifierProvider(create: (_) => CategoryController()),
-        ChangeNotifierProvider(create: (_) => HomeController()),
+        ChangeNotifierProvider(
+          create: (_) => HomeController(service: locator<ProductService>()),
+        ),
         ChangeNotifierProvider(create: (_) => OrderHistoryController()),
       ],
       child: MaterialApp(
@@ -40,24 +45,57 @@ class PharmacyApp extends StatelessWidget {
         // --- CẤU HÌNH THEME ---
         theme: ThemeData(
           useMaterial3: true,
-          scaffoldBackgroundColor: AppColors.scaffoldBackground,
+          scaffoldBackgroundColor: AppColors.background,
+          fontFamily: 'Inter', // Ensure Inter is used globally
 
           colorScheme: ColorScheme.fromSeed(
-            seedColor: AppColors.primaryPink,
-            primary: AppColors.primaryPink,
-            secondary: AppColors.secondaryGreen,
+            seedColor: AppColors.primary,
+            primary: AppColors.primary,
+            secondary: AppColors.secondary,
+            surface: AppColors.surface,
+            background: AppColors.background,
+            error: AppColors.error,
           ),
 
           appBarTheme: const AppBarTheme(
-            backgroundColor: AppColors.primaryPink,
+            backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
             elevation: 0,
             centerTitle: true,
           ),
 
           textTheme: const TextTheme(
-            bodyMedium: TextStyle(color: AppColors.textBrown),
-            bodyLarge: TextStyle(color: AppColors.textBrown),
+            bodyMedium: TextStyle(color: AppColors.textPrimary),
+            bodyLarge: TextStyle(color: AppColors.textPrimary),
+            titleLarge: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+          ),
+          
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: AppColors.surface,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.border),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.border),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: AppColors.primary, width: 2),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          ),
+          
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              elevation: 2,
+            ),
           ),
         ),
 
@@ -111,7 +149,7 @@ class MainScreenState extends State<MainScreen> {
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(
-              color: AppColors.neutralGrey.withOpacity(0.3),
+              color: AppColors.shadow,
               blurRadius: 10,
               offset: const Offset(0, -2),
             ),
@@ -121,13 +159,13 @@ class MainScreenState extends State<MainScreen> {
           backgroundColor: Colors.white,
           type: BottomNavigationBarType.fixed,
 
-          selectedItemColor: AppColors.primaryPink,
+          selectedItemColor: AppColors.primary,
           selectedLabelStyle: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 12,
           ),
 
-          unselectedItemColor: AppColors.textBrown.withOpacity(0.6),
+          unselectedItemColor: AppColors.textSecondary,
           unselectedLabelStyle: const TextStyle(fontSize: 12),
 
           currentIndex: _selectedIndex,

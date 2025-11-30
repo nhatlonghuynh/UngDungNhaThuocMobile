@@ -25,7 +25,7 @@ class OrderDetailProductList extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: AppColors.textBrown,
+            color: AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 10),
@@ -53,7 +53,7 @@ class OrderDetailProductList extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: AppColors.neutralGrey.withOpacity(0.2),
+                    color: AppColors.border.withOpacity(0.2),
                   ),
                 ),
                 child: Row(
@@ -62,13 +62,13 @@ class OrderDetailProductList extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: AppColors.scaffoldBackground,
+                        color: AppColors.background,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       // Nếu item có ảnh (item.anh) thì nên hiển thị ảnh, nếu không thì hiện Icon
                       child: const Icon(
                         Icons.medical_services_outlined,
-                        color: AppColors.primaryPink,
+                        color: AppColors.primary,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -91,7 +91,7 @@ class OrderDetailProductList extends StatelessWidget {
                           Text(
                             "${currencyFormat.format(item.donGia)} x ${item.soLuong}",
                             style: const TextStyle(
-                              color: AppColors.neutralGrey,
+                              color: AppColors.textSecondary,
                               fontSize: 13,
                             ),
                           ),
@@ -104,7 +104,7 @@ class OrderDetailProductList extends StatelessWidget {
                       currencyFormat.format(item.thanhTien),
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textBrown,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                   ],
@@ -120,9 +120,9 @@ class OrderDetailProductList extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-            color: AppColors.primaryPink.withOpacity(0.1),
+            color: AppColors.primary.withOpacity(0.1),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppColors.primaryPink.withOpacity(0.3)),
+            border: Border.all(color: AppColors.primary.withOpacity(0.3)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -135,7 +135,7 @@ class OrderDetailProductList extends StatelessWidget {
                 currencyFormat.format(totalPrice),
                 style: const TextStyle(
                   fontSize: 18,
-                  color: AppColors.primaryPink,
+                  color: AppColors.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),

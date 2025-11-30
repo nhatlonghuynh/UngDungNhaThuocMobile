@@ -13,12 +13,12 @@ class HomeHeaderSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.98),
+        color: AppColors.surface.withOpacity(0.98),
         borderRadius: const BorderRadius.all(Radius.circular(20)),
-        border: Border.all(color: AppColors.neutralBeige.withOpacity(0.5)),
+        border: Border.all(color: AppColors.border.withOpacity(0.5)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.neutralGrey.withOpacity(0.06),
+            color: AppColors.shadow,
             blurRadius: 22,
             offset: const Offset(0, 10),
           ),
@@ -30,16 +30,16 @@ class HomeHeaderSection extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppColors.scaffoldBackground,
+              color: AppColors.background,
               borderRadius: BorderRadius.circular(14),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.white.withOpacity(0.9),
+                  color: AppColors.surface.withOpacity(0.9),
                   blurRadius: 6,
                   offset: const Offset(-2, -2),
                 ),
                 BoxShadow(
-                  color: AppColors.neutralGrey.withOpacity(0.04),
+                  color: AppColors.shadow,
                   blurRadius: 10,
                   offset: const Offset(6, 6),
                 ),
@@ -48,7 +48,7 @@ class HomeHeaderSection extends StatelessWidget {
             child: const Icon(
               Icons.local_pharmacy,
               size: 36,
-              color: AppColors.primaryPink,
+              color: AppColors.primary,
             ),
           ),
 
@@ -65,7 +65,7 @@ class HomeHeaderSection extends StatelessWidget {
                     fontFamily: 'Inter',
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.textBrown,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -74,7 +74,7 @@ class HomeHeaderSection extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13,
-                    color: AppColors.neutralGrey,
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ],
@@ -95,14 +95,14 @@ class HomeHeaderSection extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: AppColors.secondaryGreen.withOpacity(0.12),
+                color: AppColors.secondary.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: AppColors.secondaryGreen.withOpacity(0.14),
+                  color: AppColors.secondary.withOpacity(0.14),
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.secondaryGreen.withOpacity(0.04),
+                    color: AppColors.secondary.withOpacity(0.04),
                     blurRadius: 10,
                     offset: const Offset(0, 6),
                   ),
@@ -112,7 +112,7 @@ class HomeHeaderSection extends StatelessWidget {
                 children: [
                   const Icon(
                     Icons.stars,
-                    color: AppColors.secondaryGreen,
+                    color: AppColors.secondary,
                     size: 18,
                   ),
                   const SizedBox(width: 8),
@@ -120,7 +120,7 @@ class HomeHeaderSection extends StatelessWidget {
                     "${user.diemTichLuy}",
                     style: const TextStyle(
                       fontFamily: 'Inter',
-                      color: AppColors.textBrown,
+                      color: AppColors.textPrimary,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -143,11 +143,11 @@ class HomeBannerSection extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        color: Colors.white.withOpacity(0.96),
-        border: Border.all(color: AppColors.neutralBeige.withOpacity(0.6)),
+        color: AppColors.surface.withOpacity(0.96),
+        border: Border.all(color: AppColors.border.withOpacity(0.6)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.neutralGrey.withOpacity(0.06),
+            color: AppColors.shadow,
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -163,18 +163,18 @@ class HomeBannerSection extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               gradient: LinearGradient(
                 colors: [
-                  AppColors.primaryPink.withOpacity(0.12),
-                  AppColors.secondaryGreen.withOpacity(0.06),
+                  AppColors.primary.withOpacity(0.12),
+                  AppColors.secondary.withOpacity(0.06),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               border: Border.all(
-                color: AppColors.neutralBeige.withOpacity(0.4),
+                color: AppColors.border.withOpacity(0.4),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.neutralGrey.withOpacity(0.04),
+                  color: AppColors.shadow,
                   blurRadius: 16,
                   offset: const Offset(6, 6),
                 ),
@@ -184,7 +184,7 @@ class HomeBannerSection extends StatelessWidget {
               child: Icon(
                 Icons.local_offer,
                 size: 40,
-                color: AppColors.primaryPink,
+                color: AppColors.primary,
               ),
             ),
           ),
@@ -201,16 +201,16 @@ class HomeBannerSection extends StatelessWidget {
                     fontFamily: 'Inter',
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textBrown,
+                    color: AppColors.textPrimary,
                   ),
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 Text(
                   "Giảm tới 20% các Vitamin ",
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13,
-                    color: AppColors.neutralGrey,
+                    color: AppColors.textSecondary,
                     height: 1.35,
                   ),
                 ),
@@ -222,11 +222,11 @@ class HomeBannerSection extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.primaryPink,
+              color: AppColors.primary,
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primaryPink.withOpacity(0.18),
+                  color: AppColors.primary.withOpacity(0.18),
                   blurRadius: 14,
                   offset: const Offset(0, 8),
                 ),

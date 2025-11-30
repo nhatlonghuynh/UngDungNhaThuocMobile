@@ -85,18 +85,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text(
           "Đăng ký tài khoản",
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: AppColors.textBrown,
+            color: AppColors.textPrimary,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.textBrown),
+        iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
       body: Stack(
         children: [
@@ -108,8 +108,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  AppColors.secondaryGreen,
-                  AppColors.secondaryGreen.withOpacity(0.8),
+                  AppColors.primary,
+                  AppColors.primary.withOpacity(0.8),
                 ],
               ),
               borderRadius: const BorderRadius.vertical(

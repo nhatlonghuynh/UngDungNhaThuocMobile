@@ -22,7 +22,7 @@ class OrderDetailInfoCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: AppColors.neutralGrey.withOpacity(0.1),
+            color: AppColors.shadow,
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -36,7 +36,7 @@ class OrderDetailInfoCard extends StatelessWidget {
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 15,
-              color: AppColors.primaryPink, // Hoặc màu Teal tuỳ bạn
+              color: AppColors.primary, // Hoặc màu Teal tuỳ bạn
             ),
           ),
           const Divider(height: 20, thickness: 0.5),
@@ -57,7 +57,7 @@ class OrderDetailInfoCard extends StatelessWidget {
             child: Text(
               label,
               style: const TextStyle(
-                color: AppColors.neutralGrey,
+                color: AppColors.textSecondary,
                 fontSize: 14,
               ),
             ),
@@ -68,7 +68,7 @@ class OrderDetailInfoCard extends StatelessWidget {
               style: const TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 14,
-                color: AppColors.textBrown,
+                color: AppColors.textPrimary,
               ),
             ),
           ),

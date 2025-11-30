@@ -80,13 +80,13 @@ class _ProfileBodyState extends State<ProfileBody> {
               'Hồ sơ cá nhân',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            backgroundColor: AppColors.primaryPink,
+            backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
             elevation: 0,
             centerTitle: true,
             automaticallyImplyLeading: false, // Ẩn nút back
           ),
-          backgroundColor: AppColors.scaffoldBackground,
+          backgroundColor: AppColors.background,
 
           // LOGIC HIỂN THỊ UI:
           // - Nếu đã Login -> Hiện Profile xịn (UserProfileView)
@@ -105,7 +105,7 @@ class _ProfileBodyState extends State<ProfileBody> {
       title: "Vui lòng đăng nhập",
       subtitle: "Đăng nhập để xem và quản lý hồ sơ cá nhân",
       icon: Icons.lock_outline_rounded,
-      iconColor: AppColors.primaryPink,
+      iconColor: AppColors.primary,
       actionButton: ElevatedButton.icon(
         onPressed: () => _checkLoginStatus(),
         icon: const Icon(Icons.login_rounded, size: 20),
@@ -114,7 +114,7 @@ class _ProfileBodyState extends State<ProfileBody> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryPink,
+          backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(

@@ -11,7 +11,7 @@ class CartEmptyWidget extends StatelessWidget {
       title: "Giỏ hàng trống",
       subtitle: "Thêm sản phẩm vào giỏ hàng để bắt đầu mua sắm",
       icon: Icons.shopping_cart_outlined,
-      iconColor: AppColors.primaryPink,
+      iconColor: AppColors.primary,
     );
   }
 }

@@ -76,7 +76,7 @@ class _RewardBodyState extends State<RewardBody> {
         foregroundColor: const Color.fromARGB(255, 235, 0, 0),
         centerTitle: true,
       ),
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: AppColors.background,
       body: !isLoggedIn
           ? _buildGuestView() // [DRY] Hàm UI nhỏ
           : Column(
@@ -125,7 +125,7 @@ class _RewardBodyState extends State<RewardBody> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textBrown,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                   ),

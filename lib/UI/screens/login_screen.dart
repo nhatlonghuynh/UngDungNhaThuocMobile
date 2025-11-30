@@ -65,14 +65,14 @@ class _LoginScreenState extends State<LoginScreen> {
     final isLoading = context.select<AuthController, bool>((c) => c.isLoading);
 
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: AppColors.background,
       body: Stack(
         children: [
           // 1. Background trang trí
           Container(
             height: 320,
             decoration: const BoxDecoration(
-              color: AppColors.primaryPink,
+              color: AppColors.primary,
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(60)),
             ),
           ),
@@ -102,11 +102,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Image.network(
                       'https://cdn-icons-png.flaticon.com/512/3063/3063822.png',
                       height: 70,
-                      color: AppColors.primaryPink,
+                      color: AppColors.primary,
                       errorBuilder: (_, _, _) => const Icon(
                         Icons.local_pharmacy,
                         size: 70,
-                        color: AppColors.primaryPink,
+                        color: AppColors.primary,
                       ),
                     ),
                   ),
@@ -133,11 +133,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(
                     padding: const EdgeInsets.all(30),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.surface,
                       borderRadius: BorderRadius.circular(25),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.textBrown.withOpacity(0.1),
+                          color: AppColors.shadow,
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -179,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             child: const Text(
                               "Quên mật khẩu?",
                               style: TextStyle(
-                                color: AppColors.primaryPink,
+                                color: AppColors.primary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -194,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           isLoading: isLoading,
                           onPressed: _handleLogin,
                           backgroundColor: AppColors
-                              .secondaryGreen, // Override màu xanh cho nút Đăng nhập
+                              .secondary, // Override màu cam cho nút Đăng nhập
                         ),
                       ],
                     ),
@@ -209,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const Text(
                         "Chưa có tài khoản? ",
                         style: TextStyle(
-                          color: AppColors.textBrown,
+                          color: AppColors.textPrimary,
                           fontSize: 15,
                         ),
                       ),
@@ -223,11 +223,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: const Text(
                           "Đăng ký ngay",
                           style: TextStyle(
-                            color: AppColors.primaryPink,
+                            color: AppColors.primary,
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                             decoration: TextDecoration.underline,
-                            decorationColor: AppColors.primaryPink,
+                            decorationColor: AppColors.primary,
                           ),
                         ),
                       ),

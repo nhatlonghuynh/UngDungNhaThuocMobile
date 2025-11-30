@@ -37,7 +37,7 @@ class ProductBottomBar extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: isOutOfStock
                   ? Colors.grey
-                  : AppColors.primaryPink,
+                  : AppColors.primary,
               padding: const EdgeInsets.symmetric(vertical: 15),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),

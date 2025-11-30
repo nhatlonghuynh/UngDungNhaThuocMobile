@@ -129,12 +129,12 @@ class _AddressPickerDialogState extends State<AddressPickerDialog> {
           onPressed: () => Navigator.pop(context),
           child: const Text(
             "Hủy",
-            style: TextStyle(color: AppColors.neutralGrey),
+            style: TextStyle(color: AppColors.textSecondary),
           ),
         ),
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryPink,
+            backgroundColor: AppColors.primary,
           ),
           onPressed:
               (_selectedProvince != null &&

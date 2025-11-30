@@ -25,19 +25,19 @@ class OrderScreen extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => OrderController()..loadUserAddresses(userId: userId),
       child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground,
+        backgroundColor: AppColors.background,
         appBar: AppBar(
           title: const Text(
             "Xác nhận đơn hàng",
             style: TextStyle(
               fontWeight: FontWeight.bold,
-              color: AppColors.textBrown,
+              color: AppColors.textPrimary,
             ),
           ),
           backgroundColor: Colors.white,
-          foregroundColor: AppColors.textBrown,
+          foregroundColor: AppColors.textPrimary,
           elevation: 0,
-          iconTheme: const IconThemeData(color: AppColors.textBrown),
+          iconTheme: const IconThemeData(color: AppColors.textPrimary),
         ),
 
         // Dùng Consumer ở cấp cao nhất để lấy controller
@@ -77,7 +77,7 @@ class OrderScreen extends StatelessWidget {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.textBrown.withOpacity(0.08),
+                  color: AppColors.shadow,
                   blurRadius: 12,
                   offset: const Offset(0, -4),
                 ),
@@ -158,7 +158,7 @@ class OrderScreen extends StatelessWidget {
             width: double.infinity,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryPink,
+                backgroundColor: AppColors.primary,
               ),
               onPressed: () => Navigator.pushNamedAndRemoveUntil(
                 context,

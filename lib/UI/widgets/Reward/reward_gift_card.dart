@@ -41,7 +41,7 @@ class RewardGiftCard extends StatelessWidget {
                 width: double.infinity,
                 errorBuilder: (_, _, _) => const Icon(
                   Icons.image_not_supported,
-                  color: AppColors.neutralGrey,
+                  color: AppColors.textSecondary,
                 ),
               ),
             ),

@@ -101,13 +101,13 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
     final controller = context.watch<PasswordRecoveryController>();
 
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground, // Màu nền chuẩn
+      backgroundColor: AppColors.background, // Màu nền chuẩn
       appBar: AppBar(
         title: const Text(
           "Đặt lại mật khẩu",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: AppColors.primaryPink, // Màu chủ đạo
+        backgroundColor: AppColors.primary, // Màu chủ đạo
         foregroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
@@ -122,8 +122,8 @@ class _ResetPasswordViewState extends State<ResetPasswordView> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  AppColors.primaryPink,
-                  AppColors.primaryPink.withOpacity(0.8),
+                  AppColors.primary,
+                  AppColors.primary.withOpacity(0.8),
                 ],
               ),
               borderRadius: const BorderRadius.vertical(

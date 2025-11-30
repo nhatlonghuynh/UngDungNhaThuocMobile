@@ -6,6 +6,8 @@ import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
 import 'package:nhathuoc_mobilee/UI/common/widget/loading_state.dart';
 import 'package:nhathuoc_mobilee/UI/common/widget/error_state.dart';
 import 'package:nhathuoc_mobilee/UI/common/widget/empty_state.dart';
+import 'package:nhathuoc_mobilee/locator.dart';
+import 'package:nhathuoc_mobilee/api/categoryapi.dart';
 
 class FilteredProductsScreen extends StatelessWidget {
   final String title;
@@ -23,17 +25,18 @@ class FilteredProductsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Khởi tạo Controller riêng cho màn hình này
     return ChangeNotifierProvider(
-      create: (_) =>
-          ProductFilterController()..loadProducts(typeId: typeId, catId: catId),
+      create: (_) => ProductFilterController(
+        service: locator<DanhMucRepository>(),
+      )..loadProducts(typeId: typeId, catId: catId),
       child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground,
+        backgroundColor: AppColors.background,
         appBar: AppBar(
           title: Text(
             title,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           backgroundColor: Colors.white,
-          foregroundColor: AppColors.textBrown,
+          foregroundColor: AppColors.textPrimary,
           elevation: 0,
         ),
         body: Consumer<ProductFilterController>(

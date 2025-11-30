@@ -18,7 +18,7 @@ class ProductInfoSection extends StatelessWidget {
     final currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
 
     return Container(
-      color: Colors.white,
+      color: AppColors.surface,
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,7 +29,7 @@ class ProductInfoSection extends StatelessWidget {
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: AppColors.textBrown,
+              color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 10),
@@ -41,7 +41,7 @@ class ProductInfoSection extends StatelessWidget {
                 "${currencyFormat.format(finalPrice)} / ${product.donVi}",
                 style: const TextStyle(
                   fontSize: 24,
-                  color: AppColors.primaryPink,
+                  color: AppColors.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -51,7 +51,7 @@ class ProductInfoSection extends StatelessWidget {
                   currencyFormat.format(product.giaBan),
                   style: const TextStyle(
                     decoration: TextDecoration.lineThrough,
-                    color: AppColors.neutralGrey,
+                    color: AppColors.textSecondary,
                     fontSize: 16,
                   ),
                 ),
@@ -82,7 +82,7 @@ class ProductInfoSection extends StatelessWidget {
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
-              color: AppColors.textBrown,
+              color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 4),

@@ -30,7 +30,7 @@ class _DetailProductView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: AppColors.background,
       // Dùng AppBar trong suốt, phần back button nổi theo phong cách glassmorphism
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -39,7 +39,7 @@ class _DetailProductView extends StatelessWidget {
         title: Text(
           "Chi tiết sản phẩm",
           style: TextStyle(
-            color: AppColors.textBrown,
+            color: AppColors.textPrimary,
             fontWeight: FontWeight.w600,
             fontSize: 18,
           ),
@@ -53,10 +53,10 @@ class _DetailProductView extends StatelessWidget {
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 8),
               decoration: BoxDecoration(
-                color: AppColors.scaffoldBackground.withOpacity(0.9),
+                color: AppColors.background.withOpacity(0.9),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: AppColors.neutralGrey.withOpacity(0.35),
+                  color: AppColors.border.withOpacity(0.35),
                 ),
                 boxShadow: [
                   // nhẹ Neumorphism
@@ -72,7 +72,7 @@ class _DetailProductView extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Icon(Icons.arrow_back, color: AppColors.textBrown),
+              child: Icon(Icons.arrow_back, color: AppColors.textPrimary),
             ),
           ),
         ),
@@ -117,16 +117,16 @@ class _DetailProductView extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: AppColors.scaffoldBackground.withOpacity(
+                            color: AppColors.background.withOpacity(
                               0.9,
                             ),
                             borderRadius: BorderRadius.circular(18),
                             border: Border.all(
-                              color: AppColors.neutralGrey.withOpacity(0.25),
+                              color: AppColors.border.withOpacity(0.25),
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.textBrown.withOpacity(0.06),
+                                color: AppColors.textPrimary.withOpacity(0.06),
                                 blurRadius: 18,
                                 offset: const Offset(0, 10),
                               ),

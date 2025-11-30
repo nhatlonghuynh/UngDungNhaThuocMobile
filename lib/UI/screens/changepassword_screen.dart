@@ -99,13 +99,13 @@ class _ChangePasswordViewState extends State<ChangePasswordView> {
     final controller = context.watch<ProfileController>();
 
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text(
           "Đổi mật khẩu",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: AppColors.primaryPink,
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,

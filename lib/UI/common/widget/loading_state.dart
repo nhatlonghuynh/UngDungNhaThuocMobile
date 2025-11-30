@@ -20,12 +20,12 @@ class LoadingState extends StatelessWidget {
               color: Colors.white.withOpacity(0.9),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: AppColors.neutralBeige.withOpacity(0.5),
+                color: AppColors.border.withOpacity(0.5),
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primaryPink.withOpacity(0.1),
+                  color: AppColors.primary.withOpacity(0.1),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -46,9 +46,9 @@ class LoadingState extends StatelessWidget {
                   child: CircularProgressIndicator(
                     strokeWidth: 4,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      AppColors.primaryPink,
+                      AppColors.primary,
                     ),
-                    backgroundColor: AppColors.neutralBeige.withOpacity(0.3),
+                    backgroundColor: AppColors.border.withOpacity(0.3),
                   ),
                 ),
                 if (message != null) ...[
@@ -56,7 +56,7 @@ class LoadingState extends StatelessWidget {
                   Text(
                     message!,
                     style: TextStyle(
-                      color: AppColors.textBrown,
+                      color: AppColors.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),

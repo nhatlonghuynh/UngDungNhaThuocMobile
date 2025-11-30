@@ -3,13 +3,13 @@ import 'package:nhathuoc_mobilee/models/thuoc.dart';
 import 'package:nhathuoc_mobilee/service/productservice.dart';
 
 class HomeController extends ChangeNotifier {
-  final ProductService _service = ProductService();
+  final ProductService _service;
 
   List<Thuoc> products = [];
   bool isLoading = true;
   String errorMessage = '';
 
-  HomeController() {
+  HomeController({required ProductService service}) : _service = service {
     fetchProducts();
   }
 

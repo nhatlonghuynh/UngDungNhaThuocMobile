@@ -28,21 +28,21 @@ class SanPhamItem extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(22),
           boxShadow: [
             BoxShadow(
-              color: AppColors.neutralGrey.withOpacity(0.06),
+              color: AppColors.shadow,
               blurRadius: 18,
               offset: const Offset(0, 10),
             ),
             BoxShadow(
-              color: Colors.white.withOpacity(0.95),
+              color: AppColors.surface.withOpacity(0.95),
               blurRadius: 8,
               offset: const Offset(-6, -6),
             ),
           ],
-          border: Border.all(color: AppColors.neutralBeige.withOpacity(0.35)),
+          border: Border.all(color: AppColors.border.withOpacity(0.35)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,14 +57,14 @@ class SanPhamItem extends StatelessWidget {
                     ),
                     child: Container(
                       width: double.infinity,
-                      color: AppColors.scaffoldBackground,
+                      color: AppColors.background,
                       child: Image.network(
                         thuoc.anhURL,
                         fit: BoxFit.contain,
                         errorBuilder: (_, __, ___) => const Center(
                           child: Icon(
                             Icons.image_not_supported,
-                            color: AppColors.neutralGrey,
+                            color: AppColors.textSecondary,
                             size: 40,
                           ),
                         ),
@@ -82,11 +82,11 @@ class SanPhamItem extends StatelessWidget {
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.primaryPink,
+                          color: AppColors.primary,
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primaryPink.withOpacity(0.14),
+                              color: AppColors.primary.withOpacity(0.14),
                               blurRadius: 12,
                               offset: const Offset(0, 6),
                             ),
@@ -119,7 +119,7 @@ class SanPhamItem extends StatelessWidget {
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
-                      color: AppColors.textBrown,
+                      color: AppColors.textPrimary,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -129,7 +129,7 @@ class SanPhamItem extends StatelessWidget {
                     thuoc.donVi,
                     style: const TextStyle(
                       fontSize: 12,
-                      color: AppColors.neutralGrey,
+                      color: AppColors.textSecondary,
                       fontFamily: 'Inter',
                     ),
                   ),
@@ -145,7 +145,7 @@ class SanPhamItem extends StatelessWidget {
                             Text(
                               '${controller.formatPrice(thuoc.donGia)}đ',
                               style: const TextStyle(
-                                color: AppColors.neutralGrey,
+                                color: AppColors.textSecondary,
                                 fontSize: 11,
                                 decoration: TextDecoration.lineThrough,
                                 fontFamily: 'Inter',
@@ -154,7 +154,7 @@ class SanPhamItem extends StatelessWidget {
                           Text(
                             '${controller.formatPrice(finalPrice)}đ',
                             style: const TextStyle(
-                              color: AppColors.primaryPink,
+                              color: AppColors.primary,
                               fontWeight: FontWeight.w900,
                               fontSize: 16,
                               fontFamily: 'Inter',
@@ -177,11 +177,11 @@ class SanPhamItem extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryPink,
+                            color: AppColors.primary,
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primaryPink.withOpacity(0.18),
+                                color: AppColors.primary.withOpacity(0.18),
                                 blurRadius: 12,
                                 offset: const Offset(0, 8),
                               ),

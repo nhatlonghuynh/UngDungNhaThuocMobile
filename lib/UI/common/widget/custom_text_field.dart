@@ -47,8 +47,8 @@ class CustomTextField extends StatelessWidget {
 
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: const TextStyle(color: AppColors.neutralGrey),
-        prefixIcon: Icon(prefixIcon, color: AppColors.primaryPink),
+        labelStyle: const TextStyle(color: AppColors.textSecondary),
+        prefixIcon: Icon(prefixIcon, color: AppColors.primary),
 
         // --- XÓA readOnly và style Ở TRONG NÀY ĐI ---
 
@@ -59,7 +59,7 @@ class CustomTextField extends StatelessWidget {
                   isObscure
                       ? Icons.visibility_outlined
                       : Icons.visibility_off_outlined,
-                  color: AppColors.neutralGrey,
+                  color: AppColors.textSecondary,
                 ),
                 onPressed: onToggleObscure,
               )
@@ -68,18 +68,18 @@ class CustomTextField extends StatelessWidget {
         // --- Style viền ---
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.neutralGrey),
+          borderSide: const BorderSide(color: AppColors.border),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.neutralGrey.withOpacity(0.5)),
+          borderSide: BorderSide(color: AppColors.border.withOpacity(0.5)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.primaryPink),
+          borderSide: const BorderSide(color: AppColors.primary),
         ),
         filled: true,
-        fillColor: Colors.white,
+        fillColor: AppColors.surface,
       ),
     );
   }

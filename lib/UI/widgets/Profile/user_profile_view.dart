@@ -23,7 +23,7 @@ class UserProfileView extends StatelessWidget {
           // Header
           Container(
             padding: const EdgeInsets.fromLTRB(20, 40, 20, 30),
-            color: AppColors.primaryPink,
+            color: AppColors.primary,
             child: Row(
               children: [
                 CircleAvatar(
@@ -32,7 +32,7 @@ class UserProfileView extends StatelessWidget {
                   child: const Icon(
                     Icons.person,
                     size: 40,
-                    color: AppColors.primaryPink,
+                    color: AppColors.primary,
                   ),
                 ),
                 const SizedBox(width: 15),
@@ -192,7 +192,7 @@ class UserProfileView extends StatelessWidget {
         trailing: const Icon(
           Icons.arrow_forward_ios,
           size: 16,
-          color: AppColors.neutralGrey,
+          color: AppColors.textSecondary,
         ),
         onTap: onTap,
       ),

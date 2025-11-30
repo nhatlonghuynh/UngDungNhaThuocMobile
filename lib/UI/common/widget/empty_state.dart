@@ -33,12 +33,12 @@ class EmptyState extends StatelessWidget {
                 color: Colors.white.withOpacity(0.9),
                 borderRadius: BorderRadius.circular(28),
                 border: Border.all(
-                  color: AppColors.neutralBeige.withOpacity(0.5),
+                  color: AppColors.border.withOpacity(0.5),
                   width: 1.5,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.neutralGrey.withOpacity(0.08),
+                    color: AppColors.textSecondary.withOpacity(0.08),
                     blurRadius: 24,
                     offset: const Offset(0, 12),
                   ),
@@ -56,7 +56,7 @@ class EmptyState extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: (iconColor ?? AppColors.primaryPink).withOpacity(
+                      color: (iconColor ?? AppColors.primary).withOpacity(
                         0.12,
                       ),
                       shape: BoxShape.circle,
@@ -64,14 +64,14 @@ class EmptyState extends StatelessWidget {
                     child: Icon(
                       icon,
                       size: 64,
-                      color: iconColor ?? AppColors.primaryPink,
+                      color: iconColor ?? AppColors.primary,
                     ),
                   ),
                   const SizedBox(height: 24),
                   Text(
                     title,
                     style: TextStyle(
-                      color: AppColors.textBrown,
+                      color: AppColors.textPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -82,7 +82,7 @@ class EmptyState extends StatelessWidget {
                     Text(
                       subtitle!,
                       style: TextStyle(
-                        color: AppColors.neutralGrey,
+                        color: AppColors.textSecondary,
                         fontSize: 14,
                         height: 1.4,
                       ),

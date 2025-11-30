@@ -77,7 +77,7 @@ class OrderHistoryCard extends StatelessWidget {
               Text(
                 dateFormat.format(order.ngayTao),
                 style: const TextStyle(
-                  color: AppColors.neutralGrey,
+                  color: AppColors.textSecondary,
                   fontSize: 12,
                 ),
               ),
@@ -116,7 +116,7 @@ class OrderHistoryCard extends StatelessWidget {
                         Text(
                           "x${order.soLuongThuocDau} sản phẩm đầu tiên...",
                           style: const TextStyle(
-                            color: AppColors.neutralGrey,
+                            color: AppColors.textSecondary,
                             fontSize: 13,
                           ),
                         ),
@@ -138,7 +138,7 @@ class OrderHistoryCard extends StatelessWidget {
                   Text(
                     currencyFormat.format(order.tongTien),
                     style: const TextStyle(
-                      color: AppColors.primaryPink,
+                      color: AppColors.primary,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),

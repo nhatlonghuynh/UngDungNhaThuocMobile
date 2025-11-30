@@ -54,7 +54,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
     return DefaultTabController(
       length: 5,
       child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground,
+        backgroundColor: AppColors.background,
         appBar: AppBar(
           title: const Text(
             "Lịch sử mua hàng",
@@ -66,9 +66,9 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
           bottom: TabBar(
             isScrollable: true,
             onTap: _onTabChanged,
-            labelColor: AppColors.primaryPink,
-            unselectedLabelColor: AppColors.textBrown,
-            indicatorColor: AppColors.primaryPink,
+            labelColor: AppColors.primary,
+            unselectedLabelColor: AppColors.textPrimary,
+            indicatorColor: AppColors.primary,
             tabs: const [
               Tab(text: "Tất cả"),
               Tab(text: "Chờ xử lý"),
@@ -101,7 +101,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                 title: "Chưa có đơn hàng",
                 subtitle: "Bạn chưa có đơn hàng nào trong lịch sử",
                 icon: Icons.receipt_long_outlined,
-                iconColor: AppColors.primaryPink,
+                iconColor: AppColors.primary,
               );
             }
 

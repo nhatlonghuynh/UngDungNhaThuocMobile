@@ -75,13 +75,13 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text(
           "Giỏ hàng",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: AppColors.primaryPink,
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         centerTitle: true,
         elevation: 0,
@@ -93,7 +93,7 @@ class _CartScreenState extends State<CartScreen> {
         builder: (context, child) {
           if (_controller.isLoading) {
             return const Center(
-              child: CircularProgressIndicator(color: AppColors.primaryPink),
+              child: CircularProgressIndicator(color: AppColors.primary),
             );
           }
 

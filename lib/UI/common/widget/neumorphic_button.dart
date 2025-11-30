@@ -26,7 +26,7 @@ class NeumorphicButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = backgroundColor ?? AppColors.primaryPink;
+    final bgColor = backgroundColor ?? AppColors.primary;
     final txtColor = textColor ?? Colors.white;
 
     return Container(

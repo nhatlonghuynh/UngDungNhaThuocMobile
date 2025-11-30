@@ -49,7 +49,7 @@ class OrderSummarySection extends StatelessWidget {
             controller.getFinalTotal(selectedItems),
             formatter,
             isBold: true,
-            color: AppColors.primaryPink,
+            color: AppColors.primary,
             fontSize: 20,
           ),
 
@@ -88,7 +88,7 @@ class OrderSummarySection extends StatelessWidget {
             style: TextStyle(
               fontSize: fontSize,
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              color: AppColors.textBrown,
+              color: AppColors.textPrimary,
             ),
           ),
           Text(
@@ -96,7 +96,7 @@ class OrderSummarySection extends StatelessWidget {
             style: TextStyle(
               fontSize: fontSize,
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              color: color ?? AppColors.textBrown,
+              color: color ?? AppColors.textPrimary,
             ),
           ),
         ],

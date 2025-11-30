@@ -26,7 +26,7 @@ class OrderAddressSection extends StatelessWidget {
               ListTile(
                 leading: const Icon(
                   Icons.location_on,
-                  color: AppColors.primaryPink,
+                  color: AppColors.primary,
                 ),
                 title: Text(
                   controller.selectedAddress?.fullAddress ?? "Chưa có địa chỉ",
@@ -38,7 +38,7 @@ class OrderAddressSection extends StatelessWidget {
                         style: TextStyle(fontSize: 12, color: Colors.grey),
                       )
                     : null,
-                trailing: const Icon(Icons.edit, color: AppColors.neutralGrey),
+                trailing: const Icon(Icons.edit, color: AppColors.textSecondary),
                 onTap: () => _showAddressModal(context, controller),
               ),
               const Divider(height: 1, indent: 20, endIndent: 20),
@@ -119,7 +119,7 @@ class _AddressModalContentState extends State<_AddressModalContent> {
                         leading: Radio<UserAddress>(
                           value: addr,
                           groupValue: widget.controller.selectedAddress,
-                          activeColor: AppColors.primaryPink,
+                          activeColor: AppColors.primary,
                           onChanged: (val) {
                             widget.controller.setSelectedAddress(val!);
                             Navigator.pop(context);
@@ -145,7 +145,7 @@ class _AddressModalContentState extends State<_AddressModalContent> {
               icon: const Icon(Icons.add),
               label: const Text("Thêm địa chỉ mới"),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryPink,
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 shape: RoundedRectangleBorder(
@@ -211,12 +211,12 @@ class _AddressModalContentState extends State<_AddressModalContent> {
             onPressed: () => Navigator.pop(ctx),
             child: const Text(
               "Hủy",
-              style: TextStyle(color: AppColors.neutralGrey),
+              style: TextStyle(color: AppColors.textSecondary),
             ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryPink,
+              backgroundColor: AppColors.primary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),

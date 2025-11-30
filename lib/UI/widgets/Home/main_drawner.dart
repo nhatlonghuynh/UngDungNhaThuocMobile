@@ -45,7 +45,7 @@ class _MainDrawerState extends State<MainDrawer> {
 
     return Drawer(
       child: Container(
-        color: AppColors.scaffoldBackground,
+        color: AppColors.background,
         child: Column(
           children: [
             // --- HEADER ---
@@ -56,7 +56,7 @@ class _MainDrawerState extends State<MainDrawer> {
               child: cateController.isLoading
                   ? const Center(
                       child: CircularProgressIndicator(
-                        color: AppColors.primaryPink,
+                        color: AppColors.primary,
                       ),
                     )
                   : ListView(
@@ -81,13 +81,13 @@ class _MainDrawerState extends State<MainDrawer> {
                             return ListTile(
                               leading: const Icon(
                                 Icons.category_outlined,
-                                color: AppColors.primaryPink,
+                                color: AppColors.primary,
                               ),
                               title: Text(
                                 loai.ten,
                                 style: const TextStyle(
                                   fontFamily: 'Inter',
-                                  color: AppColors.textBrown,
+                                  color: AppColors.textPrimary,
                                 ),
                               ),
                               onTap: () => _navigateToFilter(
@@ -111,14 +111,14 @@ class _MainDrawerState extends State<MainDrawer> {
                             child: ExpansionTile(
                               leading: const Icon(
                                 Icons.medication,
-                                color: AppColors.secondaryGreen,
+                                color: AppColors.secondary,
                               ),
                               title: Text(
                                 loai.ten,
                                 style: const TextStyle(
                                   fontFamily: 'Inter',
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.textBrown,
+                                  color: AppColors.textPrimary,
                                 ),
                               ),
                               childrenPadding: const EdgeInsets.only(
@@ -131,12 +131,12 @@ class _MainDrawerState extends State<MainDrawer> {
                                   leading: const Icon(
                                     Icons.all_inclusive,
                                     size: 18,
-                                    color: AppColors.primaryPink,
+                                    color: AppColors.primary,
                                   ),
                                   title: Text(
                                     "Tất cả ${loai.ten}",
                                     style: const TextStyle(
-                                      color: AppColors.primaryPink,
+                                      color: AppColors.primary,
                                       fontFamily: 'Inter',
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -154,12 +154,12 @@ class _MainDrawerState extends State<MainDrawer> {
                                     leading: const Icon(
                                       Icons.subdirectory_arrow_right,
                                       size: 18,
-                                      color: AppColors.neutralGrey,
+                                      color: AppColors.textSecondary,
                                     ),
                                     title: Text(
                                       dm.ten,
                                       style: const TextStyle(
-                                        color: AppColors.textBrown,
+                                        color: AppColors.textPrimary,
                                       ),
                                     ),
                                     onTap: () => _navigateToFilter(
@@ -184,7 +184,7 @@ class _MainDrawerState extends State<MainDrawer> {
                         ListTile(
                           leading: const Icon(
                             Icons.history,
-                            color: AppColors.neutralGrey,
+                            color: AppColors.textSecondary,
                           ),
                           title: const Text('Lịch sử mua hàng'),
                           onTap: () {
@@ -194,7 +194,7 @@ class _MainDrawerState extends State<MainDrawer> {
                         ListTile(
                           leading: const Icon(
                             Icons.settings_outlined,
-                            color: AppColors.neutralGrey,
+                            color: AppColors.textSecondary,
                           ),
                           title: const Text('Cài đặt'),
                           onTap: () {
@@ -217,29 +217,29 @@ class _MainDrawerState extends State<MainDrawer> {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 50, 20, 24),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.96),
+        color: AppColors.surface.withOpacity(0.96),
         borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.neutralGrey.withOpacity(0.05),
+            color: AppColors.shadow,
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
         ],
-        border: Border.all(color: AppColors.neutralBeige.withOpacity(0.5)),
+        border: Border.all(color: AppColors.border.withOpacity(0.5)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.primaryPink.withOpacity(0.12),
+              color: AppColors.primary.withOpacity(0.12),
               borderRadius: BorderRadius.circular(14),
             ),
             child: const Icon(
               Icons.local_pharmacy,
               size: 36,
-              color: AppColors.primaryPink,
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(width: 14),
@@ -248,7 +248,7 @@ class _MainDrawerState extends State<MainDrawer> {
               'Nhà Thuốc HUIT',
               style: TextStyle(
                 fontFamily: 'Inter',
-                color: AppColors.textBrown,
+                color: AppColors.textPrimary,
                 fontSize: 20,
                 fontWeight: FontWeight.w800,
               ),

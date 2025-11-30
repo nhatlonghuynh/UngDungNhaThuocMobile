@@ -5,8 +5,10 @@ import 'package:nhathuoc_mobilee/models/thuoc.dart';
 import 'package:nhathuoc_mobilee/models/thuoc_detail.dart';
 
 class ProductService {
-  final ProductRepository _repo = ProductRepository();
+  final ProductRepository _repo;
   static final NumberFormat _formatter = NumberFormat('#,###', 'vi_VN');
+
+  ProductService({required ProductRepository repo}) : _repo = repo;
 
   Future<List<Thuoc>> getProducts() async {
     return await _repo.fetchAllProducts();

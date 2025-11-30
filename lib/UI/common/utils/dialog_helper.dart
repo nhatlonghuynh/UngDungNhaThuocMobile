@@ -13,7 +13,7 @@ class DialogHelper {
           "Chưa đăng nhập",
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: AppColors.textBrown,
+            color: AppColors.textPrimary,
           ),
         ),
         content: const Text(
@@ -25,13 +25,13 @@ class DialogHelper {
             onPressed: () => Navigator.of(ctx).pop(false),
             child: const Text(
               "Để sau",
-              style: TextStyle(color: AppColors.neutralGrey),
+              style: TextStyle(color: AppColors.textSecondary),
             ),
           ),
           // Nút Đăng nhập -> Trả về TRUE
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryPink,
+              backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -96,7 +96,7 @@ class DialogHelper {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: confirmColor ?? AppColors.primaryPink,
+              backgroundColor: confirmColor ?? AppColors.primary,
             ),
             onPressed: () => Navigator.pop(ctx, true),
             child: Text(

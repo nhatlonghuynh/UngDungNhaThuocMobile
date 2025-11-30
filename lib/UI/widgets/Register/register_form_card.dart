@@ -116,7 +116,7 @@ class RegisterFormCard extends StatelessWidget {
               text: "ĐĂNG KÝ",
               isLoading: isLoading,
               onPressed: onRegister,
-              backgroundColor: AppColors.secondaryGreen,
+              backgroundColor: AppColors.secondary,
             ),
           ],
         ),
@@ -135,7 +135,7 @@ class RegisterFormCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: AppColors.textBrown,
+              color: AppColors.textPrimary,
             ),
           ),
         ),
@@ -163,13 +163,13 @@ class RegisterFormCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primaryPink.withOpacity(0.1)
+              ? AppColors.primary.withOpacity(0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected
-                ? AppColors.primaryPink
-                : AppColors.neutralBeige.withOpacity(0.6),
+                ? AppColors.primary
+                : AppColors.border.withOpacity(0.6),
             width: isSelected ? 2 : 1.5,
           ),
         ),
@@ -180,16 +180,16 @@ class RegisterFormCard extends StatelessWidget {
               icon,
               size: 20,
               color: isSelected
-                  ? AppColors.primaryPink
-                  : AppColors.neutralGrey,
+                  ? AppColors.primary
+                  : AppColors.textSecondary,
             ),
             const SizedBox(width: 8),
             Text(
               value,
               style: TextStyle(
                 color: isSelected
-                    ? AppColors.primaryPink
-                    : AppColors.textBrown,
+                    ? AppColors.primary
+                    : AppColors.textPrimary,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                 fontSize: 15,
               ),

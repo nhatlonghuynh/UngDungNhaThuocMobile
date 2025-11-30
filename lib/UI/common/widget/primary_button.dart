@@ -23,13 +23,13 @@ class PrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor ?? AppColors.primaryPink,
+          backgroundColor: backgroundColor ?? AppColors.primary,
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           elevation: 5,
-          shadowColor: (backgroundColor ?? AppColors.primaryPink).withOpacity(
+          shadowColor: (backgroundColor ?? AppColors.primary).withOpacity(
             0.4,
           ),
         ),

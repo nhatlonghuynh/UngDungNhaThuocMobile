@@ -24,7 +24,7 @@ class ErrorState extends StatelessWidget {
                 color: Colors.white.withOpacity(0.95),
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: AppColors.neutralBeige.withOpacity(0.6),
+                  color: AppColors.border.withOpacity(0.6),
                   width: 1.5,
                 ),
                 boxShadow: [
@@ -60,7 +60,7 @@ class ErrorState extends StatelessWidget {
                   Text(
                     message,
                     style: TextStyle(
-                      color: AppColors.textBrown,
+                      color: AppColors.textPrimary,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       height: 1.4,
@@ -80,7 +80,7 @@ class ErrorState extends StatelessWidget {
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryPink,
+                        backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
@@ -90,7 +90,7 @@ class ErrorState extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 4,
-                        shadowColor: AppColors.primaryPink.withOpacity(0.3),
+                        shadowColor: AppColors.primary.withOpacity(0.3),
                       ),
                     ),
                   ],

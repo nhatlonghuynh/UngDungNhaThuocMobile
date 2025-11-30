@@ -36,16 +36,16 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
     final controller = context.watch<PasswordRecoveryController>();
 
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text(
           "Quên mật khẩu",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.white,
-        foregroundColor: AppColors.textBrown,
+        foregroundColor: AppColors.textPrimary,
         elevation: 0,
-        iconTheme: const IconThemeData(color: AppColors.textBrown),
+        iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
       body: Stack(
         children: [
@@ -57,8 +57,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  AppColors.primaryPink,
-                  AppColors.primaryPink.withOpacity(0.8),
+                  AppColors.primary,
+                  AppColors.primary.withOpacity(0.8),
                 ],
               ),
               borderRadius: const BorderRadius.vertical(
@@ -139,7 +139,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                             );
                           }
                         },
-                        backgroundColor: AppColors.primaryPink,
+                        backgroundColor: AppColors.primary,
                       ),
                     ],
                   ),
