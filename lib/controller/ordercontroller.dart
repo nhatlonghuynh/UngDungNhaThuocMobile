@@ -56,10 +56,19 @@ class OrderController extends ChangeNotifier {
   // --- 4. ORDER ACTIONS (Đặt hàng) ---
 
   Future<Map<String, dynamic>> placeOrder(List<GioHang> items) async {
-    // Validate
+    // --- 1. VALIDATE ĐỊA CHỈ ---
     if (deliveryMethod == 0) {
-      if (addressDisplay.isEmpty || addressDisplay == "Chưa chọn địa chỉ") {
+      // Check 1: Chưa chọn địa chỉ (Dùng object check cho chuẩn)
+      if (selectedAddress == null) {
         throw Exception("Vui lòng chọn địa chỉ giao hàng!");
+      }
+
+      // Check 2: Địa chỉ đang đồng bộ (ID âm hoặc bằng 0)
+      // Đây là lớp bảo vệ cho phần Optimistic UI
+      if (selectedAddress!.addressID <= 0) {
+        throw Exception(
+          "Địa chỉ đang được đồng bộ, vui lòng thử lại sau vài giây!",
+        );
       }
     }
 
@@ -67,14 +76,28 @@ class OrderController extends ChangeNotifier {
       isOrdering = true;
       notifyListeners();
 
+      // Xác định chuỗi địa chỉ gửi đi
+      String finalAddressStr = "Nhận tại nhà thuốc";
+
+      if (deliveryMethod == 0) {
+        // Dùng fullAddress từ Model chuẩn hơn dùng biến display
+        finalAddressStr = selectedAddress!.fullAddress;
+      }
+
+      // --- 2. GỌI SERVICE ---
       final result = await _orderService.submitOrder(
         items: items,
-        note:
-            "$note | ĐC: ${deliveryMethod == 0 ? addressDisplay : 'Nhận tại nhà thuốc'}",
+        note: "$note | ĐC: $finalAddressStr",
         pointToUse: getPointDiscount(),
         paymentMethod: paymentMethod,
-        diaChi: deliveryMethod == 0 ? addressDisplay : "Nhận tại nhà thuốc",
+
+        // Gửi chuỗi địa chỉ chuẩn
+        diaChi: finalAddressStr,
+
+        // [KHUYẾN NGHỊ] Nếu API Order của bạn hỗ trợ nhận AddressID thì truyền thêm vào đây
+        // addressId: finalAddressId,
       );
+
       return result;
     } finally {
       isOrdering = false;
@@ -120,15 +143,12 @@ class OrderController extends ChangeNotifier {
   }
 
   Future<void> addNewAddress(UserAddress addr, String userId) async {
-    // [SỬA LỖI] Tạo ID mới ngay tại thời điểm gọi hàm
+    // 1. Tạo ID tạm (Số âm để không trùng ID server)
     final int timestamp = DateTime.now().millisecondsSinceEpoch;
-    final int myTempId = -timestamp; // ID số (dùng để logic)
-    final String myTempString =
-        "temp_$timestamp"; // ID chuỗi (dùng để debug/hiển thị)
+    final int myTempId = -timestamp; // Ví dụ: -1715482...
 
-    // Clone object với tempId vừa tạo
+    // Tạo object tạm để hiện lên UI ngay
     final newLocalAddr = UserAddress(
-      tempId: myTempString,
       addressID: myTempId,
       province: addr.province,
       district: addr.district,
@@ -137,9 +157,10 @@ class OrderController extends ChangeNotifier {
       isDefault: addr.isDefault,
     );
 
-    // Cập nhật UI ngay lập tức
+    // 2. CẬP NHẬT UI NGAY (OPTIMISTIC UPDATE)
     addresses.insert(0, newLocalAddr);
 
+    // Xử lý logic chọn mặc định
     if (newLocalAddr.isDefault) {
       for (var item in addresses) {
         if (item != newLocalAddr) item.isDefault = false;
@@ -147,30 +168,36 @@ class OrderController extends ChangeNotifier {
       setSelectedAddress(newLocalAddr);
     }
 
-    await _saveToSP();
     notifyListeners();
-
-    // Gọi API Background
     try {
       int realId = await _addressService.addAddress(userId, addr);
 
-      if (realId != 0) {
-        // Tìm đúng item có ID tạm này để update
+      if (realId > 0) {
         final index = addresses.indexWhere((e) => e.addressID == myTempId);
 
         if (index != -1) {
           addresses[index].addressID = realId;
-
-          // Nếu đang chọn item này, update reference luôn
           if (selectedAddress?.addressID == myTempId) {
             selectedAddress = addresses[index];
           }
-          await _saveToSP(); // Lưu bản chuẩn
+          await _saveToSP();
+
           debugPrint("✅ Đã đồng bộ ID thật: $realId");
+          notifyListeners(); 
         }
+      } else {
+        throw Exception("Server trả về ID không hợp lệ");
       }
     } catch (e) {
       debugPrint("❌ Lỗi sync add: $e");
+      addresses.removeWhere((element) => element.addressID == myTempId);
+
+      // Nếu lỡ chọn nó rồi thì reset selectedAddress
+      if (selectedAddress?.addressID == myTempId) {
+        selectedAddress = addresses.isNotEmpty ? addresses.first : null;
+      }
+
+      notifyListeners(); 
     }
   }
 

@@ -37,8 +37,7 @@ class GioHang {
 
         // Ghép chuỗi: http://IP:PORT/path_anh
         // Lưu ý: Không dùng ApiConstants.baseUrl vì nó có đuôi /api
-        finalImageUrl =
-            'http://${ApiConstants.ipschool}:${ApiConstants.port}/$rawImage';
+        finalImageUrl = 'http://${ApiConstants.serverUrl}/$rawImage';
       }
     } else {
       // Có thể gán ảnh mặc định nếu không có ảnh

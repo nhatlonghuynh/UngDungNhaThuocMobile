@@ -4,9 +4,9 @@ import 'package:nhathuoc_mobilee/UI/common/widget/address_selection_field.dart';
 import 'package:nhathuoc_mobilee/UI/common/widget/custom_text_field.dart';
 import 'package:provider/provider.dart';
 import 'package:nhathuoc_mobilee/controller/ordercontroller.dart';
-import 'package:nhathuoc_mobilee/models/diachikhachhang.dart'; // Import đúng file model của bạn
+import 'package:nhathuoc_mobilee/models/diachikhachhang.dart'; 
 import 'package:nhathuoc_mobilee/UI/common/utils/dialog_helper.dart';
-import 'package:nhathuoc_mobilee/manager/usermanager.dart'; // [MỚI] Import để lấy UserId
+import 'package:nhathuoc_mobilee/manager/usermanager.dart'; 
 
 class OrderAddressSection extends StatelessWidget {
   const OrderAddressSection({super.key});
@@ -176,93 +176,92 @@ class _AddressModalContentState extends State<_AddressModalContent> {
   }
 
   void _showAddNewAddressDialog() {
-    final addressCtrl = TextEditingController();
-    final detailCtrl = TextEditingController();
+  final addressCtrl = TextEditingController();
+  final detailCtrl = TextEditingController();
 
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
-          "Thêm địa chỉ mới",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Chọn Tỉnh/Huyện/Xã
-              AddressSelectionField(
-                controller: addressCtrl,
-                labelText: "Tỉnh/Thành, Quận/Huyện...",
-              ),
-              const SizedBox(height: 15),
-              // Nhập đường
-              CustomTextField(
-                controller: detailCtrl,
-                labelText: "Số nhà, tên đường",
-                prefixIcon: Icons.home_outlined,
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text(
-              "Hủy",
-              style: TextStyle(color: AppColors.textSecondary),
+  showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      title: const Text("Thêm địa chỉ mới", style: TextStyle(fontWeight: FontWeight.bold)),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AddressSelectionField(
+              controller: addressCtrl,
+              labelText: "Tỉnh/Thành, Quận/Huyện, Phường/Xã",
             ),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
+            const SizedBox(height: 15),
+            CustomTextField(
+              controller: detailCtrl,
+              labelText: "Số nhà, tên đường",
+              prefixIcon: Icons.home_outlined,
             ),
-            onPressed: () async {
-              if (addressCtrl.text.isEmpty || detailCtrl.text.isEmpty) {
-                DialogHelper.showError(
-                  context,
-                  message: "Vui lòng nhập đầy đủ thông tin",
-                );
-                return;
-              }
-              try {
-                // Parse địa chỉ
-                List<String> parts = addressCtrl.text.split(', ');
-                String ward = parts.isNotEmpty ? parts[0] : "";
-                String district = parts.length > 1 ? parts[1] : "";
-                String province = parts.length > 2 ? parts[2] : "";
-
-                // [SỬA QUAN TRỌNG] Lấy UserId chuẩn
-                String currentUserId = UserManager().userId;
-
-                await widget.controller.addNewAddress(
-                  UserAddress(
-                    tempId:
-                        'abc', // <-- BỎ DÒNG NÀY nếu Model của bạn không có field tempId
-                    addressID: 0, // ID tạm = 0, Service sẽ trả về ID thật
-                    province: province,
-                    district: district,
-                    ward: ward,
-                    street: detailCtrl.text,
-                    isDefault: true,
-                  ),
-                  currentUserId, // <-- Truyền đúng UserId vào đây
-                );
-
-                Navigator.pop(ctx);
-                Navigator.pop(context);
-              } catch (e) {
-                DialogHelper.showError(context, message: e.toString());
-              }
-            },
-            child: const Text("Lưu", style: TextStyle(color: Colors.white)),
-          ),
-        ],
+          ],
+        ),
       ),
-    );
-  }
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx),
+          child: const Text("Hủy", style: TextStyle(color: AppColors.textSecondary)),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+          onPressed: () async {
+            if (addressCtrl.text.isEmpty || detailCtrl.text.isEmpty) {
+              DialogHelper.showError(context, message: "Vui lòng nhập đầy đủ thông tin");
+              return;
+            }
+
+            try {
+              // --- XỬ LÝ TÁCH CHUỖI AN TOÀN (Tránh Crash) ---
+              List<String> parts = addressCtrl.text.split(', ');
+              String province = "";
+              String district = "";
+              String ward = "";
+
+              // Xử lý ngược từ cuối lên để đảm bảo lấy đúng Tỉnh/Thành phố
+              if (parts.isNotEmpty) {
+                province = parts.last; // Phần tử cuối cùng luôn là Tỉnh/TP
+                if (parts.length >= 2) district = parts[parts.length - 2];
+                if (parts.length >= 3) {
+                  // Gộp các phần còn lại làm Xã/Phường (đề phòng địa chỉ dài)
+                  ward = parts.sublist(0, parts.length - 2).join(', ');
+                }
+              }
+
+              String currentUserId = UserManager().userId;
+
+              // Gọi Controller để thêm mới
+              await widget.controller.addNewAddress(
+                UserAddress(
+                  addressID: 0,  
+                  province: province,
+                  district: district,
+                  ward: ward,
+                  street: detailCtrl.text,
+                  isDefault: true, // Mặc định chọn luôn cái mới thêm
+                ),
+                currentUserId,
+              );
+
+              // Đóng Dialog nhập liệu
+              if (ctx.mounted) Navigator.pop(ctx);
+              // Đóng Modal chọn địa chỉ (để user thấy địa chỉ mới đã được chọn ở màn hình chính)
+              if (context.mounted) Navigator.pop(context);
+
+            } catch (e) {
+              DialogHelper.showError(context, message: e.toString());
+            }
+          },
+          child: const Text("Lưu", style: TextStyle(color: Colors.white)),
+        ),
+      ],
+    ),
+  );
+}
 }

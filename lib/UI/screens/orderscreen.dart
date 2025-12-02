@@ -71,26 +71,42 @@ class OrderScreen extends StatelessWidget {
 
         // Bottom Bar (Nút Đặt hàng)
         bottomNavigationBar: Consumer<OrderController>(
-          builder: (context, controller, _) => Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.shadow,
-                  blurRadius: 12,
-                  offset: const Offset(0, -4),
-                ),
-              ],
-            ),
-            child: SafeArea(
-              child: PrimaryButton(
-                text: "ĐẶT HÀNG",
-                isLoading: controller.isOrdering,
-                onPressed: () => _handlePlaceOrder(context, controller),
+          builder: (context, controller, _) {
+            // Logic check xem có đang đồng bộ địa chỉ không
+            // (selectedAddress != null và ID <= 0 nghĩa là đang chờ server trả ID thật)
+            bool isSyncingAddress =
+                controller.deliveryMethod == 0 &&
+                controller.selectedAddress != null &&
+                controller.selectedAddress!.addressID <= 0;
+
+            return Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.shadow,
+                    blurRadius: 12,
+                    offset: const Offset(0, -4),
+                  ),
+                ],
               ),
-            ),
-          ),
+              child: SafeArea(
+                child: PrimaryButton(
+                  // Nếu đang sync thì hiện text khác cho user hiểu
+                  text: isSyncingAddress ? "ĐANG LƯU ĐỊA CHỈ..." : "ĐẶT HÀNG",
+
+                  // Nút loading khi đang gọi API đặt hàng
+                  isLoading: controller.isOrdering,
+
+                  // Disable nút nếu đang sync địa chỉ
+                  onPressed: isSyncingAddress
+                      ? null
+                      : () => _handlePlaceOrder(context, controller),
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -133,11 +149,13 @@ class OrderScreen extends StatelessWidget {
         }
       }
     } catch (e) {
-      if (context.mounted) DialogHelper.showError(context, message: "Lỗi: $e");
+      if (context.mounted) {
+        String errorMsg = e.toString().replaceAll("Exception:", "").trim();
+        DialogHelper.showError(context, message: errorMsg);
+      }
     }
   }
 
-  // Dialog thành công (Dùng DialogHelper hoặc custom đẹp hơn)
   void _showSuccessDialog(BuildContext context) {
     showDialog(
       context: context,

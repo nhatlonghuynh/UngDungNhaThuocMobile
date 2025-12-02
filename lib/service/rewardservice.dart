@@ -9,14 +9,14 @@ class GiftModel {
   final String name;
   final int points;
   final String imagePath;
-  final String type;
+  final int quantity;
 
   GiftModel({
     required this.id,
     required this.name,
     required this.points,
     required this.imagePath,
-    required this.type,
+    required this.quantity,
   });
 
   factory GiftModel.fromJson(Map<String, dynamic> json) {
@@ -24,8 +24,8 @@ class GiftModel {
       id: json['Id'] ?? 0,
       name: json['TenQua'] ?? '',
       points: json['DiemCanDoi'] ?? 0,
-      imagePath: json['AnhMinhHoa'] ?? "assets/images/voucher20.png",
-      type: json['LoaiQua'] ?? '',
+      imagePath: json['AnhMinhHoa'] ?? "assets/images/promotion/voucher20.png",
+      quantity: json['SoLuongTon'] ?? 0,
     );
   }
 }
@@ -56,23 +56,18 @@ class RewardService {
   }
 
   // 2. Đổi quà
+  // 2. Đổi quà
   Future<Map<String, dynamic>> redeemGift({
     required int giftId,
-    required String name,
-    required int points,
-    required String type,
+    int points = 0,
+    // Các tham số khác như name, points, type không cần gửi lên server nữa
   }) async {
     try {
       final user = UserManager();
-      debugPrint("🎁 [Service] Redeeming: $name (-$points pts)");
+      debugPrint("🎁 [Service] Redeeming ID: $giftId");
 
-      final body = {
-        "MaKH": user.userId,
-        "MaQua": giftId,
-        "TenQua": name,
-        "DiemTieuTon": points,
-        "LoaiQua": type,
-      };
+      // Body chỉ cần gửi đúng 2 thông tin này
+      final body = {"MaKH": user.userId, "MaQua": giftId};
 
       final response = await _repo.redeemGiftRequest(body);
 

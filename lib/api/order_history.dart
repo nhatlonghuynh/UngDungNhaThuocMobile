@@ -7,7 +7,7 @@ import 'package:nhathuoc_mobilee/manager/usermanager.dart';
 class OrderHistoryRepository {
   Future<Map<String, String>> _getHeaders() async {
     final token =
-        UserManager().accessToken; // Đã sửa: dùng getter đồng bộ cho nhanh
+        UserManager().accessToken; 
     return {
       "Content-Type": "application/json",
       "Authorization": "Bearer $token",

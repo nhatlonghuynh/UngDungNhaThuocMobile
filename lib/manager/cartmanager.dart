@@ -7,7 +7,7 @@ import 'package:nhathuoc_mobilee/models/cartitemlocal.dart';
 import 'package:nhathuoc_mobilee/models/giohang.dart';
 import 'package:nhathuoc_mobilee/models/thuoc.dart';
 
-class CartManager {
+class CartManager extends ChangeNotifier {
   static final CartManager _instance = CartManager._internal();
   factory CartManager() => _instance;
   CartManager._internal();
@@ -42,6 +42,7 @@ class CartManager {
     _localItems.removeWhere((item) => item.maThuoc == maThuoc);
     await _saveToPrefs();
     debugPrint("🗑️ [Cart] Removed ID: $maThuoc");
+    notifyListeners();
   }
 
   Future<void> updateQuantity(int maThuoc, int newQuantity) async {
@@ -95,7 +96,7 @@ class CartManager {
     if (_localItems.isEmpty) return [];
 
     final listIDs = _localItems.map((e) => e.maThuoc).toList();
-    
+
     // Sử dụng ApiConstants để tránh hardcode IP
     final url = Uri.parse('${ApiConstants.baseUrl}/thuoc/get_cart');
 
@@ -135,14 +136,16 @@ class CartManager {
       );
 
       if (localItem.maThuoc != -1) {
-        result.add(GioHang(
-          maThuoc: thuoc.maThuoc,
-          anhURL: thuoc.anhURL,
-          donGia: thuoc.donGia,
-          tenThuoc: thuoc.tenThuoc,
-          soLuong: localItem.soLuong,
-          // Có thể thêm field 'donVi' nếu Model Thuoc có
-        ));
+        result.add(
+          GioHang(
+            maThuoc: thuoc.maThuoc,
+            anhURL: thuoc.anhURL,
+            donGia: thuoc.donGia,
+            tenThuoc: thuoc.tenThuoc,
+            soLuong: localItem.soLuong,
+            // Có thể thêm field 'donVi' nếu Model Thuoc có
+          ),
+        );
       }
     }
     return result;

@@ -32,9 +32,7 @@ class RewardController extends ChangeNotifier {
     try {
       final result = await _service.redeemGift(
         giftId: gift.id,
-        name: gift.name,
         points: gift.points,
-        type: gift.type,
       );
 
       if (result['success'] == true) {

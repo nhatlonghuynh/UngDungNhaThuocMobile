@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
+import 'package:nhathuoc_mobilee/UI/common/constants/api_constants.dart';
 import 'package:nhathuoc_mobilee/controller/rewardcontroller.dart';
 import 'package:nhathuoc_mobilee/service/rewardservice.dart';
 import 'package:nhathuoc_mobilee/manager/usermanager.dart';
@@ -17,35 +17,32 @@ class RewardGiftCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool canRedeem = UserManager().diemTichLuy >= gift.points;
+    // Logic kiểm tra điều kiện
+    bool isOutOfStock = gift.quantity <= 0; // Hết hàng
+    bool notEnoughPoints = UserManager().diemTichLuy < gift.points;
+    bool canRedeem = !isOutOfStock && !notEnoughPoints;
 
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
+          // ignore: deprecated_member_use
           BoxShadow(color: Colors.grey.withOpacity(0.1), blurRadius: 5),
         ],
       ),
       child: Column(
         children: [
-          // Ảnh quà
+          // --- XỬ LÝ ẢNH (QUAN TRỌNG) ---
           Expanded(
             child: ClipRRect(
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(15),
               ),
-              child: Image.asset(
-                gift.imagePath,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                errorBuilder: (_, _, _) => const Icon(
-                  Icons.image_not_supported,
-                  color: AppColors.textSecondary,
-                ),
-              ),
+              child: _buildGiftImage(gift.imagePath),
             ),
           ),
+
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -63,13 +60,21 @@ class RewardGiftCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                // Hiển thị tồn kho (Optional)
+                if (isOutOfStock)
+                  const Text(
+                    "(Hết hàng)",
+                    style: TextStyle(color: Colors.red, fontSize: 10),
+                  ),
+
                 const SizedBox(height: 5),
 
-                // Nút Đổi Ngay
+                // --- NÚT BẤM ---
                 SizedBox(
                   width: double.infinity,
                   height: 30,
                   child: ElevatedButton(
+                    // Nếu hết hàng hoặc thiếu điểm thì disable nút
                     onPressed: canRedeem ? () => _confirmRedeem(context) : null,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: canRedeem
@@ -81,7 +86,9 @@ class RewardGiftCard extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      canRedeem ? "Đổi ngay" : "Thiếu điểm",
+                      isOutOfStock
+                          ? "Hết hàng"
+                          : (notEnoughPoints ? "Thiếu điểm" : "Đổi ngay"),
                       style: const TextStyle(color: Colors.white, fontSize: 12),
                     ),
                   ),
@@ -91,6 +98,25 @@ class RewardGiftCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildGiftImage(String path) {
+    if (path.startsWith("http")) {
+      return Image.network(path, fit: BoxFit.cover);
+    } else if (path.contains("images/")) {
+      String cleanPath = path.startsWith('/') ? path.substring(1) : path;
+      String fullUrl = "${ApiConstants.serverUrl}/$cleanPath";
+      return Image.network(
+        fullUrl,
+        fit: BoxFit.cover,
+        errorBuilder: (_, _, _) => const Icon(Icons.broken_image),
+      );
+    }
+    return Image.asset(
+      "assets/images/default_gift.png",
+      fit: BoxFit.cover,
+      errorBuilder: (_, _, _) => const Icon(Icons.image),
     );
   }
 

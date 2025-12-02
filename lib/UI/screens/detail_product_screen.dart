@@ -55,9 +55,7 @@ class _DetailProductView extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.background.withOpacity(0.9),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppColors.border.withOpacity(0.35),
-                ),
+                border: Border.all(color: AppColors.border.withOpacity(0.35)),
                 boxShadow: [
                   // nhẹ Neumorphism
                   BoxShadow(
@@ -108,7 +106,10 @@ class _DetailProductView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       // Ảnh chính với nền warm gradient + neumorphism card
-                      ProductImagesSlider(imageUrl: product.anh),
+                      ProductImagesSlider(
+                        imageUrl: product.anh,
+                        heroTag: 'product-${product.id}',
+                      ),
 
                       const SizedBox(height: 14),
 
@@ -117,9 +118,7 @@ class _DetailProductView extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: AppColors.background.withOpacity(
-                              0.9,
-                            ),
+                            color: AppColors.background.withOpacity(0.9),
                             borderRadius: BorderRadius.circular(18),
                             border: Border.all(
                               color: AppColors.border.withOpacity(0.25),

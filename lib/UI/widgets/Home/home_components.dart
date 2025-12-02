@@ -110,11 +110,7 @@ class HomeHeaderSection extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.stars,
-                    color: AppColors.secondary,
-                    size: 18,
-                  ),
+                  const Icon(Icons.stars, color: AppColors.secondary, size: 18),
                   const SizedBox(width: 8),
                   Text(
                     "${user.diemTichLuy}",
@@ -169,9 +165,7 @@ class HomeBannerSection extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
-              border: Border.all(
-                color: AppColors.border.withOpacity(0.4),
-              ),
+              border: Border.all(color: AppColors.border.withOpacity(0.4)),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.shadow,
@@ -219,25 +213,27 @@ class HomeBannerSection extends StatelessWidget {
           ),
 
           // CTA
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: AppColors.primary,
+          Material(
+            color: AppColors.primary,
+            borderRadius: BorderRadius.circular(12),
+            child: InkWell(
               borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primary.withOpacity(0.18),
-                  blurRadius: 14,
-                  offset: const Offset(0, 8),
+              onTap: () {
+                // Existing behavior can be implemented by parent if needed. For now, keep as a small feedback tap.
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
                 ),
-              ],
-            ),
-            child: const Text(
-              "Xem ngay",
-              style: TextStyle(
-                fontFamily: 'Inter',
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
+                child: const Text(
+                  "Xem ngay",
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
             ),
           ),

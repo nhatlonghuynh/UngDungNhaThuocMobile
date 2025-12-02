@@ -32,12 +32,11 @@ class UserAddressService {
   }
 
   // =======================================================================
-  // 2. THÊM ĐỊA CHỈ (QUAN TRỌNG: TRẢ VỀ ID THẬT)
+  // 2. THÊM ĐỊA CHỈ (CẬP NHẬT)
   // =======================================================================
   Future<int> addAddress(String userId, UserAddress addr) async {
     try {
       debugPrint("➕ [AddressService] Adding: ${addr.street}...");
-
       final response = await _repo.addAddressRequest(userId, addr.toJson());
 
       debugPrint("⬅️ [AddressService] Status: ${response.statusCode}");
@@ -45,17 +44,33 @@ class UserAddressService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         final body = jsonDecode(response.body);
 
-        // Logic tìm ID thật trong response trả về từ Server
-        // Case 1: Trả về object { "addressID": 105, ... }
+        // Case 1: Trả về object (Check đủ các kiểu viết hoa thường)
         if (body is Map) {
-          if (body.containsKey('ID')) return body['ID'];
-          if (body.containsKey('addressID')) return body['addressID'];
-          if (body.containsKey('id')) return body['id'];
+          // 1. Ưu tiên tìm đúng key 'addressID' (là Int)
+          // Lưu ý: Server trả về 'addressID' (viết thường chữ a)
+          if (body['addressID'] != null && body['addressID'] is int) {
+            return body['addressID'];
+          }
+
+          // Check thêm case viết hoa nếu có thay đổi backend sau này
+          if (body['AddressID'] != null && body['AddressID'] is int) {
+            return body['AddressID'];
+          }
+
+          // 2. Kiểm tra 'id', nhưng PHẢI CHECK LÀ INT (để tránh lấy nhầm UserID dạng chuỗi)
+          if (body['id'] != null && body['id'] is int) {
+            return body['id'];
+          }
+
+          // Debug để xem server trả gì nếu vẫn không tìm thấy
+          debugPrint("⚠️ [Warning] Server response body: $body");
         }
-        // Case 2: Trả về số nguyên trực tiếp: 105
+
+        // Case 2: Trả về số nguyên trực tiếp
         if (body is int) return body;
 
-        return 0; // Không tìm thấy ID
+        debugPrint("⚠️ [Warning] Không tìm thấy ID trong response: $body");
+        return 0;
       } else {
         final error = _handleError(response);
         throw Exception(error['message']);
@@ -107,7 +122,9 @@ class UserAddressService {
   Map<String, dynamic> _handleError(http.Response response) {
     try {
       final data = jsonDecode(utf8.decode(response.bodyBytes));
-      String msg = data['message'] ?? "Lỗi server (${response.statusCode}): ${response.body}";
+      String msg =
+          data['message'] ??
+          "Lỗi server (${response.statusCode}): ${response.body}";
       if (data['ModelState'] != null) {
         msg = data['ModelState'].values.first[0];
       }
