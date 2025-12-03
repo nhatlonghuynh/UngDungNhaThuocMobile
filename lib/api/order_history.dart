@@ -6,8 +6,7 @@ import 'package:nhathuoc_mobilee/manager/usermanager.dart';
 
 class OrderHistoryRepository {
   Future<Map<String, String>> _getHeaders() async {
-    final token =
-        UserManager().accessToken; 
+    final token = UserManager().accessToken;
     return {
       "Content-Type": "application/json",
       "Authorization": "Bearer $token",
@@ -44,6 +43,19 @@ class OrderHistoryRepository {
     debugPrint('➡️ [HistoryRepo] POST Cancel: $orderId');
 
     final headers = await _getHeaders();
+    final body = jsonEncode({"MaHD": orderId});
+
+    return await http.post(uri, headers: headers, body: body);
+  }
+
+  //4. Xác nhận đã nhận hàng
+  Future<http.Response> confirmReceivedOrder(int orderId) async {
+    final uri = Uri.parse('${ApiConstants.baseUrl}/order/xac-nhan-nhan-hang');
+
+    debugPrint('➡️ [HistoryRepo] POST ConfirmReceived: $orderId');
+
+    final headers = await _getHeaders();
+    // Body khớp với DTO XacNhanDonHangRequest ở Backend
     final body = jsonEncode({"MaHD": orderId});
 
     return await http.post(uri, headers: headers, body: body);

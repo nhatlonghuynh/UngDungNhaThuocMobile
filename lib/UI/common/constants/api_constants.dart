@@ -6,6 +6,6 @@ class ApiConstants {
   static const String port = '8476';
 
   // Base URL dùng chung cho toàn app
-  static const String serverUrl = 'http://$ip.$port';
+  static const String serverUrl = 'http://$ip:$port';
   static const String baseUrl = 'http://$ip:$port/api';
 }

@@ -50,6 +50,20 @@ class OrderHistoryController extends ChangeNotifier {
     }
   }
 
+  Future<bool> confirmReceived(int orderId) async {
+    // Gọi Service
+    final result = await OrderService().confirmOrderReceived(orderId);
+
+    if (result['success'] == true) {
+      // Nếu thành công, reload lại chi tiết đơn để cập nhật trạng thái mới (Đã giao)
+      await getOrderDetail(orderId);
+      return true;
+    } else {
+      // Gán lỗi để UI hiển thị (nếu cần) hoặc trả về false
+      return false;
+    }
+  }
+
   Future<void> getOrderDetail(int orderId) async {
     try {
       isLoadingDetail = true;

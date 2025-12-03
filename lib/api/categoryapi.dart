@@ -43,7 +43,7 @@ class DanhMucRepository {
       final Map<String, String> queryParams = {};
       if (typeId != null) queryParams['typeId'] = typeId.toString();
       if (catId != null) queryParams['catId'] = catId.toString();
-      
+
       final uri = Uri.parse(
         '${ApiConstants.baseUrl}/thuoc/filter',
       ).replace(queryParameters: queryParams);

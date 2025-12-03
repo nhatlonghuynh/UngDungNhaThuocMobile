@@ -29,6 +29,8 @@ class UserManager {
   String? get accessToken => _currentUser?['access_token'];
   String get userId => _currentUser?['user_id'] ?? '';
 
+  int get makh => _currentUser?['khachhang_id'] ?? '';
+
   // Thông tin cá nhân
   String get hoTen => _currentUser?['HoTen'] ?? 'Khách hàng';
   set hoTen(String value) => _setUserField('HoTen', value);
@@ -48,7 +50,6 @@ class UserManager {
 
   // Điểm tích luỹ
   int get diemTichLuy => _currentUser?['DiemTichLuy'] ?? 0;
-  int get tongDiemTichLuy => _currentUser?['tongDiemTichLuy'] ?? 0;
   String get capDo => _currentUser?['capDo'] ?? 'Thành viên';
 
   // Helper set data & tự động lưu xuống đĩa

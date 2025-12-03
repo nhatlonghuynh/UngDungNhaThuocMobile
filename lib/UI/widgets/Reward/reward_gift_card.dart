@@ -122,21 +122,165 @@ class RewardGiftCard extends StatelessWidget {
 
   // Logic đổi quà
   void _confirmRedeem(BuildContext context) async {
-    // 1. Dialog Xác nhận (Dùng Helper)
-    final confirm = await DialogHelper.showConfirmDialog(
-      context,
-      title: "Xác nhận đổi quà",
-      content: "Dùng ${gift.points} điểm để đổi '${gift.name}'?",
-      confirmText: "Đổi ngay",
-      confirmColor: Colors.green,
+    // Show a bottom sheet with points breakdown (current, cost, remaining)
+    final int currentPoints = UserManager().diemTichLuy;
+    final int cost = gift.points;
+    final int remaining = currentPoints - cost;
+
+    final bool? confirmed = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.36,
+          minChildSize: 0.22,
+          maxChildSize: 0.9,
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              padding: EdgeInsets.only(
+                top: 12,
+                left: 16,
+                right: 16,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+              ),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              ),
+              child: SingleChildScrollView(
+                controller: scrollController,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const Text(
+                      "Xác nhận đổi quà",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      gift.name,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.black87),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 16),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Điểm hiện có",
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                        Text(
+                          "$currentPoints",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Điểm cần đổi",
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                        Text(
+                          "$cost",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Điểm còn lại",
+                          style: TextStyle(color: Colors.black54),
+                        ),
+                        Text(
+                          "$remaining",
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () => Navigator.of(ctx).pop(false),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text(
+                              'HỦY',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () => Navigator.of(ctx).pop(true),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text(
+                              'ĐỔI NGAY',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
 
-    if (confirm != true) return;
+    if (confirmed != true) return;
 
-    // 2. Gọi API (Hiện Loading)
+    // Proceed with API call (show loading and call controller.exchangeGift)
     if (!context.mounted) return;
 
-    // Hiển thị Loading (Tự tạo dialog loading đơn giản hoặc dùng helper nếu có)
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -145,9 +289,8 @@ class RewardGiftCard extends StatelessWidget {
 
     final result = await controller.exchangeGift(gift);
 
-    if (context.mounted) Navigator.pop(context); // Tắt loading
+    if (context.mounted) Navigator.pop(context); // close loading
 
-    // 3. Thông báo kết quả
     if (context.mounted) {
       if (result['success']) {
         DialogHelper.showSuccessDialog(

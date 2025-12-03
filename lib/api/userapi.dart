@@ -88,9 +88,7 @@ class ProfileRepository {
   // Endpoint: /api/UserAddress/{userId}
   // =========================================================
   Future<http.Response> getAddressesRequest(String userId) async {
-    final url = Uri.parse(
-      '${ApiConstants.baseUrl}/user-address',
-    );
+    final url = Uri.parse('${ApiConstants.baseUrl}/user-address');
 
     return await http.get(
       url,

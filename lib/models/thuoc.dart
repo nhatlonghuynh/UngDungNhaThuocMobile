@@ -60,7 +60,7 @@ class Thuoc {
 
         // Ghép chuỗi: http://IP:PORT/path_anh
         // Lưu ý: Không dùng ApiConstants.baseUrl vì nó có đuôi /api
-        finalImageUrl = 'http://${ApiConstants.serverUrl}/$rawImage';
+        finalImageUrl = '${ApiConstants.serverUrl}/$rawImage';
       }
     } else {
       // Có thể gán ảnh mặc định nếu không có ảnh

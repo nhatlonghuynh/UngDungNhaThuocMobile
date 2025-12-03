@@ -77,6 +77,32 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
 
+          // Back button (SafeArea) - appear above background
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 12.0, top: 8.0),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(14),
+                  onTap: () => Navigator.maybePop(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      color: Colors.white,
+                      size: 22,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
           // 2. Nội dung chính
           Center(
             child: SingleChildScrollView(
@@ -100,11 +126,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
                     child: Image.network(
-                      'https://cdn-icons-png.flaticon.com/512/3063/3063822.png',
+                      'https://www.flaticon.com/free-icon/pills_4418031?term=medicine&page=1&position=23&origin=search&related_id=4418031',
                       height: 70,
                       color: AppColors.primary,
                       errorBuilder: (_, _, _) => const Icon(
-                        Icons.local_pharmacy,
+                        Icons.local_pharmacy, 
                         size: 70,
                         color: AppColors.primary,
                       ),

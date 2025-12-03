@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
-// import 'package:nhathuoc_mobilee/controller/home_controller.dart'; // Removed dependency
 import 'package:nhathuoc_mobilee/controller/productcontroller.dart';
 import 'package:nhathuoc_mobilee/models/thuoc.dart';
 import 'package:nhathuoc_mobilee/UI/widgets/Home/product_buy_sheet.dart';
@@ -31,12 +30,11 @@ class _DetailProductView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      // Dùng AppBar trong suốt, phần back button nổi theo phong cách glassmorphism
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        title: Text(
+        title: const Text(
           "Chi tiết sản phẩm",
           style: TextStyle(
             color: AppColors.textPrimary,
@@ -45,7 +43,6 @@ class _DetailProductView extends StatelessWidget {
           ),
         ),
         automaticallyImplyLeading: false,
-        // custom leading để giữ control wyglądu
         leading: Padding(
           padding: const EdgeInsets.only(left: 12.0),
           child: GestureDetector(
@@ -57,7 +54,6 @@ class _DetailProductView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppColors.border.withOpacity(0.35)),
                 boxShadow: [
-                  // nhẹ Neumorphism
                   BoxShadow(
                     color: Colors.black.withOpacity(0.06),
                     offset: const Offset(4, 4),
@@ -70,7 +66,7 @@ class _DetailProductView extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Icon(Icons.arrow_back, color: AppColors.textPrimary),
+              child: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
             ),
           ),
         ),
@@ -90,7 +86,7 @@ class _DetailProductView extends StatelessWidget {
             return ErrorState(
               message: controller.errorMessage,
               onRetry: () =>
-                  controller.loadProduct(controller.product?.id ?? 0),
+                  controller.loadProduct(controller.product?.maThuoc ?? 0),
             );
           }
 
@@ -98,22 +94,15 @@ class _DetailProductView extends StatelessWidget {
 
           return Column(
             children: [
-              // Scrollable content
               Expanded(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Ảnh chính với nền warm gradient + neumorphism card
-                      ProductImagesSlider(
-                        imageUrl: product.anh,
-                        heroTag: 'product-${product.id}',
-                      ),
+                      ProductImagesSlider(imageUrl: product.anh),
 
                       const SizedBox(height: 14),
-
-                      // Card thông tin sản phẩm - glassmorphism style
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Container(
@@ -133,7 +122,6 @@ class _DetailProductView extends StatelessWidget {
                           ),
                           child: Column(
                             children: [
-                              // Reuse existing ProductInfoSection (UI nội dung), nhưng bọc trong padding đẹp
                               Padding(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 16.0,
@@ -151,8 +139,6 @@ class _DetailProductView extends StatelessWidget {
 
                       const SizedBox(height: 20),
 
-                      // Thông tin thêm (ví dụ mô tả dài) - giữ structure nếu ProductInfoSection đã cover
-                      // Nếu cần thêm sections, người dùng có thể chỉnh ProductInfoSection (không đổi ở đây).
                       const SizedBox(
                         height: 80,
                       ), // khoảng để tránh che bởi bottom bar
@@ -161,14 +147,15 @@ class _DetailProductView extends StatelessWidget {
                 ),
               ),
 
-              // Bottom bar (đã tách file) - vẫn sử dụng ProductBottomBar
+              // Bottom bar
               ProductBottomBar(
                 controller: controller,
                 onAddToCart: () {
                   if (controller.product == null) return;
                   final detail = controller.product!;
+                  // Convert từ ThuocDetail (detail) sang Thuoc (model giỏ hàng)
                   Thuoc thuoc = Thuoc(
-                    maThuoc: detail.id,
+                    maThuoc: detail.maThuoc,
                     tenThuoc: detail.tenThuoc,
                     anhURL: detail.anh,
                     cachSD: detail.cachSD,
@@ -180,11 +167,7 @@ class _DetailProductView extends StatelessWidget {
                     thanhPhan: detail.thanhPhan,
                     soLuongTon: detail.soLuong,
                   );
-                  ProductBuySheet.show(
-                    context,
-                    thuoc, // Truyền đối tượng đã convert
-                    controller.finalPrice, // Truyền giá tiền
-                  );
+                  ProductBuySheet.show(context, thuoc, controller.finalPrice);
                 },
               ),
             ],

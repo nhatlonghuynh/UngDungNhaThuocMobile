@@ -4,8 +4,8 @@ import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
 import 'package:nhathuoc_mobilee/UI/common/utils/dialog_helper.dart';
 import 'package:nhathuoc_mobilee/UI/common/widget/custom_text_field.dart';
 import 'package:nhathuoc_mobilee/UI/common/widget/primary_button.dart';
-import 'package:provider/provider.dart';
 import 'package:nhathuoc_mobilee/controller/usercontroller.dart';
+import 'package:provider/provider.dart';
 import 'package:nhathuoc_mobilee/manager/usermanager.dart';
 import 'package:nhathuoc_mobilee/UI/common/widget/glass_card.dart';
 
@@ -34,17 +34,30 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
   late TextEditingController _nameCtrl;
   late TextEditingController _phoneCtrl;
   late TextEditingController _dobCtrl;
+  late TextEditingController _emailCtrl; // [MỚI] Thêm Email
+  late TextEditingController _addressCtrl; // [MỚI] Thêm Địa chỉ
 
   String? _selectedGender;
+  DateTime? _selectedDateObj; // [MỚI] Biến lưu DateTime thực sự để gửi API
 
   @override
   void initState() {
     super.initState();
     final user = UserManager();
+
     _nameCtrl = TextEditingController(text: user.hoTen);
     _phoneCtrl = TextEditingController(text: user.soDienThoai);
-    // Nếu ngày sinh null thì để trống
-    _dobCtrl = TextEditingController(text: user.ngaySinh ?? '');
+    _addressCtrl = TextEditingController(text: user.diaChi ?? '');
+    _emailCtrl = TextEditingController(text: "user@example.com");
+    if (user.ngaySinh != null && user.ngaySinh!.isNotEmpty) {
+      _dobCtrl = TextEditingController(text: user.ngaySinh);
+      try {
+        _selectedDateObj = DateTime.tryParse(user.ngaySinh!);
+      } catch (_) {}
+    } else {
+      _dobCtrl = TextEditingController();
+    }
+
     _selectedGender = user.gioiTinh ?? 'Nam';
   }
 
@@ -53,6 +66,8 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
     _nameCtrl.dispose();
     _phoneCtrl.dispose();
     _dobCtrl.dispose();
+    _emailCtrl.dispose();
+    _addressCtrl.dispose();
     super.dispose();
   }
 
@@ -60,17 +75,15 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
   Future<void> _selectDate() async {
     DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now().subtract(
-        const Duration(days: 365 * 18),
-      ), // Mặc định 18 tuổi
+      initialDate:
+          _selectedDateObj ??
+          DateTime.now().subtract(const Duration(days: 365 * 18)),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.primary,
-            ),
+            colorScheme: const ColorScheme.light(primary: AppColors.primary),
           ),
           child: child!,
         );
@@ -79,33 +92,38 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
 
     if (picked != null) {
       setState(() {
-        _dobCtrl.text = DateFormat('yyyy-MM-dd').format(picked);
+        _selectedDateObj = picked; // Lưu Object DateTime
+        _dobCtrl.text = DateFormat(
+          'yyyy-MM-dd',
+        ).format(picked); // Hiển thị String
       });
     }
   }
 
-  // 2. Hàm Submit (Đã bỏ tham số Address)
+  // 2. Hàm Submit (Đã cập nhật đủ trường)
   void _handleSubmit(ProfileController controller) async {
     if (!_formKey.currentState!.validate()) return;
 
-    // Ẩn bàn phím
     FocusScope.of(context).unfocus();
 
+    // Gọi Controller (đã sửa ở bước trước)
     final result = await controller.updateInfo(
       name: _nameCtrl.text,
       phone: _phoneCtrl.text,
+      email: _emailCtrl.text, // [MỚI] Gửi Email
+      address: _addressCtrl.text, // [MỚI] Gửi Địa chỉ
       gender: _selectedGender ?? 'Nam',
-      birthday: _dobCtrl.text,
+      dob: _selectedDateObj, // [MỚI] Gửi DateTime object
     );
 
     if (!mounted) return;
 
-    if (result['success']) {
+    if (result['success'] == true) {
       DialogHelper.showSuccessDialog(
         context,
         title: "Thành công",
         message: "Cập nhật thông tin thành công!",
-        onPressed: () => Navigator.pop(context, true), // Trả về true để reload
+        onPressed: () => Navigator.pop(context, true),
       );
     } else {
       DialogHelper.showError(context, message: result['message']);
@@ -150,18 +168,37 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
                     ),
                     const SizedBox(height: 20),
 
-                    // 2. SĐT
+                    // 2. SĐT (Readonly)
                     CustomTextField(
                       controller: _phoneCtrl,
                       labelText: "Số điện thoại",
                       prefixIcon: Icons.phone_android_rounded,
-                      keyboardType: TextInputType.phone,
-                      readOnly: true,
+                      readOnly: true, // Không cho sửa SĐT đăng nhập
                       style: const TextStyle(color: Colors.grey),
                     ),
                     const SizedBox(height: 20),
 
-                    // 3. Ngày sinh (Chọn lịch)
+                    // [MỚI] 3. Email
+                    CustomTextField(
+                      controller: _emailCtrl,
+                      labelText: "Email",
+                      prefixIcon: Icons.email_outlined,
+                      keyboardType: TextInputType.emailAddress,
+                      // validator: (v) => v!.isEmpty ? "Vui lòng nhập email" : null, // Tùy chọn bắt buộc hay không
+                    ),
+                    const SizedBox(height: 20),
+
+                    // [MỚI] 4. Địa chỉ
+                    CustomTextField(
+                      controller: _addressCtrl,
+                      labelText: "Địa chỉ",
+                      prefixIcon: Icons.location_on_outlined,
+                      validator: (v) =>
+                          v!.isEmpty ? "Vui lòng nhập địa chỉ" : null,
+                    ),
+                    const SizedBox(height: 20),
+
+                    // 5. Ngày sinh
                     GestureDetector(
                       onTap: _selectDate,
                       child: AbsorbPointer(
@@ -176,7 +213,7 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
                     ),
                     const SizedBox(height: 20),
 
-                    // 4. Giới tính (Dropdown với GlassCard style)
+                    // 6. Giới tính
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -218,7 +255,7 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
               ),
               const SizedBox(height: 24),
 
-              // 5. Nút Lưu
+              // 7. Nút Lưu
               PrimaryButton(
                 text: "LƯU THAY ĐỔI",
                 isLoading: controller.isLoading,

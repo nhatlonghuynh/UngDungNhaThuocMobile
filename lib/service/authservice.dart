@@ -34,13 +34,13 @@ class AuthService {
         // Mapping dữ liệu
         Map<String, dynamic> userSaveData = {
           'access_token': userData['token'],
-          'user_id': userData['maKH'],
+          'khachhang_id': userData['MaKH'],
+          'user_id': userData['maTK'],
           'HoTen': userData['hoTen'] ?? 'Khách hàng',
           'SoDienThoai': userData['soDienThoai'] ?? phone,
-          'GioiTinh': userData['gender'] ?? 'Nam',
-          'DiaChi': userData['DiaChi'] ?? '',
-          'DiemTichLuy': userData['DiemTichLuy'] ?? 0,
-          'tongDiemTichLuy': userData['tongDiemTichLuy'] ?? 0,
+          'GioiTinh': userData['gioiTinh'] ?? 'Nam',
+          'DiaChi': userData['diaChi'] ?? '',
+          'DiemTichLuy': userData['diemTichLuy'] ?? 0,
           'capDo': userData['capDo'] ?? 'Mới',
         };
 
@@ -78,6 +78,8 @@ class AuthService {
         "ConfirmPassword": password,
         "Name_Customer": name,
         "PhoneNumber": cleanedPhone,
+        "DateOfBirth": null,
+        "City":'',
         "Address": address,
         "Gender": gender,
         "RoleType": "KhachHang",

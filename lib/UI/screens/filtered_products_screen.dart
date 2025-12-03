@@ -25,9 +25,9 @@ class FilteredProductsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Khởi tạo Controller riêng cho màn hình này
     return ChangeNotifierProvider(
-      create: (_) => ProductFilterController(
-        service: locator<DanhMucRepository>(),
-      )..loadProducts(typeId: typeId, catId: catId),
+      create: (_) =>
+          ProductFilterController(service: locator<DanhMucRepository>())
+            ..loadProducts(typeId: typeId, catId: catId),
       child: Scaffold(
         backgroundColor: AppColors.background,
         appBar: AppBar(
@@ -71,7 +71,7 @@ class FilteredProductsScreen extends StatelessWidget {
                 mainAxisSpacing: 14,
               ),
               itemBuilder: (context, index) {
-                return SanPhamItem(thuoc: controller.products[index]);
+                return SanPhamItem(product: controller.products[index]);
               },
             );
           },

@@ -4,9 +4,9 @@ import 'package:nhathuoc_mobilee/UI/common/widget/address_selection_field.dart';
 import 'package:nhathuoc_mobilee/UI/common/widget/custom_text_field.dart';
 import 'package:provider/provider.dart';
 import 'package:nhathuoc_mobilee/controller/ordercontroller.dart';
-import 'package:nhathuoc_mobilee/models/diachikhachhang.dart'; 
+import 'package:nhathuoc_mobilee/models/diachikhachhang.dart';
 import 'package:nhathuoc_mobilee/UI/common/utils/dialog_helper.dart';
-import 'package:nhathuoc_mobilee/manager/usermanager.dart'; 
+import 'package:nhathuoc_mobilee/manager/usermanager.dart';
 
 class OrderAddressSection extends StatelessWidget {
   const OrderAddressSection({super.key});
@@ -38,7 +38,10 @@ class OrderAddressSection extends StatelessWidget {
                         style: TextStyle(fontSize: 12, color: Colors.grey),
                       )
                     : null,
-                trailing: const Icon(Icons.edit, color: AppColors.textSecondary),
+                trailing: const Icon(
+                  Icons.edit,
+                  color: AppColors.textSecondary,
+                ),
                 onTap: () => _showAddressModal(context, controller),
               ),
               const Divider(height: 1, indent: 20, endIndent: 20),
@@ -176,92 +179,102 @@ class _AddressModalContentState extends State<_AddressModalContent> {
   }
 
   void _showAddNewAddressDialog() {
-  final addressCtrl = TextEditingController();
-  final detailCtrl = TextEditingController();
+    final addressCtrl = TextEditingController();
+    final detailCtrl = TextEditingController();
 
-  showDialog(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      title: const Text("Thêm địa chỉ mới", style: TextStyle(fontWeight: FontWeight.bold)),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AddressSelectionField(
-              controller: addressCtrl,
-              labelText: "Tỉnh/Thành, Quận/Huyện, Phường/Xã",
-            ),
-            const SizedBox(height: 15),
-            CustomTextField(
-              controller: detailCtrl,
-              labelText: "Số nhà, tên đường",
-              prefixIcon: Icons.home_outlined,
-            ),
-          ],
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          "Thêm địa chỉ mới",
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx),
-          child: const Text("Hủy", style: TextStyle(color: AppColors.textSecondary)),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AddressSelectionField(
+                controller: addressCtrl,
+                labelText: "Tỉnh/Thành, Quận/Huyện, Phường/Xã",
+              ),
+              const SizedBox(height: 15),
+              CustomTextField(
+                controller: detailCtrl,
+                labelText: "Số nhà, tên đường",
+                prefixIcon: Icons.home_outlined,
+              ),
+            ],
           ),
-          onPressed: () async {
-            if (addressCtrl.text.isEmpty || detailCtrl.text.isEmpty) {
-              DialogHelper.showError(context, message: "Vui lòng nhập đầy đủ thông tin");
-              return;
-            }
-
-            try {
-              // --- XỬ LÝ TÁCH CHUỖI AN TOÀN (Tránh Crash) ---
-              List<String> parts = addressCtrl.text.split(', ');
-              String province = "";
-              String district = "";
-              String ward = "";
-
-              // Xử lý ngược từ cuối lên để đảm bảo lấy đúng Tỉnh/Thành phố
-              if (parts.isNotEmpty) {
-                province = parts.last; // Phần tử cuối cùng luôn là Tỉnh/TP
-                if (parts.length >= 2) district = parts[parts.length - 2];
-                if (parts.length >= 3) {
-                  // Gộp các phần còn lại làm Xã/Phường (đề phòng địa chỉ dài)
-                  ward = parts.sublist(0, parts.length - 2).join(', ');
-                }
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text(
+              "Hủy",
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            onPressed: () async {
+              if (addressCtrl.text.isEmpty || detailCtrl.text.isEmpty) {
+                DialogHelper.showError(
+                  context,
+                  message: "Vui lòng nhập đầy đủ thông tin",
+                );
+                return;
               }
 
-              String currentUserId = UserManager().userId;
+              try {
+                // --- XỬ LÝ TÁCH CHUỖI AN TOÀN (Tránh Crash) ---
+                List<String> parts = addressCtrl.text.split(', ');
+                String province = "";
+                String district = "";
+                String ward = "";
 
-              // Gọi Controller để thêm mới
-              await widget.controller.addNewAddress(
-                UserAddress(
-                  addressID: 0,  
-                  province: province,
-                  district: district,
-                  ward: ward,
-                  street: detailCtrl.text,
-                  isDefault: true, // Mặc định chọn luôn cái mới thêm
-                ),
-                currentUserId,
-              );
+                // Xử lý ngược từ cuối lên để đảm bảo lấy đúng Tỉnh/Thành phố
+                if (parts.isNotEmpty) {
+                  province = parts.last; // Phần tử cuối cùng luôn là Tỉnh/TP
+                  if (parts.length >= 2) district = parts[parts.length - 2];
+                  if (parts.length >= 3) {
+                    // Gộp các phần còn lại làm Xã/Phường (đề phòng địa chỉ dài)
+                    ward = parts.sublist(0, parts.length - 2).join(', ');
+                  }
+                }
 
-              // Đóng Dialog nhập liệu
-              if (ctx.mounted) Navigator.pop(ctx);
-              // Đóng Modal chọn địa chỉ (để user thấy địa chỉ mới đã được chọn ở màn hình chính)
-              if (context.mounted) Navigator.pop(context);
+                String currentUserId = UserManager().userId;
 
-            } catch (e) {
-              DialogHelper.showError(context, message: e.toString());
-            }
-          },
-          child: const Text("Lưu", style: TextStyle(color: Colors.white)),
-        ),
-      ],
-    ),
-  );
-}
+                // Gọi Controller để thêm mới
+                await widget.controller.addNewAddress(
+                  UserAddress(
+                    addressID: 0,
+                    province: province,
+                    district: district,
+                    ward: ward,
+                    street: detailCtrl.text,
+                    isDefault: true, // Mặc định chọn luôn cái mới thêm
+                  ),
+                  currentUserId,
+                );
+
+                // Đóng Dialog nhập liệu
+                if (ctx.mounted) Navigator.pop(ctx);
+                // Đóng Modal chọn địa chỉ (để user thấy địa chỉ mới đã được chọn ở màn hình chính)
+                if (context.mounted) Navigator.pop(context);
+              } catch (e) {
+                DialogHelper.showError(context, message: e.toString());
+              }
+            },
+            child: const Text("Lưu", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
 }

@@ -133,9 +133,7 @@ class _AddressPickerDialogState extends State<AddressPickerDialog> {
           ),
         ),
         ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-          ),
+          style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
           onPressed:
               (_selectedProvince != null &&
                   _selectedDistrict != null &&

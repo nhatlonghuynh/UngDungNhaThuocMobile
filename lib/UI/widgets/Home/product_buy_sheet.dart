@@ -23,19 +23,12 @@ class ProductBuySheet extends StatefulWidget {
     required this.finalPrice,
   });
 
-  static void show(
-    BuildContext context,
-    Thuoc thuoc,
-    double finalPrice,
-  ) {
+  static void show(BuildContext context, Thuoc thuoc, double finalPrice) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => ProductBuySheet(
-        thuoc: thuoc,
-        finalPrice: finalPrice,
-      ),
+      builder: (_) => ProductBuySheet(thuoc: thuoc, finalPrice: finalPrice),
     );
   }
 

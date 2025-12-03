@@ -68,9 +68,12 @@ class PharmacyApp extends StatelessWidget {
           textTheme: const TextTheme(
             bodyMedium: TextStyle(color: AppColors.textPrimary),
             bodyLarge: TextStyle(color: AppColors.textPrimary),
-            titleLarge: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+            titleLarge: TextStyle(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          
+
           inputDecorationTheme: InputDecorationTheme(
             filled: true,
             fillColor: AppColors.surface,
@@ -86,14 +89,19 @@ class PharmacyApp extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: AppColors.primary, width: 2),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
           ),
-          
+
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               padding: const EdgeInsets.symmetric(vertical: 16),
               elevation: 2,
             ),
@@ -174,7 +182,7 @@ class MainScreenState extends State<MainScreen> {
 
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.local_pharmacy_outlined),
+              icon: Icon(Icons.home_outlined),
               activeIcon: Icon(Icons.local_pharmacy),
               label: 'Trang Chủ',
             ),

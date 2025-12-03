@@ -25,6 +25,49 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     });
   }
 
+  //Xác nhận đơn hàng
+  void _onConfirmReceived() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Xác nhận nhận hàng"),
+        content: const Text(
+          "Bạn xác nhận đã nhận được đầy đủ hàng và muốn hoàn tất đơn hàng này?",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text("Đóng", style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+            onPressed: () {
+              Navigator.pop(ctx);
+              // Gọi Controller
+              context
+                  .read<OrderHistoryController>()
+                  .confirmReceived(widget.orderId)
+                  .then((success) {
+                    if (success && mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Đã xác nhận nhận hàng thành công!"),
+                          backgroundColor: Colors.green,
+                        ),
+                      );
+                    }
+                  });
+            },
+            child: const Text(
+              "Đã nhận hàng",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // [CHỨC NĂNG MỚI] Xử lý sự kiện hủy đơn
   void _onCancelOrder() {
     showDialog(
@@ -165,14 +208,18 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           final detail = controller.currentDetail;
           if (detail == null) return const SizedBox.shrink();
 
-          // Kiểm tra logic trạng thái cho phép hủy
-          // Lưu ý: Chuỗi so sánh phải khớp chính xác với OrderConst trong C#
+          // 1. Kiểm tra trạng thái cho phép Hủy
           bool canCancel =
               detail.trangThai == "Chờ xử lý" ||
               detail.trangThai == "Chờ thanh toán" ||
               detail.trangThai == "Chờ duyệt";
 
-          if (!canCancel) return const SizedBox.shrink();
+          // 2. Kiểm tra trạng thái cho phép Xác nhận nhận hàng
+          // [QUAN TRỌNG] Chuỗi "Đang giao" phải khớp chính xác với OrderConst trong C#
+          bool canConfirm = detail.trangThai == "Đang giao";
+
+          // Nếu không thuộc 2 trường hợp trên thì ẩn luôn
+          if (!canCancel && !canConfirm) return const SizedBox.shrink();
 
           return Container(
             padding: const EdgeInsets.all(16),
@@ -187,23 +234,47 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               ],
             ),
             child: SafeArea(
-              child: ElevatedButton(
-                onPressed: _onCancelOrder,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.red,
-                  side: const BorderSide(color: Colors.red, width: 1.5),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  "Hủy đơn hàng",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-              ),
+              child: canConfirm
+                  // === CASE 1: NÚT XÁC NHẬN NHẬN HÀNG (Màu Xanh) ===
+                  ? ElevatedButton(
+                      onPressed: _onConfirmReceived,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            AppColors.badgeNew, // Hoặc Colors.green
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text(
+                        "Đã nhận được hàng",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    )
+                  // === CASE 2: NÚT HỦY ĐƠN (Màu Đỏ - Code cũ của bạn) ===
+                  : ElevatedButton(
+                      onPressed: _onCancelOrder,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.red,
+                        side: const BorderSide(color: Colors.red, width: 1.5),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text(
+                        "Hủy đơn hàng",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
             ),
           );
         },

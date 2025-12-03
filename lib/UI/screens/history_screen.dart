@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
-import 'package:nhathuoc_mobilee/UI/widgets/HistoryOrder/order_history_card.dart';
 import 'package:provider/provider.dart';
 import 'package:nhathuoc_mobilee/controller/historyordercontroller.dart';
 import 'package:nhathuoc_mobilee/UI/screens/history_detail_screen.dart';
 import 'package:nhathuoc_mobilee/UI/common/widget/loading_state.dart';
 import 'package:nhathuoc_mobilee/UI/common/widget/error_state.dart';
 import 'package:nhathuoc_mobilee/UI/common/widget/empty_state.dart';
+// Import file card vừa tạo
+import 'package:nhathuoc_mobilee/UI/widgets/HistoryOrder/order_history_card.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
   const OrderHistoryScreen({super.key});
@@ -25,7 +26,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
     });
   }
 
-  // Hàm xử lý khi chuyển Tab
+  // Hàm xử lý khi chuyển Tab - GIỮ NGUYÊN LOGIC CŨ CỦA BẠN
   void _onTabChanged(int index) {
     String status = "ALL";
     switch (index) {
@@ -113,7 +114,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
               itemBuilder: (context, index) {
                 final item = controller.orders[index];
                 return OrderHistoryCard(
-                  order: item,
+                  order: item, // Truyền item dynamic vào Card
                   onTap: () {
                     Navigator.push(
                       context,

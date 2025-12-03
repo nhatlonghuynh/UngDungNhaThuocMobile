@@ -52,9 +52,7 @@ class OrderDetailProductList extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: AppColors.border.withOpacity(0.2),
-                  ),
+                  border: Border.all(color: AppColors.border.withOpacity(0.2)),
                 ),
                 child: Row(
                   children: [

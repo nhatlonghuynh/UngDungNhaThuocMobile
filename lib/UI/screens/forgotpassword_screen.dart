@@ -56,10 +56,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  AppColors.primary,
-                  AppColors.primary.withOpacity(0.8),
-                ],
+                colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
               ),
               borderRadius: const BorderRadius.vertical(
                 bottom: Radius.circular(50),

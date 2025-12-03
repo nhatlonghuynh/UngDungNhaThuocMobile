@@ -5,7 +5,8 @@ import 'package:nhathuoc_mobilee/models/thuoc.dart';
 class ProductFilterController extends ChangeNotifier {
   final DanhMucRepository _service;
 
-  ProductFilterController({required DanhMucRepository service}) : _service = service;
+  ProductFilterController({required DanhMucRepository service})
+    : _service = service;
 
   // State
   List<Thuoc> products = [];

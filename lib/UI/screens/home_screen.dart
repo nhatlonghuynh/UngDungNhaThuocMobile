@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nhathuoc_mobilee/UI/widgets/Home/home_components.dart';
 import 'package:nhathuoc_mobilee/UI/widgets/Home/item_product.dart';
+import 'package:nhathuoc_mobilee/UI/widgets/Home/promo_carousel.dart';
 import 'package:nhathuoc_mobilee/UI/widgets/Home/main_drawner.dart';
 import 'package:provider/provider.dart';
 import 'package:nhathuoc_mobilee/controller/home_controller.dart';
@@ -14,7 +15,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => HomeController(service: ProductService(repo: ProductRepository())),
+      create: (_) =>
+          HomeController(service: ProductService(repo: ProductRepository())),
       child: Scaffold(
         drawer: MainDrawer(), // Widget Drawer đã tách
         backgroundColor: AppColors.background,
@@ -81,9 +83,7 @@ class HomeBody extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.surface.withOpacity(0.92),
               borderRadius: BorderRadius.circular(22),
-              border: Border.all(
-                color: AppColors.border.withOpacity(0.6),
-              ),
+              border: Border.all(color: AppColors.border.withOpacity(0.6)),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.shadow,
@@ -140,12 +140,25 @@ class HomeBody extends StatelessWidget {
           ),
         ),
 
+        // Promo carousel (bordered horizontal scroller)
+        Builder(
+          builder: (context) {
+            final controller = context.watch<HomeController>();
+            final promos = controller.products
+                .where((p) => controller.checkPromo(p))
+                .toList();
+            if (promos.isEmpty)
+              return const SliverToBoxAdapter(child: SizedBox.shrink());
+            return SliverToBoxAdapter(child: PromoCarousel(promos: promos));
+          },
+        ),
+
         // Title
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 6, 20, 8),
             child: Text(
-              "Sản phẩm nổi bật",
+              "Danh sách sản phẩm",
               style: const TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 18,
@@ -179,7 +192,7 @@ class HomeBody extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
             sliver: SliverGrid(
               delegate: SliverChildBuilderDelegate(
-                (ctx, index) => SanPhamItem(thuoc: controller.products[index]),
+                (ctx, index) => SanPhamItem(product: controller.products[index]),
                 childCount: controller.products.length,
               ),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:nhathuoc_mobilee/UI/common/constants/api_constants.dart';
 import 'package:nhathuoc_mobilee/api/rewardapi.dart';
 import 'package:nhathuoc_mobilee/manager/usermanager.dart';
 
@@ -20,11 +21,27 @@ class GiftModel {
   });
 
   factory GiftModel.fromJson(Map<String, dynamic> json) {
+    String rawImage = json['AnhMinhHoa']?.toString() ?? '';
+    String finalImageUrl = '';
+
+    if (rawImage.isNotEmpty) {
+      if (rawImage.startsWith('http')) {
+        finalImageUrl = rawImage;
+      } else {
+        if (rawImage.startsWith('/')) {
+          rawImage = rawImage.substring(1);
+        }
+        finalImageUrl = '${ApiConstants.serverUrl}/$rawImage';
+      }
+    } else {
+      // Có thể gán ảnh mặc định nếu không có ảnh
+      finalImageUrl = 'https://via.placeholder.com/150';
+    }
     return GiftModel(
       id: json['Id'] ?? 0,
       name: json['TenQua'] ?? '',
       points: json['DiemCanDoi'] ?? 0,
-      imagePath: json['AnhMinhHoa'] ?? "assets/images/promotion/voucher20.png",
+      imagePath: finalImageUrl,
       quantity: json['SoLuongTon'] ?? 0,
     );
   }
@@ -55,8 +72,6 @@ class RewardService {
     }
   }
 
-  // 2. Đổi quà
-  // 2. Đổi quà
   Future<Map<String, dynamic>> redeemGift({
     required int giftId,
     int points = 0,

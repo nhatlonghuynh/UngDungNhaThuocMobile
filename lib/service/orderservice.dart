@@ -155,4 +155,28 @@ class OrderService {
       return {'success': false, 'message': 'Lỗi kết nối: $e'};
     }
   }
+
+  //xác nhận nhận hàng
+  Future<Map<String, dynamic>> confirmOrderReceived(int orderId) async {
+    try {
+      debugPrint("📦 [Service] Confirm Received ID: $orderId");
+      final response = await _historyRepo.confirmReceivedOrder(orderId);
+
+      if (response.statusCode == 200) {
+        debugPrint("✅ [Confirm] Success");
+        // Backend trả về: { Message, MaHD, TrangThai, DiemTichLuyHienTai }
+        // Bạn có thể parse data này để update UI nếu cần
+        return {'success': true, 'message': 'Xác nhận thành công'};
+      } else {
+        final body = jsonDecode(response.body);
+        debugPrint("❌ [Confirm] Fail: ${body['Message']}");
+        return {
+          'success': false,
+          'message': body['Message'] ?? 'Lỗi xác nhận đơn hàng',
+        };
+      }
+    } catch (e) {
+      return {'success': false, 'message': 'Lỗi kết nối: $e'};
+    }
+  }
 }

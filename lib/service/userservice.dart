@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:nhathuoc_mobilee/api/userapi.dart'; // Đảm bảo import đúng ProfileRepository
+import 'package:nhathuoc_mobilee/api/userapi.dart';
 import 'package:nhathuoc_mobilee/manager/usermanager.dart';
 
 class UserService {
@@ -12,28 +12,35 @@ class UserService {
   // =======================================================================
   Future<Map<String, dynamic>> updateProfile({
     required String name,
+    required DateTime? dob, // Chỉ dùng DateTime
+    required String email,
     required String phoneNumber,
     required String gender,
-    required String birthday,
+    required String address, 
   }) async {
     try {
       debugPrint("👤 [UserService] Update Profile: $name - $phoneNumber");
-
-      final response = await _repo.updateProfileRequest({
+      String? dobString = dob?.toIso8601String();
+      final body = {
         'Name_Customer': name,
         'PhoneNumber': phoneNumber,
         'Gender': gender,
-        'Email': "", // Để trống nếu server không yêu cầu
-        'Birthday': birthday,
-      });
+        'Email': email, 
+        'Address': address,
+        'DateOfBirth': dobString,
+      };
+
+      final response = await _repo.updateProfileRequest(body);
 
       if (response.statusCode == 200) {
-        // Update thành công -> Lưu ngay vào Singleton UserManager
         final userMgr = UserManager();
         userMgr.hoTen = name;
         userMgr.soDienThoai = phoneNumber;
         userMgr.gioiTinh = gender;
-        userMgr.ngaySinh = birthday;
+        userMgr.diaChi = address; 
+        if (dob != null) {
+          userMgr.ngaySinh = dobString;
+        }
 
         return {'success': true, 'message': 'Cập nhật thành công'};
       } else {
@@ -77,18 +84,29 @@ class UserService {
     try {
       debugPrint("🔑 [UserService] Forgot Password: $username");
       final response = await _repo.forgotPasswordRequest(username);
+
+      if (response.body.isEmpty) return _handleError(response);
+
       final data = jsonDecode(response.body);
 
+      debugPrint("📩 [API Response]: $data");
+
       if (response.statusCode == 200) {
+        String? token = data['resetToken'];
+
+        if (token == null && data['data'] != null) {
+          token = data['data']['resetToken'];
+        }
         return {
           'success': true,
-          'message': data['message'],
-          'resetToken': data['resetToken'],
+          'message': data['message'] ?? "Thành công",
+          'resetToken': token ?? "",
         };
       } else {
         return _handleError(response);
       }
     } catch (e) {
+      debugPrint("❌ Error: $e");
       return {'success': false, 'message': 'Lỗi kết nối: $e'};
     }
   }
@@ -116,22 +134,25 @@ class UserService {
     }
   }
 
-  // --- Helper xử lý lỗi (Dùng chung trong class này) ---
+  // --- Helper xử lý lỗi ---
   Map<String, dynamic> _handleError(http.Response response) {
     try {
-      // Decode UTF8 để hiển thị tiếng Việt có dấu chuẩn
       final data = jsonDecode(utf8.decode(response.bodyBytes));
       String msg = data['message'] ?? "Có lỗi xảy ra";
 
-      // Xử lý lỗi ModelState (ASP.NET)
       if (data['ModelState'] != null) {
-        msg = data['ModelState'].values.first[0];
+        var errors = data['ModelState'] as Map<String, dynamic>;
+        if (errors.isNotEmpty) {
+          var firstKey = errors.keys.first;
+          msg = errors[firstKey][0];
+        }
       }
       return {'success': false, 'message': msg};
     } catch (_) {
       return {
         'success': false,
-        'message': 'Lỗi server (${response.statusCode})',
+        'message':
+            'Lỗi server (${response.statusCode}): ${response.reasonPhrase}',
       };
     }
   }

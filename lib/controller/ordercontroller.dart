@@ -183,7 +183,7 @@ class OrderController extends ChangeNotifier {
           await _saveToSP();
 
           debugPrint("✅ Đã đồng bộ ID thật: $realId");
-          notifyListeners(); 
+          notifyListeners();
         }
       } else {
         throw Exception("Server trả về ID không hợp lệ");
@@ -197,7 +197,7 @@ class OrderController extends ChangeNotifier {
         selectedAddress = addresses.isNotEmpty ? addresses.first : null;
       }
 
-      notifyListeners(); 
+      notifyListeners();
     }
   }
 

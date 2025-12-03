@@ -54,10 +54,7 @@ class CartItemWidget extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    side: const BorderSide(
-                      color: AppColors.border,
-                      width: 1.2,
-                    ),
+                    side: const BorderSide(color: AppColors.border, width: 1.2),
                     onChanged: (val) {
                       // Gọi hàm toggleItem vừa thêm ở Bước 1
                       controller.toggleItem(index);

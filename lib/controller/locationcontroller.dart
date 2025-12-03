@@ -33,7 +33,7 @@ class LocationController extends ChangeNotifier {
   /// Chọn Tỉnh -> Load Huyện, Reset Xã
   void selectProvince(Province? province) {
     if (province == null) return;
-    
+
     debugPrint("📍 [Controller] Chọn Tỉnh: ${province.name}");
     selectedProvince = province;
     districts = province.districts;
@@ -63,12 +63,12 @@ class LocationController extends ChangeNotifier {
   /// Chọn Xã
   void selectWard(Ward? ward) {
     if (ward == null) return;
-    
+
     debugPrint("📍 [Controller] Chọn Xã: ${ward.name}");
     selectedWard = ward;
     notifyListeners();
   }
-  
+
   // Hàm reset chọn lại từ đầu (nếu cần)
   void resetSelection() {
     selectedProvince = null;

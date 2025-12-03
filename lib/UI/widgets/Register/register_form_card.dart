@@ -141,13 +141,9 @@ class RegisterFormCard extends StatelessWidget {
         ),
         Row(
           children: [
-            Expanded(
-              child: _buildGenderOption("Nam", Icons.male_rounded),
-            ),
+            Expanded(child: _buildGenderOption("Nam", Icons.male_rounded)),
             const SizedBox(width: 12),
-            Expanded(
-              child: _buildGenderOption("Nữ", Icons.female_rounded),
-            ),
+            Expanded(child: _buildGenderOption("Nữ", Icons.female_rounded)),
           ],
         ),
       ],
@@ -179,17 +175,13 @@ class RegisterFormCard extends StatelessWidget {
             Icon(
               icon,
               size: 20,
-              color: isSelected
-                  ? AppColors.primary
-                  : AppColors.textSecondary,
+              color: isSelected ? AppColors.primary : AppColors.textSecondary,
             ),
             const SizedBox(width: 8),
             Text(
               value,
               style: TextStyle(
-                color: isSelected
-                    ? AppColors.primary
-                    : AppColors.textPrimary,
+                color: isSelected ? AppColors.primary : AppColors.textPrimary,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                 fontSize: 15,
               ),
@@ -200,4 +192,3 @@ class RegisterFormCard extends StatelessWidget {
     );
   }
 }
-

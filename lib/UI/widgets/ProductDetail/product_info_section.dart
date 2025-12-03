@@ -4,7 +4,7 @@ import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
 import 'package:nhathuoc_mobilee/models/thuoc_detail.dart';
 
 class ProductInfoSection extends StatelessWidget {
-  final ThuocDetail product; // Thay bằng tên model của bạn
+  final ThuocDetail product;
   final double finalPrice;
 
   const ProductInfoSection({
@@ -34,8 +34,12 @@ class ProductInfoSection extends StatelessWidget {
           ),
           const SizedBox(height: 10),
 
-          // Giá & Khuyến mãi
-          Row(
+          // --- SỬA Ở ĐÂY: Thay Row bằng Wrap ---
+          Wrap(
+            crossAxisAlignment:
+                WrapCrossAlignment.center, // Canh giữa theo chiều dọc
+            spacing: 10, // Khoảng cách ngang (thay cho SizedBox width)
+            runSpacing: 4, // Khoảng cách dọc (nếu bị rớt dòng)
             children: [
               Text(
                 "${currencyFormat.format(finalPrice)} / ${product.donVi}",
@@ -45,8 +49,7 @@ class ProductInfoSection extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              if (product.khuyenMai != null) ...[
-                const SizedBox(width: 10),
+              if (product.khuyenMai != null)
                 Text(
                   currencyFormat.format(product.giaBan),
                   style: const TextStyle(
@@ -55,40 +58,46 @@ class ProductInfoSection extends StatelessWidget {
                     fontSize: 16,
                   ),
                 ),
-              ],
             ],
           ),
 
+          // --------------------------------------
           const Divider(height: 30),
 
           // Thông tin chi tiết
-          _buildInfoRow("Thương hiệu", product.tenNCC),
-          _buildInfoRow("Công dụng", product.congDung),
-          _buildInfoRow("Thành phần", product.thanhPhan),
-          _buildInfoRow("Cách dùng", product.cachSD),
+          _buildInfoRow(Icons.business, "Thương hiệu", product.tenNCC),
+          _buildInfoRow(Icons.medication, "Công dụng", product.congDung),
+          _buildInfoRow(Icons.science, "Thành phần", product.thanhPhan),
+          _buildInfoRow(Icons.info_outline, "Cách dùng", product.cachSD),
         ],
       ),
     );
   }
 
-  Widget _buildInfoRow(String title, String content) {
+  Widget _buildInfoRow(IconData icon, String title, String content) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-              color: AppColors.textPrimary,
-            ),
+          Row(
+            children: [
+              Icon(icon, size: 18, color: AppColors.primary),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 4),
-          Text(
+          const SizedBox(height: 6),
+          SelectableText(
             content,
-            style: const TextStyle(color: Colors.black87, height: 1.4),
+            style: const TextStyle(color: Colors.black87, height: 1.5),
           ),
         ],
       ),

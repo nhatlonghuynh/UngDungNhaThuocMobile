@@ -81,14 +81,16 @@ class CartService {
         );
 
         if (localItem.maThuoc != -1) {
-             result.add(GioHang(
-            maThuoc: thuoc.maThuoc,
-            tenThuoc: thuoc.tenThuoc,
-            anhURL: thuoc.anhURL,
-            donGia: thuoc.donGia,
-            soLuong: localItem.soLuong, // Lấy số lượng từ máy người dùng
-            isSelected: false,
-          ));
+          result.add(
+            GioHang(
+              maThuoc: thuoc.maThuoc,
+              tenThuoc: thuoc.tenThuoc,
+              anhURL: thuoc.anhURL,
+              donGia: thuoc.donGia,
+              soLuong: localItem.soLuong, // Lấy số lượng từ máy người dùng
+              isSelected: false,
+            ),
+          );
         }
       }
       return result;
