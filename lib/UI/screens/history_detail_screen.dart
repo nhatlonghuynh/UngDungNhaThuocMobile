@@ -69,6 +69,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 
   // [CHỨC NĂNG MỚI] Xử lý sự kiện hủy đơn
+  // [CẬP NHẬT] Xử lý sự kiện hủy đơn an toàn hơn
   void _onCancelOrder() {
     showDialog(
       context: context,
@@ -91,31 +92,51 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            onPressed: () {
+            onPressed: () async {
+              // 1. Đóng dialog xác nhận trước
               Navigator.pop(ctx);
-              // Gọi API hủy trong Controller
-              context
-                  .read<OrderHistoryController>()
-                  .cancelOrder(widget.orderId)
-                  .then((success) {
-                    if (success) {
-                      // Reload lại data để cập nhật trạng thái mới
-                      context.read<OrderHistoryController>().getOrderDetail(
-                        widget.orderId,
-                      );
 
-                      if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              "Đã gửi yêu cầu hủy đơn hàng thành công",
-                            ),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                      }
-                    }
-                  });
+              // 2. Hiển thị loading nhẹ hoặc chặn thao tác (Optional)
+              // ...
+
+              final controller = context.read<OrderHistoryController>();
+
+              // 3. Gọi API hủy
+              bool success = await controller.cancelOrder(widget.orderId);
+
+              // 4. Reload lại dữ liệu MỚI NHẤT từ server bất kể thành công hay thất bại
+              // Để đảm bảo UI đồng bộ với Server (Ví dụ: Server đã đổi thành 'Đã duyệt' thì reload sẽ thấy status đó)
+              await controller.getOrderDetail(widget.orderId);
+
+              if (mounted) {
+                if (success) {
+                  // CASE A: Hủy thành công
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Đã hủy đơn hàng thành công"),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                } else {
+                  // CASE B: Hủy thất bại (Do Backend chặn vì đơn đã duyệt/đang giao)
+                  // Lúc này nhờ hàm getOrderDetail ở trên, UI sẽ tự vẽ lại -> Nút hủy sẽ tự biến mất
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text("Không thể hủy"),
+                      content: const Text(
+                        "Trạng thái đơn hàng đã thay đổi (có thể nhân viên vừa duyệt đơn). Danh sách đã được cập nhật lại.",
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text("Đã hiểu"),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              }
             },
             child: const Text("Xác nhận hủy"),
           ),

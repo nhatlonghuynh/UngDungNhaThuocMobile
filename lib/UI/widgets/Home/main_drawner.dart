@@ -76,12 +76,14 @@ class _MainDrawerState extends State<MainDrawer> {
                           ),
 
                         ...cateController.tree.map((loai) {
-                          // Trường hợp 1: Không có con -> Hiển thị ListTile thường
                           if (loai.danhMucCon.isEmpty) {
                             return ListTile(
-                              leading: const Icon(
-                                Icons.category_outlined,
-                                color: AppColors.primary,
+                              leading: Image.asset(
+                                'assets/icons/drugs1.png',
+                                width: 24,
+                                height: 24,
+                                fit: BoxFit.contain,
+                                color: AppColors.badgeNew,
                               ),
                               title: Text(
                                 loai.ten,
@@ -109,9 +111,12 @@ class _MainDrawerState extends State<MainDrawer> {
                               context,
                             ).copyWith(dividerColor: Colors.transparent),
                             child: ExpansionTile(
-                              leading: const Icon(
-                                Icons.medication,
-                                color: AppColors.secondary,
+                              leading: Image.asset(
+                                'assets/icons/drugs1.png',
+                                width: 24,
+                                height: 24,
+                                fit: BoxFit.contain,
+                                color: AppColors.badgeNew,
                               ),
                               title: Text(
                                 loai.ten,
@@ -151,10 +156,10 @@ class _MainDrawerState extends State<MainDrawer> {
                                 // Danh sách con
                                 ...loai.danhMucCon.map(
                                   (dm) => ListTile(
-                                    leading: const Icon(
-                                      Icons.subdirectory_arrow_right,
-                                      size: 18,
-                                      color: AppColors.textSecondary,
+                                    leading: Image.asset(
+                                      'assets/icons/drugs.png',
+                                      height: 18,
+                                      width: 18,
                                     ),
                                     title: Text(
                                       dm.ten,
@@ -236,10 +241,10 @@ class _MainDrawerState extends State<MainDrawer> {
               color: AppColors.primary.withOpacity(0.12),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: const Icon(
-              Icons.local_pharmacy,
-              size: 36,
-              color: AppColors.primary,
+            child: Image.asset(
+              'assets/icons/trolley.png',
+              height: 36,
+              width: 36,
             ),
           ),
           const SizedBox(width: 14),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:nhathuoc_mobilee/UI/widgets/Home/home_components.dart';
 import 'package:nhathuoc_mobilee/UI/widgets/Home/item_product.dart';
 import 'package:nhathuoc_mobilee/UI/widgets/Home/promo_carousel.dart';
 import 'package:nhathuoc_mobilee/UI/widgets/Home/main_drawner.dart';
-import 'package:provider/provider.dart';
 import 'package:nhathuoc_mobilee/controller/home_controller.dart';
 import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
 import 'package:nhathuoc_mobilee/service/productservice.dart';
@@ -18,7 +19,7 @@ class HomeScreen extends StatelessWidget {
       create: (_) =>
           HomeController(service: ProductService(repo: ProductRepository())),
       child: Scaffold(
-        drawer: MainDrawer(), // Widget Drawer đã tách
+        drawer: MainDrawer(),
         backgroundColor: AppColors.background,
         body: const HomeBody(),
       ),
@@ -26,8 +27,58 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class HomeBody extends StatelessWidget {
+class HomeBody extends StatefulWidget {
   const HomeBody({super.key});
+
+  @override
+  State<HomeBody> createState() => _HomeBodyState();
+}
+
+class _HomeBodyState extends State<HomeBody> {
+  late stt.SpeechToText _speech;
+  bool _isListening = false;
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _speech = stt.SpeechToText();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _listen() async {
+    if (!_isListening) {
+      bool available = await _speech.initialize(
+        onStatus: (val) => print('Trạng thái voice: $val'),
+        onError: (val) => print('Lỗi voice: $val'),
+      );
+
+      if (available) {
+        setState(() => _isListening = true);
+        _speech.listen(
+          localeId: 'vi_VN',
+          onResult: (val) {
+            setState(() {
+              _searchController.text = val.recognizedWords;
+
+              if (val.finalResult) {
+                context.read<HomeController>().onSearch(val.recognizedWords);
+              }
+            });
+          },
+        );
+      }
+    } else {
+      // Dừng nghe
+      setState(() => _isListening = false);
+      _speech.stop();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,15 +87,22 @@ class HomeBody extends StatelessWidget {
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
-        // Floating compact welcome AppBar (glass-like)
+        // --- 1. AppBar Title (Menu + Tên App) ---
         SliverAppBar(
           pinned: false,
           floating: true,
           snap: true,
           centerTitle: true,
-          title: Text(
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: const Icon(Icons.menu_outlined, color: AppColors.primary),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
+          title: const Text(
             'Nhà Thuốc',
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Inter',
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w700,
@@ -56,7 +114,6 @@ class HomeBody extends StatelessWidget {
           flexibleSpace: Container(
             decoration: BoxDecoration(
               color: AppColors.background.withOpacity(0.6),
-              // subtle glass gradient
               gradient: LinearGradient(
                 colors: [
                   AppColors.background.withOpacity(0.80),
@@ -69,7 +126,7 @@ class HomeBody extends StatelessWidget {
           ),
         ),
 
-        // Pinned search bar with soft shadow + rounded
+        // --- 2. Search Bar (Đã tích hợp Voice) ---
         SliverAppBar(
           pinned: true,
           primary: false,
@@ -90,7 +147,6 @@ class HomeBody extends StatelessWidget {
                   blurRadius: 18,
                   offset: const Offset(0, 8),
                 ),
-                // subtle top highlight for neumorphism feel
                 BoxShadow(
                   color: AppColors.surface.withOpacity(0.9),
                   blurRadius: 6,
@@ -99,6 +155,7 @@ class HomeBody extends StatelessWidget {
               ],
             ),
             child: TextField(
+              controller: _searchController, // Gán controller
               textInputAction: TextInputAction.search,
               onSubmitted: (value) {
                 context.read<HomeController>().onSearch(value);
@@ -109,14 +166,29 @@ class HomeBody extends StatelessWidget {
                 fontSize: 14,
               ),
               decoration: InputDecoration(
-                hintText: "Tên, công dụng thuốc ....",
+                // Đổi hint text khi đang nghe để user biết
+                hintText: _isListening
+                    ? "Đang nghe bạn nói..."
+                    : "Tên, công dụng thuốc ....",
                 hintStyle: TextStyle(
-                  color: AppColors.textSecondary.withOpacity(0.9),
+                  color: _isListening
+                      ? Colors.redAccent
+                      : AppColors.textSecondary.withOpacity(0.9),
                   fontSize: 14,
                   fontFamily: 'Inter',
                 ),
                 prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
-                suffixIcon: Icon(Icons.mic, color: AppColors.primary),
+
+                // Nút Mic đã được xử lý sự kiện
+                suffixIcon: IconButton(
+                  onPressed: _listen,
+                  icon: Icon(
+                    _isListening ? Icons.mic_off : Icons.mic, // Đổi icon
+                    color: _isListening
+                        ? Colors.red
+                        : AppColors.primary, // Đổi màu
+                  ),
+                ),
                 border: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(vertical: 16),
               ),
@@ -124,7 +196,7 @@ class HomeBody extends StatelessWidget {
           ),
         ),
 
-        // Header (greet + points)
+        // --- 3. Header Info ---
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
@@ -132,7 +204,7 @@ class HomeBody extends StatelessWidget {
           ),
         ),
 
-        // Banner
+        // --- 4. Banner ---
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
@@ -140,26 +212,27 @@ class HomeBody extends StatelessWidget {
           ),
         ),
 
-        // Promo carousel (bordered horizontal scroller)
+        // --- 5. Promo Carousel ---
         Builder(
           builder: (context) {
             final controller = context.watch<HomeController>();
             final promos = controller.products
                 .where((p) => controller.checkPromo(p))
                 .toList();
-            if (promos.isEmpty)
+            if (promos.isEmpty) {
               return const SliverToBoxAdapter(child: SizedBox.shrink());
+            }
             return SliverToBoxAdapter(child: PromoCarousel(promos: promos));
           },
         ),
 
-        // Title
+        // --- 6. Title List ---
         SliverToBoxAdapter(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 6, 20, 8),
-            child: Text(
+            child: const Text(
               "Danh sách sản phẩm",
-              style: const TextStyle(
+              style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -169,7 +242,7 @@ class HomeBody extends StatelessWidget {
           ),
         ),
 
-        // Grid sản phẩm
+        // --- 7. Grid Sản phẩm ---
         if (controller.isLoading)
           const SliverToBoxAdapter(
             child: Center(
@@ -192,7 +265,8 @@ class HomeBody extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
             sliver: SliverGrid(
               delegate: SliverChildBuilderDelegate(
-                (ctx, index) => SanPhamItem(product: controller.products[index]),
+                (ctx, index) =>
+                    SanPhamItem(product: controller.products[index]),
                 childCount: controller.products.length,
               ),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

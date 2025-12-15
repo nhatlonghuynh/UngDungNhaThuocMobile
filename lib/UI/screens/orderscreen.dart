@@ -3,6 +3,7 @@ import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
 import 'package:nhathuoc_mobilee/UI/common/utils/dialog_helper.dart';
 import 'package:nhathuoc_mobilee/UI/common/widget/primary_button.dart';
 import 'package:nhathuoc_mobilee/UI/screens/payos_payment_screen.dart';
+import 'package:nhathuoc_mobilee/main.dart';
 import 'package:provider/provider.dart';
 import 'package:nhathuoc_mobilee/controller/ordercontroller.dart';
 import 'package:nhathuoc_mobilee/models/giohang.dart';
@@ -178,11 +179,14 @@ class OrderScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
               ),
-              onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                context,
-                '/',
-                (route) => false,
-              ),
+              onPressed: () {
+                Navigator.of(context).pop(); // Đóng dialog
+
+                mainScreenKey.currentState?.navigateToTab(0);
+
+                Navigator.of(context)
+                    .popUntil((route) => route.isFirst); // Về trang chủ
+              },
               child: const Text(
                 "Về trang chủ",
                 style: TextStyle(color: Colors.white),

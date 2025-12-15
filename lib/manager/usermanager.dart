@@ -29,7 +29,12 @@ class UserManager {
   String? get accessToken => _currentUser?['access_token'];
   String get userId => _currentUser?['user_id'] ?? '';
 
-  int get makh => _currentUser?['khachhang_id'] ?? '';
+  int get makh {
+    final value = _currentUser?['khachhang_id'];
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
+  }
 
   // Thông tin cá nhân
   String get hoTen => _currentUser?['HoTen'] ?? 'Khách hàng';
