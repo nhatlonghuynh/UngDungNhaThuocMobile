@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
+import 'package:nhathuoc_mobilee/UI/common/utils/color_opacity_ext.dart';
 
 /// Widget Card với hiệu ứng Glassmorphism tinh tế
 class GlassCard extends StatelessWidget {

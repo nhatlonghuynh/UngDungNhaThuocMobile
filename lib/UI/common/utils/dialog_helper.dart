@@ -16,9 +16,7 @@ class DialogHelper {
             color: AppColors.textPrimary,
           ),
         ),
-        content: const Text(
-          "Vui lòng đăng nhập để xem thông tin hồ sơ cá nhân.",
-        ),
+        content: const Text("Vui lòng đăng nhập để xem chi tiết."),
         actions: [
           // Nút Thoát -> Trả về FALSE
           TextButton(

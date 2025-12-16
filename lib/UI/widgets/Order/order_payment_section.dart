@@ -16,52 +16,62 @@ class OrderPaymentSection extends StatelessWidget {
             _buildSection(
               title: "Hình thức nhận hàng",
               children: [
-                RadioListTile(
-                  title: const Text("Giao tận nơi"),
-                  value: 0,
+                RadioGroup<int>(
                   groupValue: c.deliveryMethod,
-                  activeColor: AppColors.primary,
                   onChanged: (v) => c.setDeliveryMethod(v!),
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
-                ),
-                RadioListTile(
-                  title: const Text("Nhận tại nhà thuốc"),
-                  value: 1,
-                  groupValue: c.deliveryMethod,
-                  activeColor: AppColors.primary,
-                  onChanged: (v) => c.setDeliveryMethod(v!),
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
+                  child: Column(
+                    children: [
+                      RadioListTile<int>(
+                        title: const Text("Giao tận nơi"),
+                        value: 0,
+                        activeColor: AppColors.primary,
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                      ),
+                      RadioListTile<int>(
+                        title: const Text("Nhận tại nhà thuốc"),
+                        value: 1,
+                        activeColor: AppColors.primary,
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
+
             const SizedBox(height: 10),
 
             // 2. Thanh toán
             _buildSection(
               title: "Phương thức thanh toán",
               children: [
-                RadioListTile(
-                  title: const Text("Thanh toán khi nhận hàng (COD)"),
-                  value: "COD",
+                RadioGroup<String>(
                   groupValue: c.paymentMethod,
-                  activeColor: AppColors.primary,
                   onChanged: (v) => c.setPaymentMethod(v!),
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
-                ),
-                RadioListTile(
-                  title: const Text("Thanh toán PayOS (QR Code)"),
-                  value: "PAYOS",
-                  groupValue: c.paymentMethod,
-                  activeColor: AppColors.primary,
-                  onChanged: (v) => c.setPaymentMethod(v!),
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
+                  child: Column(
+                    children: [
+                      RadioListTile<String>(
+                        title: const Text("Thanh toán khi nhận hàng (COD)"),
+                        value: "COD",
+                        activeColor: AppColors.primary,
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                      ),
+                      RadioListTile<String>(
+                        title: const Text("Thanh toán PayOS (QR Code)"),
+                        value: "PAYOS",
+                        activeColor: AppColors.primary,
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
+
             const SizedBox(height: 10),
 
             // 3. Ghi chú
@@ -101,7 +111,7 @@ class OrderPaymentSection extends StatelessWidget {
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                     value: c.usePoints,
-                    activeColor: AppColors.primary,
+                    activeThumbColor: AppColors.primary,
                     // Disable switch nếu không có điểm
                     onChanged: c.maxPoints > 0 ? c.toggleUsePoints : null,
                     contentPadding: EdgeInsets.zero,

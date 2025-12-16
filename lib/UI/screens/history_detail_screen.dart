@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:nhathuoc_mobilee/manager/usermanager.dart';
 import 'package:provider/provider.dart';
 import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
 import 'package:nhathuoc_mobilee/controller/historyordercontroller.dart';
@@ -25,7 +26,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
     });
   }
 
-  //Xác nhận đơn hàng
   void _onConfirmReceived() {
     showDialog(
       context: context,
@@ -41,22 +41,37 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(ctx);
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (_) =>
+                    const Center(child: CircularProgressIndicator()),
+              );
               // Gọi Controller
-              context
-                  .read<OrderHistoryController>()
-                  .confirmReceived(widget.orderId)
-                  .then((success) {
-                    if (success && mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Đã xác nhận nhận hàng thành công!"),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    }
-                  });
+              final controller = context.read<OrderHistoryController>();
+              bool success = await controller.confirmReceived(widget.orderId);
+
+              if (success && mounted) {
+                await controller.getOrderDetail(widget.orderId);
+                UserManager().loadUser();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      "Đã nhận hàng! Điểm tích lũy đã được cập nhật.",
+                    ),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              } else if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text("Có lỗi xảy ra, vui lòng thử lại."),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
             },
             child: const Text(
               "Đã nhận hàng",
@@ -93,19 +108,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
               foregroundColor: Colors.white,
             ),
             onPressed: () async {
-              // 1. Đóng dialog xác nhận trước
               Navigator.pop(ctx);
-
-              // 2. Hiển thị loading nhẹ hoặc chặn thao tác (Optional)
-              // ...
-
               final controller = context.read<OrderHistoryController>();
-
-              // 3. Gọi API hủy
               bool success = await controller.cancelOrder(widget.orderId);
-
-              // 4. Reload lại dữ liệu MỚI NHẤT từ server bất kể thành công hay thất bại
-              // Để đảm bảo UI đồng bộ với Server (Ví dụ: Server đã đổi thành 'Đã duyệt' thì reload sẽ thấy status đó)
               await controller.getOrderDetail(widget.orderId);
 
               if (mounted) {
@@ -118,8 +123,6 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     ),
                   );
                 } else {
-                  // CASE B: Hủy thất bại (Do Backend chặn vì đơn đã duyệt/đang giao)
-                  // Lúc này nhờ hàm getOrderDetail ở trên, UI sẽ tự vẽ lại -> Nút hủy sẽ tự biến mất
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
@@ -230,9 +233,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           if (detail == null) return const SizedBox.shrink();
 
           // 1. Kiểm tra trạng thái cho phép Hủy
+          bool isPendingPayment = detail.trangThai == "Chờ thanh toán";
+
           bool canCancel =
               detail.trangThai == "Chờ xử lý" ||
-              detail.trangThai == "Chờ thanh toán" ||
               detail.trangThai == "Chờ duyệt";
 
           // 2. Kiểm tra trạng thái cho phép Xác nhận nhận hàng

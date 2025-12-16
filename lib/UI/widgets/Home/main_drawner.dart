@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nhathuoc_mobilee/UI/common/utils/color_opacity_ext.dart';
+import 'package:nhathuoc_mobilee/UI/screens/history_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
 import 'package:nhathuoc_mobilee/controller/categorycontroller.dart';
@@ -193,20 +195,25 @@ class _MainDrawerState extends State<MainDrawer> {
                           ),
                           title: const Text('Lịch sử mua hàng'),
                           onTap: () {
-                            /* TODO */
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => OrderHistoryScreen(),
+                              ),
+                            );
                           },
                         ),
-                        ListTile(
-                          leading: const Icon(
-                            Icons.settings_outlined,
-                            color: AppColors.textSecondary,
-                          ),
-                          title: const Text('Cài đặt'),
-                          onTap: () {
-                            /* TODO */
-                          },
-                        ),
-                        const SizedBox(height: 20),
+                        // ListTile(
+                        //   leading: const Icon(
+                        //     Icons.settings_outlined,
+                        //     color: AppColors.textSecondary,
+                        //   ),
+                        //   title: const Text('Cài đặt'),
+                        //   onTap: () {
+                        //     /* TODO */
+                        //   },
+                        // ),
+                        // const SizedBox(height: 20),
                       ],
                     ),
             ),

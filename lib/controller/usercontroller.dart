@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:nhathuoc_mobilee/manager/usermanager.dart';
 import 'package:nhathuoc_mobilee/service/userservice.dart';
 
 class ProfileController extends ChangeNotifier {
@@ -34,9 +36,15 @@ class ProfileController extends ChangeNotifier {
       // Nếu thành công, có thể cần update lại UserManager singleton tại đây
       // để UI tự động hiển thị thông tin mới
       if (result['success'] == true) {
-         // UserManager().hoTen = name;
-         // UserManager().diaChi = address;
-         // ...
+        final user = UserManager();
+
+        user.hoTen = name;
+        user.soDienThoai = phone;
+        user.gioiTinh = gender;
+        user.diaChi = address;
+        user.ngaySinh = dob != null
+            ? DateFormat('yyyy-MM-dd').format(dob)
+            : null;
       }
 
       return result;

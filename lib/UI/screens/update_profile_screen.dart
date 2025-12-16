@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
+import 'package:nhathuoc_mobilee/UI/common/utils/color_opacity_ext.dart';
 import 'package:nhathuoc_mobilee/UI/common/utils/dialog_helper.dart';
 import 'package:nhathuoc_mobilee/UI/common/widget/custom_text_field.dart';
 import 'package:nhathuoc_mobilee/UI/common/widget/primary_button.dart';
@@ -229,7 +230,7 @@ class _UpdateProfileViewState extends State<UpdateProfileView> {
                       ),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButtonFormField<String>(
-                          value: _selectedGender,
+                          initialValue: _selectedGender,
                           decoration: const InputDecoration(
                             labelText: "Giới tính",
                             labelStyle: TextStyle(

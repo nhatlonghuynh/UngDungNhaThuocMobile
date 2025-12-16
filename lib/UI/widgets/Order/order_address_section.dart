@@ -119,14 +119,19 @@ class _AddressModalContentState extends State<_AddressModalContent> {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        leading: Radio<UserAddress>(
-                          value: addr,
+                        leading: RadioGroup<UserAddress>(
                           groupValue: widget.controller.selectedAddress,
-                          activeColor: AppColors.primary,
                           onChanged: (val) {
                             widget.controller.setSelectedAddress(val!);
                             Navigator.pop(context);
                           },
+                          child: ListTile(
+                            leading: Radio<UserAddress>(
+                              value: addr,
+                              activeColor: AppColors.primary,
+                            ),
+                            title: Text(addr.fullAddress),
+                          ),
                         ),
                         trailing: IconButton(
                           icon: const Icon(

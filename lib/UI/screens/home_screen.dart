@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nhathuoc_mobilee/UI/common/utils/color_opacity_ext.dart';
 import 'package:provider/provider.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:nhathuoc_mobilee/UI/widgets/Home/home_components.dart';
@@ -7,22 +8,16 @@ import 'package:nhathuoc_mobilee/UI/widgets/Home/promo_carousel.dart';
 import 'package:nhathuoc_mobilee/UI/widgets/Home/main_drawner.dart';
 import 'package:nhathuoc_mobilee/controller/home_controller.dart';
 import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
-import 'package:nhathuoc_mobilee/service/productservice.dart';
-import 'package:nhathuoc_mobilee/api/productapi.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) =>
-          HomeController(service: ProductService(repo: ProductRepository())),
-      child: Scaffold(
-        drawer: MainDrawer(),
-        backgroundColor: AppColors.background,
-        body: const HomeBody(),
-      ),
+    return Scaffold(
+      drawer: MainDrawer(),
+      backgroundColor: AppColors.background,
+      body: const HomeBody(),
     );
   }
 }

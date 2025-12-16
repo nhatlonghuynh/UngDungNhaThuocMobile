@@ -16,16 +16,23 @@ class UserService {
     required String email,
     required String phoneNumber,
     required String gender,
-    required String address, 
+    required String address,
   }) async {
     try {
       debugPrint("👤 [UserService] Update Profile: $name - $phoneNumber");
-      String? dobString = dob?.toIso8601String();
+      String? dobString;
+      if (dob != null) {
+        dobString =
+            "${dob.year.toString().padLeft(4, '0')}-"
+            "${dob.month.toString().padLeft(2, '0')}-"
+            "${dob.day.toString().padLeft(2, '0')}";
+      }
+
       final body = {
         'Name_Customer': name,
         'PhoneNumber': phoneNumber,
         'Gender': gender,
-        'Email': email, 
+        'Email': email,
         'Address': address,
         'DateOfBirth': dobString,
       };
@@ -37,7 +44,7 @@ class UserService {
         userMgr.hoTen = name;
         userMgr.soDienThoai = phoneNumber;
         userMgr.gioiTinh = gender;
-        userMgr.diaChi = address; 
+        userMgr.diaChi = address;
         if (dob != null) {
           userMgr.ngaySinh = dobString;
         }

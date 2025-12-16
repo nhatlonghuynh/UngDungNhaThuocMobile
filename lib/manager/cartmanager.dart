@@ -6,11 +6,13 @@ import 'package:nhathuoc_mobilee/UI/common/constants/api_constants.dart'; // Dù
 import 'package:nhathuoc_mobilee/models/cartitemlocal.dart';
 import 'package:nhathuoc_mobilee/models/giohang.dart';
 import 'package:nhathuoc_mobilee/models/thuoc.dart';
+import 'dart:async';
 
 class CartManager extends ChangeNotifier {
   static final CartManager _instance = CartManager._internal();
   factory CartManager() => _instance;
   CartManager._internal();
+  Timer? _debouceTimer;
 
   List<CartItemLocal> _localItems = [];
   final String _storageKey = 'my_cart_data';
@@ -47,10 +49,18 @@ class CartManager extends ChangeNotifier {
 
   Future<void> updateQuantity(int maThuoc, int newQuantity) async {
     final index = _localItems.indexWhere((e) => e.maThuoc == maThuoc);
+    if (index < 0 || index >= _localItems.length) return;
     if (index == -1) return;
 
     if (newQuantity > 0) {
       _localItems[index].soLuong = newQuantity;
+      notifyListeners();
+
+      if (_debouceTimer?.isActive ?? false) _debouceTimer?.cancel();
+      _debouceTimer = Timer(const Duration(milliseconds: 500), () async {
+        debugPrint("💾 [Cart] Quantity Updated ID: $maThuoc to $newQuantity");
+        await _saveToPrefs();
+      });
     } else {
       _localItems.removeAt(index); // Xóa nếu số lượng = 0
     }

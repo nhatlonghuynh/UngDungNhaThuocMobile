@@ -62,14 +62,8 @@ class OrderController extends ChangeNotifier {
       if (selectedAddress == null) {
         throw Exception("Vui lòng chọn địa chỉ giao hàng!");
       }
-
       // Check 2: Địa chỉ đang đồng bộ (ID âm hoặc bằng 0)
       // Đây là lớp bảo vệ cho phần Optimistic UI
-      if (selectedAddress!.addressID <= 0) {
-        throw Exception(
-          "Địa chỉ đang được đồng bộ, vui lòng thử lại sau vài giây!",
-        );
-      }
     }
 
     try {

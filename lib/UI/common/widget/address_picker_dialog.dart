@@ -58,7 +58,7 @@ class _AddressPickerDialogState extends State<AddressPickerDialog> {
                 children: [
                   // ======= 1. Tỉnh / Thành =======
                   DropdownButtonFormField<Province>(
-                    value: _selectedProvince,
+                    initialValue: _selectedProvince,
                     isExpanded: true,
                     hint: const Text("Tỉnh/Thành phố"),
                     items: _provinces
@@ -79,7 +79,7 @@ class _AddressPickerDialogState extends State<AddressPickerDialog> {
 
                   // ======= 2. Quận / Huyện =======
                   DropdownButtonFormField<District>(
-                    value: _selectedDistrict,
+                    initialValue: _selectedDistrict,
                     isExpanded: true,
                     hint: const Text("Quận/Huyện"),
                     items: _selectedProvince == null
@@ -104,7 +104,7 @@ class _AddressPickerDialogState extends State<AddressPickerDialog> {
 
                   // ======= 3. Xã / Phường =======
                   DropdownButtonFormField<Ward>(
-                    value: _selectedWard,
+                    initialValue: _selectedWard,
                     isExpanded: true,
                     hint: const Text("Phường/Xã"),
                     items: (_selectedDistrict == null)

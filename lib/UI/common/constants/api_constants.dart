@@ -4,8 +4,8 @@ class ApiConstants {
   static const String ip1school = 'localhost';
   // Port của API (Backend chạy port nào thì điền port đó, ví dụ 8476)
   static const String port = '8476';
-
+  static const String portLocalhost = '59269';
   // Base URL dùng chung cho toàn app
-  static const String serverUrl = 'http://$ip:$port';
-  static const String baseUrl = 'http://$ip:$port/api';
+  static const String serverUrl = 'http://$ip1school:$portLocalhost';
+  static const String baseUrl = 'http://$ip1school:$portLocalhost/api';
 }

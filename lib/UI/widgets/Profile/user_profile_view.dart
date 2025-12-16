@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
+import 'package:nhathuoc_mobilee/UI/common/utils/color_opacity_ext.dart';
 import 'package:nhathuoc_mobilee/controller/authcontroller.dart';
 import 'package:nhathuoc_mobilee/manager/usermanager.dart';
 import 'package:nhathuoc_mobilee/UI/screens/changepassword_screen.dart';
 import 'package:nhathuoc_mobilee/UI/screens/history_screen.dart';
 import 'package:nhathuoc_mobilee/UI/screens/reward_screen.dart'; // Import Reward Screen
 import 'package:nhathuoc_mobilee/UI/common/utils/dialog_helper.dart';
-import 'package:nhathuoc_mobilee/UI/screens/update_profile_screen.dart'; // [DRY]
+import 'package:nhathuoc_mobilee/UI/screens/update_profile_screen.dart';
+import 'package:provider/provider.dart'; // [DRY]
 
 class UserProfileView extends StatelessWidget {
   final AuthController controller;
@@ -16,6 +18,7 @@ class UserProfileView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = UserManager();
+    final userMgr = context.watch<UserManager>();
 
     return SingleChildScrollView(
       child: Column(
@@ -67,7 +70,7 @@ class UserProfileView extends StatelessWidget {
           _buildMenuItem(
             icon: Icons.loyalty,
             iconColor: Colors.orange,
-            title: "Điểm tích lũy: ${user.diemTichLuy}",
+            title: "Điểm tích lũy: ${userMgr.diemTichLuy}",
             subtitle: "Đổi quà ngay",
             onTap: () {
               Navigator.push(

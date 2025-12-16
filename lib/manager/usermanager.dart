@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class UserManager {
+class UserManager extends ChangeNotifier {
   // ---------------------------------------------------------------------------
   // 1. SINGLETON
   // ---------------------------------------------------------------------------
@@ -80,6 +80,7 @@ class UserManager {
     await _storage.write(key: _storageKey, value: jsonEncode(userData));
 
     debugPrint("👤 [UserMgr] Session saved (Secure): ${userData['HoTen']}");
+    notifyListeners();
   }
 
   Future<void> loadUser() async {
@@ -90,6 +91,7 @@ class UserManager {
       try {
         _currentUser = jsonDecode(data);
         debugPrint("👤 [UserMgr] Session restored: ${_currentUser?['HoTen']}");
+        notifyListeners();
       } catch (e) {
         debugPrint("❌ [UserMgr] Parse error: $e");
         await logout();
@@ -103,6 +105,7 @@ class UserManager {
     _currentUser = null;
     await _storage.delete(key: _storageKey);
     debugPrint("👋 [UserMgr] Logged out (Secure)");
+    notifyListeners();
   }
 
   // ---------------------------------------------------------------------------
@@ -119,5 +122,6 @@ class UserManager {
 
     await saveUser(_currentUser!);
     debugPrint("💎 [UserMgr] Updated Points: $diemMoi");
+    notifyListeners();
   }
 }

@@ -4,22 +4,21 @@ import 'package:nhathuoc_mobilee/UI/screens/cart_screen.dart';
 import 'package:nhathuoc_mobilee/UI/screens/home_screen.dart';
 import 'package:nhathuoc_mobilee/UI/screens/profile_screen.dart';
 import 'package:nhathuoc_mobilee/UI/screens/reward_screen.dart';
+import 'package:nhathuoc_mobilee/controller/authcontroller.dart';
 import 'package:nhathuoc_mobilee/controller/categorycontroller.dart';
 import 'package:nhathuoc_mobilee/controller/historyordercontroller.dart';
 import 'package:nhathuoc_mobilee/controller/home_controller.dart';
+import 'package:nhathuoc_mobilee/controller/productcontroller.dart'; // Import controller chi tiết
 import 'package:nhathuoc_mobilee/service/productservice.dart';
-import 'package:provider/provider.dart'; // Thêm thư viện Provider
+import 'package:provider/provider.dart';
 import 'package:nhathuoc_mobilee/manager/usermanager.dart';
-
 import 'package:nhathuoc_mobilee/locator.dart';
 
-// 1. Biến toàn cục để điều khiển MainScreen từ xa
 final GlobalKey<MainScreenState> mainScreenKey = GlobalKey<MainScreenState>();
 
-// 2. Điểm khởi chạy ứng dụng
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  setupLocator(); // Khởi tạo Service Locator
+  setupLocator();
   await UserManager().loadUser();
   runApp(const PharmacyApp());
 }
@@ -29,51 +28,42 @@ class PharmacyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 3. Bọc MaterialApp bằng MultiProvider để khắc phục lỗi ProviderNotFoundException
     return MultiProvider(
       providers: [
-        // Khởi tạo CategoryController để toàn bộ App có thể dùng
         ChangeNotifierProvider(create: (_) => CategoryController()),
+        // Sử dụng locator để inject service chuẩn
         ChangeNotifierProvider(
           create: (_) => HomeController(service: locator<ProductService>()),
         ),
         ChangeNotifierProvider(create: (_) => OrderHistoryController()),
+        // THÊM: Đăng ký controller cho màn hình chi tiết
+        ChangeNotifierProvider(create: (_) => ProductDetailController()),
+
+        ChangeNotifierProvider(create: (_) => AuthController()),
+        ChangeNotifierProvider(create: (_) => UserManager()),
       ],
       child: MaterialApp(
         title: 'Nhà Thuốc Online',
         debugShowCheckedModeBanner: false,
-
-        // --- CẤU HÌNH THEME ---
         theme: ThemeData(
           useMaterial3: true,
           scaffoldBackgroundColor: AppColors.background,
-          fontFamily: 'Inter', // Ensure Inter is used globally
-
+          fontFamily: 'Inter',
           colorScheme: ColorScheme.fromSeed(
             seedColor: AppColors.primary,
             primary: AppColors.primary,
             secondary: AppColors.secondary,
             surface: AppColors.surface,
+            // ignore: deprecated_member_use
             background: AppColors.background,
             error: AppColors.error,
           ),
-
           appBarTheme: const AppBarTheme(
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
             elevation: 0,
             centerTitle: true,
           ),
-
-          textTheme: const TextTheme(
-            bodyMedium: TextStyle(color: AppColors.textPrimary),
-            bodyLarge: TextStyle(color: AppColors.textPrimary),
-            titleLarge: TextStyle(
-              color: AppColors.textPrimary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-
           inputDecorationTheme: InputDecorationTheme(
             filled: true,
             fillColor: AppColors.surface,
@@ -94,7 +84,6 @@ class PharmacyApp extends StatelessWidget {
               vertical: 16,
             ),
           ),
-
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
@@ -107,28 +96,22 @@ class PharmacyApp extends StatelessWidget {
             ),
           ),
         ),
-
         initialRoute: '/',
-
-        // 4. Khai báo routes (Gắn key vào MainScreen)
         routes: {'/': (context) => MainScreen(key: mainScreenKey)},
       ),
     );
   }
 }
 
-// 5. Màn hình chính
+// ... Phần MainScreen giữ nguyên ...
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key}); // Giữ const và super.key bình thường
-
+  const MainScreen({super.key});
   @override
-  State<MainScreen> createState() => MainScreenState(); // Đổi tên State thành public
+  State<MainScreen> createState() => MainScreenState();
 }
 
-// Đổi tên từ _MainScreenState -> MainScreenState (bỏ dấu gạch dưới) để public
 class MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-
   final List<Widget> _screens = [
     const HomeScreen(),
     const CartScreen(),
@@ -136,14 +119,13 @@ class MainScreenState extends State<MainScreen> {
     const ProfileScreen(),
   ];
 
-  void _onItemTapped(int index) {
+  void navigateToTab(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
 
-  // --- HÀM PUBLIC ĐỂ GỌI TỪ BÊN NGOÀI ---
-  void navigateToTab(int index) {
+  void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -152,8 +134,8 @@ class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_selectedIndex],
-
+      body:
+          _screens[_selectedIndex], // Giữ trạng thái khi switch tab cần dùng IndexedStack, nhưng tạm thời để nguyên theo code gốc
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
@@ -167,19 +149,10 @@ class MainScreenState extends State<MainScreen> {
         child: BottomNavigationBar(
           backgroundColor: Colors.white,
           type: BottomNavigationBarType.fixed,
-
           selectedItemColor: AppColors.primary,
-          selectedLabelStyle: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 12,
-          ),
-
           unselectedItemColor: AppColors.textSecondary,
-          unselectedLabelStyle: const TextStyle(fontSize: 12),
-
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
-
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),

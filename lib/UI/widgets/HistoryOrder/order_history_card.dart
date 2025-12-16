@@ -5,7 +5,6 @@ import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
 // --- HELPER PHÂN MÀU (Giữ logic cũ + thêm màu mới) ---
 class StatusHelper {
   static Color getColor(String status) {
-    // Chuyển về chữ thường để so sánh cho chính xác
     final s = status.toLowerCase();
 
     if (s.contains('chờ')) {
@@ -25,18 +24,21 @@ class OrderHistoryCard extends StatelessWidget {
   // GIỮ NGUYÊN: dynamic order theo ý bạn
   final dynamic order;
   final VoidCallback onTap;
-
-  const OrderHistoryCard({super.key, required this.order, required this.onTap});
+  final VoidCallback? onConfirmReceived;
+  const OrderHistoryCard({
+    super.key,
+    required this.order,
+    required this.onTap,
+    this.onConfirmReceived,
+  });
 
   @override
   Widget build(BuildContext context) {
     final currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ');
     // Định dạng ngày (lưu ý: đảm bảo order.ngayTao là kiểu DateTime, nếu là String thì cần parse)
     final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
-
     // Lấy màu từ Helper dựa trên order.trangThai
     final statusColor = StatusHelper.getColor(order.trangThai);
-
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

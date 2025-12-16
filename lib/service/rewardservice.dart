@@ -75,14 +75,13 @@ class RewardService {
   Future<Map<String, dynamic>> redeemGift({
     required int giftId,
     int points = 0,
-    // Các tham số khác như name, points, type không cần gửi lên server nữa
   }) async {
     try {
       final user = UserManager();
       debugPrint("🎁 [Service] Redeeming ID: $giftId");
 
       // Body chỉ cần gửi đúng 2 thông tin này
-      final body = {"MaKH": user.userId, "MaQua": giftId};
+      final body = {"MaKH": user.makh, "MaQua": giftId};
 
       final response = await _repo.redeemGiftRequest(body);
 
@@ -97,13 +96,21 @@ class RewardService {
         debugPrint("✅ [Service] Success! New Points: $newPoints");
         return {'success': true, 'message': 'Đổi quà thành công!'};
       } else {
-        String msg = data['Message'] ?? "Đổi quà thất bại";
-        debugPrint("❌ [Service] Fail: $msg");
-        return {'success': false, 'message': msg};
+        String errorBody = response.body;
+        try {
+          // Cố gắng decode nếu là JSON
+          final errJson = jsonDecode(utf8.decode(response.bodyBytes));
+          errorBody = errJson['Message'] ?? errJson.toString();
+        } catch (_) {}
+
+        debugPrint(
+          "❌ [Service] Server Error (${response.statusCode}): $errorBody",
+        );
+        return {'success': false, 'message': errorBody};
       }
     } catch (e) {
-      debugPrint("❌ [Service] Exception: $e");
-      return {'success': false, 'message': 'Lỗi kết nối: $e'};
+      debugPrint("❌ [Service] Exception: $e"); // In chi tiết Exception
+      return {'success': false, 'message': 'Lỗi ứng dụng: $e'};
     }
   }
 }

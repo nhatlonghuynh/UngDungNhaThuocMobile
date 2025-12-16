@@ -110,7 +110,7 @@ class _ProfileBodyState extends State<ProfileBody> {
         onPressed: () => _checkLoginStatus(),
         icon: const Icon(Icons.login_rounded, size: 20),
         label: const Text(
-          "Đăng nhập ngay",
+          "ĐĂNG NHẬP NGAY",
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
         ),
         style: ElevatedButton.styleFrom(

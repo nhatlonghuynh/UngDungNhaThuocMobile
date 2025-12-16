@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nhathuoc_mobilee/UI/common/utils/color_opacity_ext.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:shimmer/shimmer.dart';
@@ -12,6 +13,7 @@ class HomeHeaderSection extends StatelessWidget {
   const HomeHeaderSection({super.key});
   @override
   Widget build(BuildContext context) {
+    final userMgr = context.watch<UserManager>();
     final user = UserManager();
     return Container(
       padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
@@ -49,7 +51,7 @@ class HomeHeaderSection extends StatelessWidget {
               ],
             ),
             child: const Icon(
-              Icons.local_pharmacy,
+              Icons.person_rounded,
               size: 36,
               color: AppColors.primary,
             ),
@@ -116,7 +118,7 @@ class HomeHeaderSection extends StatelessWidget {
                   const Icon(Icons.stars, color: AppColors.secondary, size: 18),
                   const SizedBox(width: 8),
                   Text(
-                    "${user.diemTichLuy}",
+                    "${userMgr.diemTichLuy}",
                     style: const TextStyle(
                       fontFamily: 'Inter',
                       color: AppColors.textPrimary,

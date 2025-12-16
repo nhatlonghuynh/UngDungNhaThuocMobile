@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nhathuoc_mobilee/UI/common/constants/appcolor.dart';
+import 'package:nhathuoc_mobilee/UI/common/utils/color_opacity_ext.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ProductImagesSlider extends StatelessWidget {
